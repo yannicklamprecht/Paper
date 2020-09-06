@@ -1,0 +1,1219 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ysl3000 <yannicklamprecht@live.de>
+Date: Sun, 7 Jun 2020 16:32:16 +0200
+Subject: [PATCH] added packet support
+
+
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAnimation.java b/src/main/java/net/minecraft/server/PacketPlayOutAnimation.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4eed7ea99b7ed297f35d9e020db05341fceca157
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutAnimation.java
+@@ -0,0 +1,33 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayOutAnimation implements Packet<PacketListenerPlayOut> {
++
++    private int a;
++    private int b;
++
++    public PacketPlayOutAnimation() {}
++
++    public PacketPlayOutAnimation(Entity entity, int i){this(entity.getId(), i);}
++    public PacketPlayOutAnimation(int entityID, int i) {
++        this.a = entityID;
++        this.b = i;
++    }
++
++    @Override
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.i();
++        this.b = packetdataserializer.readUnsignedByte();
++    }
++
++    @Override
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(this.a);
++        packetdataserializer.writeByte(this.b);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..90c3034ab97431149ab64e9e9add3f58a6b2f36a
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java
+@@ -0,0 +1,33 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayOutEntityHeadRotation implements Packet<PacketListenerPlayOut> {
++
++    private int a;
++    private byte b;
++
++    public PacketPlayOutEntityHeadRotation() {}
++
++    public PacketPlayOutEntityHeadRotation(Entity entity, byte b0) {this(entity.getId(), b0);}
++    public PacketPlayOutEntityHeadRotation(int entityId, byte b0) {
++        this.a = entityId;
++        this.b = b0;
++    }
++
++    @Override
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.i();
++        this.b = packetdataserializer.readByte();
++    }
++
++    @Override
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(this.a);
++        packetdataserializer.writeByte(this.b);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..02fbddb300108d2e3ef071151162dad93455bcf3
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
+@@ -0,0 +1,39 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import java.util.List;
++
++public class PacketPlayOutEntityMetadata implements Packet<PacketListenerPlayOut> {
++
++    public int a;
++    public List<DataWatcher.Item<?>> b;
++
++    public PacketPlayOutEntityMetadata() {}
++
++    public PacketPlayOutEntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
++        this.a = i;
++        if (flag) {
++            this.b = datawatcher.c();
++            datawatcher.e();
++        } else {
++            this.b = datawatcher.b();
++        }
++
++    }
++
++    @Override
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.i();
++        this.b = DataWatcher.a(packetdataserializer);
++    }
++
++    @Override
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(this.a);
++        DataWatcher.a(this.b, packetdataserializer);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..40769b27285babb61bbdd3afa5fb53745c5641ce
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java
+@@ -0,0 +1,52 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayOutEntityTeleport implements Packet<PacketListenerPlayOut> {
++
++    public int a;
++    public double b;
++    public double c;
++    public double d;
++    public byte e;
++    public byte f;
++    public boolean g;
++
++    public PacketPlayOutEntityTeleport() {}
++
++    public PacketPlayOutEntityTeleport(Entity entity) {
++        this.a = entity.getId();
++        this.b = entity.locX();
++        this.c = entity.locY();
++        this.d = entity.locZ();
++        this.e = (byte) ((int) (entity.yaw * 256.0F / 360.0F));
++        this.f = (byte) ((int) (entity.pitch * 256.0F / 360.0F));
++        this.g = entity.isOnGround();
++    }
++
++    @Override
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.i();
++        this.b = packetdataserializer.readDouble();
++        this.c = packetdataserializer.readDouble();
++        this.d = packetdataserializer.readDouble();
++        this.e = packetdataserializer.readByte();
++        this.f = packetdataserializer.readByte();
++        this.g = packetdataserializer.readBoolean();
++    }
++
++    @Override
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(this.a);
++        packetdataserializer.writeDouble(this.b);
++        packetdataserializer.writeDouble(this.c);
++        packetdataserializer.writeDouble(this.d);
++        packetdataserializer.writeByte(this.e);
++        packetdataserializer.writeByte(this.f);
++        packetdataserializer.writeBoolean(this.g);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..bfc44e87bd38382fe02f98fc7ff029391c43a5bc
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+@@ -0,0 +1,71 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import java.util.UUID;
++
++public class PacketPlayOutNamedEntitySpawn implements Packet<PacketListenerPlayOut> {
++
++    private int a;
++    private UUID b;
++    private double c;
++    private double d;
++    private double e;
++    private byte f;
++    private byte g;
++
++    public PacketPlayOutNamedEntitySpawn() {}
++
++    public PacketPlayOutNamedEntitySpawn(EntityHuman entityhuman) {
++        this.a = entityhuman.getId();
++        this.b = entityhuman.getProfile().getId();
++        this.c = entityhuman.locX();
++        this.d = entityhuman.locY();
++        this.e = entityhuman.locZ();
++        this.f = (byte) ((int) (entityhuman.yaw * 256.0F / 360.0F));
++        this.g = (byte) ((int) (entityhuman.pitch * 256.0F / 360.0F));
++    }
++
++    public PacketPlayOutNamedEntitySpawn(
++        int entityId,
++        UUID uuid,
++        double x,
++        double y,
++        double z,
++        float yaw,
++        float pitch
++    ) {
++        this.a = entityId;
++        this.b = uuid;
++        this.c = x;
++        this.d = y;
++        this.e = z;
++        this.f = (byte) ((int) (yaw * 256.0F / 360.0F));
++        this.g = (byte) ((int) (pitch * 256.0F / 360.0F));
++    }
++
++    @Override
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.i();
++        this.b = packetdataserializer.k();
++        this.c = packetdataserializer.readDouble();
++        this.d = packetdataserializer.readDouble();
++        this.e = packetdataserializer.readDouble();
++        this.f = packetdataserializer.readByte();
++        this.g = packetdataserializer.readByte();
++    }
++
++    @Override
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(this.a);
++        packetdataserializer.a(this.b);
++        packetdataserializer.writeDouble(this.c);
++        packetdataserializer.writeDouble(this.d);
++        packetdataserializer.writeDouble(this.e);
++        packetdataserializer.writeByte(this.f);
++        packetdataserializer.writeByte(this.g);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..493da2a90d0c8c591757e6b29bb8e9af5af28cca
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+@@ -0,0 +1,212 @@
++package net.minecraft.server;
++
++import com.google.common.base.MoreObjects;
++import com.google.common.collect.Lists;
++import com.mojang.authlib.GameProfile;
++import com.mojang.authlib.properties.Property;
++import java.io.IOException;
++import java.util.Iterator;
++import java.util.List;
++import javax.annotation.Nullable;
++
++public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
++
++    public EnumPlayerInfoAction a;
++    public final List<PlayerInfoData> b = Lists.newArrayList();
++
++    public PacketPlayOutPlayerInfo() {}
++
++    public PacketPlayOutPlayerInfo(EnumPlayerInfoAction packetplayoutplayerinfo_enumplayerinfoaction, EntityPlayer... aentityplayer) {
++        this.a = packetplayoutplayerinfo_enumplayerinfoaction;
++        EntityPlayer[] aentityplayer1 = aentityplayer;
++        int i = aentityplayer.length;
++
++        for (int j = 0; j < i; ++j) {
++            EntityPlayer entityplayer = aentityplayer1[j];
++
++            this.b.add(new PlayerInfoData(entityplayer.getProfile(), entityplayer.ping, entityplayer.playerInteractManager.getGameMode(), entityplayer.getPlayerListName()));
++        }
++
++    }
++
++    public PacketPlayOutPlayerInfo(EnumPlayerInfoAction packetplayoutplayerinfo_enumplayerinfoaction, Iterable<EntityPlayer> iterable) {
++        this.a = packetplayoutplayerinfo_enumplayerinfoaction;
++        Iterator iterator = iterable.iterator();
++
++        while (iterator.hasNext()) {
++            EntityPlayer entityplayer = (EntityPlayer) iterator.next();
++
++            this.b.add(new PlayerInfoData(entityplayer.getProfile(), entityplayer.ping, entityplayer.playerInteractManager.getGameMode(), entityplayer.getPlayerListName()));
++        }
++
++    }
++
++    @Override
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = (EnumPlayerInfoAction) packetdataserializer.a(EnumPlayerInfoAction.class);
++        int i = packetdataserializer.i();
++
++        for (int j = 0; j < i; ++j) {
++            GameProfile gameprofile = null;
++            int k = 0;
++            EnumGamemode enumgamemode = null;
++            IChatBaseComponent ichatbasecomponent = null;
++
++            switch (this.a) {
++                case ADD_PLAYER:
++                    gameprofile = new GameProfile(packetdataserializer.k(), packetdataserializer.e(16));
++                    int l = packetdataserializer.i();
++
++                    for (int i1 = 0; i1 < l; ++i1) {
++                        String s = packetdataserializer.e(32767);
++                        String s1 = packetdataserializer.e(32767);
++
++                        if (packetdataserializer.readBoolean()) {
++                            gameprofile.getProperties().put(s, new Property(s, s1, packetdataserializer.e(32767)));
++                        } else {
++                            gameprofile.getProperties().put(s, new Property(s, s1));
++                        }
++                    }
++
++                    enumgamemode = EnumGamemode.getById(packetdataserializer.i());
++                    k = packetdataserializer.i();
++                    if (packetdataserializer.readBoolean()) {
++                        ichatbasecomponent = packetdataserializer.h();
++                    }
++                    break;
++                case UPDATE_GAME_MODE:
++                    gameprofile = new GameProfile(packetdataserializer.k(), (String) null);
++                    enumgamemode = EnumGamemode.getById(packetdataserializer.i());
++                    break;
++                case UPDATE_LATENCY:
++                    gameprofile = new GameProfile(packetdataserializer.k(), (String) null);
++                    k = packetdataserializer.i();
++                    break;
++                case UPDATE_DISPLAY_NAME:
++                    gameprofile = new GameProfile(packetdataserializer.k(), (String) null);
++                    if (packetdataserializer.readBoolean()) {
++                        ichatbasecomponent = packetdataserializer.h();
++                    }
++                    break;
++                case REMOVE_PLAYER:
++                    gameprofile = new GameProfile(packetdataserializer.k(), (String) null);
++            }
++
++            this.b.add(new PlayerInfoData(gameprofile, k, enumgamemode, ichatbasecomponent));
++        }
++
++    }
++
++    @Override
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a((Enum) this.a);
++        packetdataserializer.d(this.b.size());
++        Iterator iterator = this.b.iterator();
++
++        while (iterator.hasNext()) {
++            PlayerInfoData packetplayoutplayerinfo_playerinfodata = (PlayerInfoData) iterator.next();
++
++            switch (this.a) {
++                case ADD_PLAYER:
++                    packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
++                    packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getName());
++                    packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.a().getProperties().size());
++                    Iterator iterator1 = packetplayoutplayerinfo_playerinfodata.a().getProperties().values().iterator();
++
++                    while (iterator1.hasNext()) {
++                        Property property = (Property) iterator1.next();
++
++                        packetdataserializer.a(property.getName());
++                        packetdataserializer.a(property.getValue());
++                        if (property.hasSignature()) {
++                            packetdataserializer.writeBoolean(true);
++                            packetdataserializer.a(property.getSignature());
++                        } else {
++                            packetdataserializer.writeBoolean(false);
++                        }
++                    }
++
++                    packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.c().getId());
++                    packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.b());
++                    if (packetplayoutplayerinfo_playerinfodata.d() == null) {
++                        packetdataserializer.writeBoolean(false);
++                    } else {
++                        packetdataserializer.writeBoolean(true);
++                        packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.d());
++                    }
++                    break;
++                case UPDATE_GAME_MODE:
++                    packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
++                    packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.c().getId());
++                    break;
++                case UPDATE_LATENCY:
++                    packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
++                    packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.b());
++                    break;
++                case UPDATE_DISPLAY_NAME:
++                    packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
++                    if (packetplayoutplayerinfo_playerinfodata.d() == null) {
++                        packetdataserializer.writeBoolean(false);
++                    } else {
++                        packetdataserializer.writeBoolean(true);
++                        packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.d());
++                    }
++                    break;
++                case REMOVE_PLAYER:
++                    packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
++            }
++        }
++
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++
++    public String toString() {
++        return MoreObjects.toStringHelper(this).add("action", this.a).add("entries", this.b).toString();
++    }
++
++    public static class PlayerInfoData {
++
++        private final int b;
++        private final EnumGamemode c;
++        private final GameProfile d;
++        private final IChatBaseComponent e;
++
++        public PlayerInfoData(GameProfile gameprofile, int i, EnumGamemode enumgamemode, @Nullable IChatBaseComponent ichatbasecomponent) {
++            this.d = gameprofile;
++            this.b = i;
++            this.c = enumgamemode;
++            this.e = ichatbasecomponent;
++        }
++
++        public GameProfile a() {
++            return this.d;
++        }
++
++        public int b() {
++            return this.b;
++        }
++
++        public EnumGamemode c() {
++            return this.c;
++        }
++
++        @Nullable
++        public IChatBaseComponent d() {
++            return this.e;
++        }
++
++        public String toString() {
++            return MoreObjects.toStringHelper(this).add("latency", this.b).add("gameMode", this.c).add("profile", this.d).add("displayName", this.e == null ? null : IChatBaseComponent.ChatSerializer.a(this.e)).toString();
++        }
++    }
++
++    public static enum EnumPlayerInfoAction {
++
++        ADD_PLAYER, UPDATE_GAME_MODE, UPDATE_LATENCY, UPDATE_DISPLAY_NAME, REMOVE_PLAYER;
++
++        private EnumPlayerInfoAction() {}
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index 724aec660a36eb516514ae5dbee5fee2ca248a5a..14f67c5d3e296d92ef2f1eda2f239fa0e0da1323 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -367,6 +367,7 @@ public abstract class World implements GeneratorAccess, AutoCloseable {
+         return this.a(blockposition, iblockdata, i, 512);
+     }
+ 
++    public final boolean blockEvent(BlockPosition blockposition, IBlockData iblockdata, int i, int j){return a(blockposition, iblockdata, i, j);}
+     @Override
+     public boolean a(BlockPosition blockposition, IBlockData iblockdata, int i, int j) {
+         // CraftBukkit start - tree generation
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 5f5b39b3b7e56e935d1f964fbfc3385a65b7e178..3b90e7a8f00966c24a54417b14f5bbad27e540bd 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -163,6 +163,7 @@ import org.bukkit.craftbukkit.map.CraftMapView;
+ import org.bukkit.craftbukkit.metadata.EntityMetadataStore;
+ import org.bukkit.craftbukkit.metadata.PlayerMetadataStore;
+ import org.bukkit.craftbukkit.metadata.WorldMetadataStore;
++import org.bukkit.craftbukkit.packet.CraftPacketPipeline;
+ import org.bukkit.craftbukkit.potion.CraftPotionBrewer;
+ import org.bukkit.craftbukkit.scheduler.CraftScheduler;
+ import org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager;
+@@ -204,6 +205,7 @@ import org.bukkit.inventory.SmokingRecipe;
+ import org.bukkit.inventory.StonecuttingRecipe;
+ import org.bukkit.loot.LootTable;
+ import org.bukkit.map.MapView;
++import org.bukkit.packet.PacketPipeline;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.permissions.Permission;
+ import org.bukkit.plugin.Plugin;
+@@ -250,6 +252,7 @@ public final class CraftServer implements Server {
+     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
+     private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
+     private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
++    private final PacketPipeline packetPipeline = new CraftPacketPipeline();
+     private int monsterSpawn = -1;
+     private int animalSpawn = -1;
+     private int waterAnimalSpawn = -1;
+@@ -2375,5 +2378,10 @@ public final class CraftServer implements Server {
+     public com.destroystokyo.paper.entity.ai.MobGoals getMobGoals() {
+         return mobGoals;
+     }
++
++    @Override
++    public @Nonnull PacketPipeline getPacketPipeline() {
++        return packetPipeline;
++    }
+     // Paper end
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 299f57ca2a65887a0d7e7c584fc1bd5c783b0db2..865f874fc07a4da96bbf3ac4ad2529df837182c0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -90,6 +90,7 @@ import net.minecraft.server.SoundCategory;
+ import net.minecraft.server.StructureGenerator;
+ import net.minecraft.server.Ticket;
+ import net.minecraft.server.TicketType;
++import net.minecraft.server.TileEntity;
+ import net.minecraft.server.Unit;
+ import net.minecraft.server.Vec3D;
+ import net.minecraft.server.WorldServer;
+@@ -284,6 +285,13 @@ public class CraftWorld implements World {
+     private int waterAmbientSpawn = -1;
+     private int ambientSpawn = -1;
+ 
++    @Override
++    public void triggerBlockEntityEvent(Location location, int paramA, int paramB) {
++        BlockPosition position = new BlockPosition(location.getX(), location.getY(), location.getZ());
++        TileEntity chest = world.getTileEntity(position);
++        world.blockEvent(position, chest.getBlock(), paramA, paramB); // pail rename: blockEvent
++    }
++
+     // Paper start - Provide fast information methods
+     public int getEntityCount() {
+         int ret = 0;
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/AbstractPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/AbstractPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a2e42ce94866418783b7af58f1a2b335b14f09c6
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/AbstractPacketStep.java
+@@ -0,0 +1,39 @@
++package org.bukkit.craftbukkit.packet;
++
++import net.minecraft.server.Packet;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.entity.Player;
++import org.bukkit.packet.PacketStep;
++
++import java.util.Collection;
++
++public abstract class AbstractPacketStep implements PacketStep {
++    private PacketStep next;
++
++    public void setNext(PacketStep next) {
++        if(this.next == null){
++            this.next = next;
++        } else {
++            this.next.setNext(next);
++        }
++    }
++
++    public final void execute(Collection<? extends Player> players) {
++        executeStep(players);
++        if (next != null) {
++            next.execute(players);
++        }
++    }
++
++    protected void sendPacket(Player player, Packet<?> packet){
++        ((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
++    }
++
++    protected void sendPacket(Collection<?extends Player> players, Packet<?> packet){
++        for (Player player: players){
++            sendPacket(player, packet);
++        }
++    }
++
++    protected abstract void executeStep(Collection<? extends Player> players);
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/CraftPacketPipeline.java b/src/main/java/org/bukkit/craftbukkit/packet/CraftPacketPipeline.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4473710a943c4fc2eef5b652534ef9060b714036
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/CraftPacketPipeline.java
+@@ -0,0 +1,38 @@
++package org.bukkit.craftbukkit.packet;
++
++
++import net.minecraft.server.Scoreboard;
++import org.apache.commons.lang.RandomStringUtils;
++import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;
++import org.bukkit.entity.Player;
++import org.bukkit.packet.PacketPipeline;
++import org.bukkit.packet.PacketStepBuilder;
++import org.bukkit.scoreboard.Team;
++
++
++import javax.annotation.Nonnull;
++import java.util.Collection;
++
++public class CraftPacketPipeline implements PacketPipeline {
++    @Override
++    public PacketStepBuilder create() {
++        return new CraftPacketStepBuilder();
++    }
++
++    @Override
++    public void send(PacketStepBuilder packetStepBuilder, Collection<? extends Player> players) {
++        packetStepBuilder.build().execute(players);
++    }
++
++    @Override
++    public Team createTeam(@Nonnull String name) {
++        Scoreboard scoreboard = new Scoreboard();
++        CraftScoreboard craftScoreboard = new CraftScoreboard(scoreboard);
++        return craftScoreboard.registerNewTeam(name);
++    }
++
++    @Override
++    public String generateRandomString(int count, boolean letters, boolean numbers) {
++        return RandomStringUtils.random(count, letters, numbers);
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/CraftPacketStepBuilder.java b/src/main/java/org/bukkit/craftbukkit/packet/CraftPacketStepBuilder.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4fa8afb6970d077466a3863d36ac4e082ab683c7
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/CraftPacketStepBuilder.java
+@@ -0,0 +1,107 @@
++package org.bukkit.craftbukkit.packet;
++
++import com.destroystokyo.paper.profile.PlayerProfile;
++import org.bukkit.Location;
++import org.bukkit.block.data.BlockData;
++import org.bukkit.craftbukkit.packet.steps.*;
++import org.bukkit.entity.Player;
++import org.bukkit.inventory.EquipmentSlot;
++import org.bukkit.inventory.ItemStack;
++import org.bukkit.packet.PacketOptions;
++import org.bukkit.packet.PacketStep;
++import org.bukkit.packet.PacketStepBuilder;
++import org.bukkit.plugin.java.JavaPlugin;
++import org.bukkit.scoreboard.Team;
++
++import java.util.Collection;
++import java.util.UUID;
++import java.util.concurrent.TimeUnit;
++
++public class CraftPacketStepBuilder implements PacketStepBuilder {
++
++    private final PacketStep initial = new EmptyPacketStep();
++
++    @Override
++    public PacketStepBuilder sendPlayerProfile(PlayerProfile playerProfile, PacketOptions.ProfileAction profileAction) {
++        initial.setNext(new ProfilePacketStep(playerProfile, profileAction));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder spawnPlayer(int entityId, UUID uuid, Location location) {
++        initial.setNext(new SpawnPlayerPacketStep(entityId, uuid, location));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder setPlayerTeam(Team team, PacketOptions.TeamMode teamMode) {
++        initial.setNext(new SetTeamPacketStep(team, teamMode));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder teleportEntity(int entityId, Location location, boolean onGround) {
++        initial.setNext(new TeleportEntityPacketStep(entityId, location, onGround));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder sendBlockChange(Location location, BlockData blockData) {
++        initial.setNext(new AbstractPacketStep() {
++            @Override
++            protected void executeStep(Collection<? extends Player> players) {
++                for (Player player : players) {
++                    player.sendBlockChange(location, blockData);
++                }
++            }
++        });
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder sleepAt(int entityId, Location location) {
++        initial.setNext(new SleepAtPacketStep(entityId, location));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder rotateHead(int entityId, float yaw) {
++        initial.setNext(new RotateHeadStep(entityId, yaw));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder setEquipmentItem(int entityId, EquipmentSlot equipmentSlot, ItemStack itemStack) {
++        initial.setNext(new SetEquipmentPacketStep(entityId, equipmentSlot, itemStack));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder delay(JavaPlugin javaPlugin, long time, TimeUnit timeUnit) {
++        initial.setNext(new DelayPacketStep(javaPlugin, time, timeUnit));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder custom(PacketStep packetStep) {
++        initial.setNext(packetStep);
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder removeEntity(int entityId) {
++        initial.setNext(new RemoveEntityPacketStep(entityId));
++        return this;
++    }
++
++    @Override
++    public PacketStepBuilder animateEntity(int entityId, PacketOptions.Animation animation) {
++        initial.setNext(new AnimateEntityPacketStep(entityId,animation));
++        return this;
++    }
++
++    @Override
++    public PacketStep build() {
++        return initial;
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/AnimateEntityPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/AnimateEntityPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8c87a920b84db6814a79cce50429bafaea9f5b66
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/AnimateEntityPacketStep.java
+@@ -0,0 +1,21 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import net.minecraft.server.PacketPlayOutAnimation;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++import org.bukkit.packet.PacketOptions;
++
++import java.util.Collection;
++
++public class AnimateEntityPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutAnimation animatePacket;
++    public AnimateEntityPacketStep(int entityId, PacketOptions.Animation animation) {
++        this.animatePacket = new PacketPlayOutAnimation(entityId, animation.getAction());
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        sendPacket(players, animatePacket);
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/DelayPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/DelayPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..83490b2f06b714dba024d89eec31c0636e4baa3a
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/DelayPacketStep.java
+@@ -0,0 +1,35 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import org.bukkit.Bukkit;
++import org.bukkit.entity.Player;
++import org.bukkit.packet.PacketStep;
++import org.bukkit.plugin.java.JavaPlugin;
++
++import java.util.Collection;
++import java.util.concurrent.TimeUnit;
++
++public class DelayPacketStep implements PacketStep {
++
++    private PacketStep next;
++    private final JavaPlugin javaPlugin;
++    private final long delay;
++    private final TimeUnit timeUnit;
++
++    public DelayPacketStep(JavaPlugin javaPlugin, long delay, TimeUnit timeUnit) {
++        this.javaPlugin = javaPlugin;
++        this.delay = delay;
++        this.timeUnit = timeUnit;
++    }
++
++    @Override
++    public void execute(Collection<? extends Player> players) {
++        Bukkit.getScheduler().runTaskLater(javaPlugin, () -> {
++            if (next != null) next.execute(players);
++        }, 20 * timeUnit.toSeconds(delay));
++    }
++
++    @Override
++    public void setNext(PacketStep next) {
++        this.next = next;
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/EmptyPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/EmptyPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0204663e6c94ea7f49e525dd58a727ab9b2037ad
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/EmptyPacketStep.java
+@@ -0,0 +1,12 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.Collection;
++
++public class EmptyPacketStep extends AbstractPacketStep {
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/ProfilePacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/ProfilePacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f795947076c225de27a4d1dfa1f1edd3730430e1
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/ProfilePacketStep.java
+@@ -0,0 +1,49 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import com.destroystokyo.paper.profile.CraftPlayerProfile;
++import com.destroystokyo.paper.profile.PlayerProfile;
++import com.mojang.authlib.GameProfile;
++import net.minecraft.server.EnumGamemode;
++import net.minecraft.server.PacketPlayOutPlayerInfo;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++import org.bukkit.packet.PacketOptions;
++
++import java.util.Collection;
++
++public class ProfilePacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutPlayerInfo clientboundPlayerInfoPacket;
++
++    public ProfilePacketStep(PlayerProfile playerProfile, PacketOptions.ProfileAction profileAction) {
++        GameProfile gameProfile = ((CraftPlayerProfile) playerProfile).getGameProfile();
++        this.clientboundPlayerInfoPacket = new PacketPlayOutPlayerInfo();
++        PacketPlayOutPlayerInfo.PlayerInfoData playerUpdate = new PacketPlayOutPlayerInfo.PlayerInfoData(gameProfile, 0, EnumGamemode.NOT_SET, null);
++        this.clientboundPlayerInfoPacket.b.add(playerUpdate);
++        this.clientboundPlayerInfoPacket.a = from(profileAction);
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, clientboundPlayerInfoPacket);
++        }
++    }
++
++    public PacketPlayOutPlayerInfo.EnumPlayerInfoAction from(PacketOptions.ProfileAction action) {
++        switch (action) {
++            case ADD_PLAYER:
++                return PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER;
++            case REMOVE_PLAYER:
++                return PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER;
++            case UPDATE_LATENCY:
++                return PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_LATENCY;
++            case UPDATE_GAME_MODE:
++                return PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE;
++            case UPDATE_DISPLAY_NAME:
++                return PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME;
++        }
++        return PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER;
++    }
++
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/RemoveEntityPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/RemoveEntityPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d66c1441b4fc27d7e6da73f90937f6cd590e008
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/RemoveEntityPacketStep.java
+@@ -0,0 +1,23 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import net.minecraft.server.PacketPlayOutEntityDestroy;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.Collection;
++
++public class RemoveEntityPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutEntityDestroy removeEntity;
++
++    public RemoveEntityPacketStep(int entityId) {
++        removeEntity = new PacketPlayOutEntityDestroy(entityId);
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, removeEntity);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/RotateHeadStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/RotateHeadStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..c94979dafe84da4903a5edad9ccb1abb0fb4a19d
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/RotateHeadStep.java
+@@ -0,0 +1,26 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import net.minecraft.server.PacketPlayOutEntityHeadRotation;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.Collection;
++
++public class RotateHeadStep extends AbstractPacketStep {
++
++    private final PacketPlayOutEntityHeadRotation rot;
++
++    public RotateHeadStep(int entityId, float yaw) {
++        rot = new PacketPlayOutEntityHeadRotation(
++            entityId,
++            (byte) ((int) (yaw * 256.0F / 360.0F))
++        );
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, rot);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/SetEquipmentPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/SetEquipmentPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..fd6c5398e1df02478a0c3944213356e138f8c0c1
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/SetEquipmentPacketStep.java
+@@ -0,0 +1,61 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import com.mojang.datafixers.util.Pair;
++import net.minecraft.server.EnumItemSlot;
++import net.minecraft.server.ItemStack;
++import net.minecraft.server.PacketPlayOutEntityEquipment;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.EnumMap;
++import java.util.List;
++
++public class SetEquipmentPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutEntityEquipment npcEquip;
++
++    public SetEquipmentPacketStep(int entityId, org.bukkit.inventory.EquipmentSlot equipmentSlot, org.bukkit.inventory.ItemStack itemStack) {
++        npcEquip = new PacketPlayOutEntityEquipment(entityId, Arrays.asList(new Pair<>(from(equipmentSlot), CraftItemStack.asNMSCopy(itemStack))));
++    }
++
++    public SetEquipmentPacketStep(int entityId, EnumMap<org.bukkit.inventory.EquipmentSlot,org.bukkit.inventory.ItemStack> equipment) {
++        npcEquip = new PacketPlayOutEntityEquipment(entityId, from(equipment));
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, npcEquip);
++        }
++    }
++
++    private EnumItemSlot from(org.bukkit.inventory.EquipmentSlot equipmentSlot) {
++        switch (equipmentSlot) {
++            case HAND:
++                return EnumItemSlot.MAINHAND;
++            case OFF_HAND:
++                return EnumItemSlot.OFFHAND;
++            case FEET:
++                return EnumItemSlot.FEET;
++            case LEGS:
++                return EnumItemSlot.LEGS;
++            case CHEST:
++                return EnumItemSlot.CHEST;
++            case HEAD:
++            default:
++                return EnumItemSlot.HEAD;
++        }
++    }
++
++    private List<Pair<EnumItemSlot, ItemStack>> from(EnumMap<org.bukkit.inventory.EquipmentSlot,org.bukkit.inventory.ItemStack> equipment){
++        List<Pair<EnumItemSlot, ItemStack>> pairList = new ArrayList<>();
++        equipment.forEach((equipmentSlot, itemStack) -> {
++            pairList.add(new Pair<>(from(equipmentSlot), CraftItemStack.asNMSCopy(itemStack)));
++        });
++        return pairList;
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/SetTeamPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/SetTeamPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..47b2b98cacc3096b8789b5a6ad3f3ea9afb4ba19
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/SetTeamPacketStep.java
+@@ -0,0 +1,31 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++
++import net.minecraft.server.PacketPlayOutScoreboardTeam;
++import net.minecraft.server.ScoreboardTeam;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.craftbukkit.scoreboard.CraftTeam;
++import org.bukkit.entity.Player;
++import org.bukkit.packet.PacketOptions;
++import org.bukkit.scoreboard.Team;
++
++import javax.annotation.Nonnull;
++import java.util.Collection;
++
++public class SetTeamPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutScoreboardTeam clientboundSetPlayerTeamPacket;
++
++    public SetTeamPacketStep(@Nonnull Team team, @Nonnull PacketOptions.TeamMode teamMode) {
++        ScoreboardTeam playerTeam = ((CraftTeam)team).getScoreboard().getHandle().getPlayerTeam(team.getName());
++        clientboundSetPlayerTeamPacket = new PacketPlayOutScoreboardTeam(playerTeam, teamMode.getMode());
++
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, clientboundSetPlayerTeamPacket);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/SleepAtPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/SleepAtPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5ee27d664879ee447168656f8d1ed7ea187be171
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/SleepAtPacketStep.java
+@@ -0,0 +1,40 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++
++import net.minecraft.server.BlockPosition;
++import net.minecraft.server.DataWatcher;
++import net.minecraft.server.DataWatcherObject;
++import net.minecraft.server.DataWatcherRegistry;
++import net.minecraft.server.EntityPose;
++import net.minecraft.server.PacketPlayOutEntityMetadata;
++import org.bukkit.Bukkit;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Optional;
++
++public class SleepAtPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutEntityMetadata meta;
++
++    public SleepAtPacketStep(int entityId, Location location) {
++        meta = new PacketPlayOutEntityMetadata();
++        meta.a = entityId;
++        meta.b = new ArrayList<>();
++        meta.b.add(new DataWatcher.Item<>(new DataWatcherObject<>(6, DataWatcherRegistry.s), EntityPose.SLEEPING));
++        meta.b.add(new DataWatcher.Item<>(new DataWatcherObject<>(13,
++            DataWatcherRegistry.m),
++                Optional.of(new BlockPosition(location.getBlockX(), location.getY(), location.getBlockZ())))
++        );
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : Bukkit.getOnlinePlayers()) {
++            sendPacket(player, meta);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/SpawnPlayerPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/SpawnPlayerPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..cca98d4a75f9a0913c713aa870212c9df8931019
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/SpawnPlayerPacketStep.java
+@@ -0,0 +1,33 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import net.minecraft.server.PacketPlayOutNamedEntitySpawn;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.Collection;
++import java.util.UUID;
++
++public class SpawnPlayerPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutNamedEntitySpawn clientboundAddPlayerPacket;
++
++    public SpawnPlayerPacketStep(int entityId, UUID uuid, Location location) {
++        clientboundAddPlayerPacket = new PacketPlayOutNamedEntitySpawn(
++            entityId,
++            uuid,
++            location.getX(),
++            location.getY(),
++            location.getZ(),
++            location.getYaw(),
++            location.getPitch()
++        );
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, clientboundAddPlayerPacket);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/packet/steps/TeleportEntityPacketStep.java b/src/main/java/org/bukkit/craftbukkit/packet/steps/TeleportEntityPacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..962458aeee4219faaeaf22628937a7b3a78b1bca
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/packet/steps/TeleportEntityPacketStep.java
+@@ -0,0 +1,31 @@
++package org.bukkit.craftbukkit.packet.steps;
++
++import net.minecraft.server.PacketPlayOutEntityTeleport;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.packet.AbstractPacketStep;
++import org.bukkit.entity.Player;
++
++import java.util.Collection;
++
++public class TeleportEntityPacketStep extends AbstractPacketStep {
++
++    private final PacketPlayOutEntityTeleport teleportEntityPacket;
++
++    public TeleportEntityPacketStep(int entityId, Location location, boolean onGround) {
++        teleportEntityPacket = new PacketPlayOutEntityTeleport();
++        teleportEntityPacket.a = entityId;
++        teleportEntityPacket.b = location.getX();
++        teleportEntityPacket.c = location.getY();
++        teleportEntityPacket.d = location.getZ();
++        teleportEntityPacket.e = (byte)((int)(location.getYaw() * 256.0F / 360.0F));
++        teleportEntityPacket.f = (byte)((int)(location.getPitch() * 256.0F / 360.0F));
++        teleportEntityPacket.g = onGround;
++    }
++
++    @Override
++    protected void executeStep(Collection<? extends Player> players) {
++        for (Player player : players) {
++            sendPacket(player, teleportEntityPacket);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboard.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboard.java
+index e3036fe23fa2be100044332c432d1ad5b4872823..4663aceb4003ebfaedb8851afebb23833c1d79ce 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboard.java
++++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboard.java
+@@ -20,7 +20,7 @@ import org.bukkit.scoreboard.Team;
+ public final class CraftScoreboard implements org.bukkit.scoreboard.Scoreboard {
+     final Scoreboard board;
+ 
+-    CraftScoreboard(Scoreboard board) {
++    public CraftScoreboard(Scoreboard board) {
+         this.board = board;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java
+index 0315ea5ad8dcccf067e5419e2387e497b29bccb1..2a1a07ab9cb752e3df20f99eb6e4586667634dce 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java
++++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java
+@@ -13,10 +13,10 @@ import org.bukkit.craftbukkit.util.CraftChatMessage;
+ import org.bukkit.scoreboard.NameTagVisibility;
+ import org.bukkit.scoreboard.Team;
+ 
+-final class CraftTeam extends CraftScoreboardComponent implements Team {
++public final class CraftTeam extends CraftScoreboardComponent implements Team {
+     private final ScoreboardTeam team;
+ 
+-    CraftTeam(CraftScoreboard scoreboard, ScoreboardTeam team) {
++    public CraftTeam(CraftScoreboard scoreboard, ScoreboardTeam team) {
+         super(scoreboard);
+         this.team = team;
+     }

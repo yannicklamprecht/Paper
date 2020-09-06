@@ -1,0 +1,216 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ysl3000 <yannicklamprecht@live.de>
+Date: Thu, 11 Jun 2020 18:15:12 +0200
+Subject: [PATCH] added packet support
+
+add trigger block entity to api
+
+add remove and animate entity packet api
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index bfe842364ee0a4bf39dacdbb6972477d57a4ef8a..055a015c2a1e08a6a3603dc97f785302c55e986b 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -40,6 +40,7 @@ import org.bukkit.inventory.Recipe;
+ import org.bukkit.inventory.meta.ItemMeta;
+ import org.bukkit.loot.LootTable;
+ import org.bukkit.map.MapView;
++import org.bukkit.packet.PacketPipeline;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.plugin.PluginManager;
+ import org.bukkit.plugin.ServicesManager;
+@@ -1783,6 +1784,11 @@ public final class Bukkit {
+     }
+     // Paper end
+ 
++    @NotNull
++    public static PacketPipeline getPacketPipeline() {
++        return server.getPacketPipeline();
++    }
++
+     @NotNull
+     public static Server.Spigot spigot() {
+         return server.spigot();
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 7c0a788900c93c29d14d8c45ac5ae3317cf4a94e..5e2b080edb9c6dc2c28c3e92bde26a025eaff01d 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -40,6 +40,7 @@ import org.bukkit.inventory.Recipe;
+ import org.bukkit.inventory.meta.ItemMeta;
+ import org.bukkit.loot.LootTable;
+ import org.bukkit.map.MapView;
++import org.bukkit.packet.PacketPipeline;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.plugin.PluginManager;
+ import org.bukkit.plugin.ServicesManager;
+@@ -1556,4 +1557,8 @@ public interface Server extends PluginMessageRecipient {
+     @NotNull
+     com.destroystokyo.paper.entity.ai.MobGoals getMobGoals();
+     // Paper end
++
++    @NotNull
++    PacketPipeline getPacketPipeline();
++
+ }
+diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
+index e827e1a6f5c0f8410ed32dda8f17aa769b469999..5b7be46e8594d2afad298b1aca523e5c3d517c53 100644
+--- a/src/main/java/org/bukkit/World.java
++++ b/src/main/java/org/bukkit/World.java
+@@ -45,6 +45,8 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public interface World extends PluginMessageRecipient, Metadatable {
+ 
++    void triggerBlockEntityEvent(@NotNull Location location, int paramA, int paramB);
++
+     // Paper start
+     /**
+      * @return The amount of Entities in this world
+diff --git a/src/main/java/org/bukkit/packet/PacketOptions.java b/src/main/java/org/bukkit/packet/PacketOptions.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..01b515595b4a980d74d62fb334dc17b4ef872dd5
+--- /dev/null
++++ b/src/main/java/org/bukkit/packet/PacketOptions.java
+@@ -0,0 +1,49 @@
++package org.bukkit.packet;
++
++public class PacketOptions {
++
++    public enum TeamMode {
++        CREATE_TEAM(0),
++        REMOVE_TEAM(1),
++        UPDATE_TEAM_INFO(2),
++        ADD_PLAYERS_TO_TEAM(3),
++        REMOVE_PLAYERS_FROM_TEAM(4);
++
++        private final int mode;
++
++        TeamMode(int mode) {
++            this.mode = mode;
++        }
++
++        public int getMode() {
++            return mode;
++        }
++    }
++
++    public enum ProfileAction {
++        ADD_PLAYER,
++        UPDATE_GAME_MODE,
++        UPDATE_LATENCY,
++        UPDATE_DISPLAY_NAME,
++        REMOVE_PLAYER;
++    }
++
++    public enum Animation {
++        SWING_MAIN_ARM(0),
++        TAKE_DAMAGE(1),
++        LEAVE_BED(2),
++        SWING_OFFHAND(3),
++        CRITICAL_EFFECT(4),
++        MAGIC_CRITICAL_EFFECT(5);
++
++        private final int action;
++
++        Animation(int action) {
++            this.action = action;
++        }
++
++        public int getAction() {
++            return action;
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/packet/PacketPipeline.java b/src/main/java/org/bukkit/packet/PacketPipeline.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d96b363dcfd63c04a00ff8368f93da3d5614367a
+--- /dev/null
++++ b/src/main/java/org/bukkit/packet/PacketPipeline.java
+@@ -0,0 +1,21 @@
++package org.bukkit.packet;
++
++import org.bukkit.entity.Player;
++import org.bukkit.scoreboard.Team;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.Collection;
++
++public interface PacketPipeline {
++
++    @NotNull
++    PacketStepBuilder create();
++
++    void send(@NotNull PacketStepBuilder packetStepBuilder, @NotNull Collection<? extends Player> players);
++
++    @NotNull
++    Team createTeam(@NotNull String name);
++
++    @NotNull
++    String generateRandomString(int count, boolean letters, boolean numbers);
++}
+diff --git a/src/main/java/org/bukkit/packet/PacketStep.java b/src/main/java/org/bukkit/packet/PacketStep.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..898722dbc6614abe31a71fbec51db1f4dd3075e4
+--- /dev/null
++++ b/src/main/java/org/bukkit/packet/PacketStep.java
+@@ -0,0 +1,11 @@
++package org.bukkit.packet;
++
++import org.bukkit.entity.Player;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.Collection;
++
++public interface PacketStep {
++    void execute(@NotNull Collection<? extends Player> players);
++    void setNext(@NotNull PacketStep next);
++}
+diff --git a/src/main/java/org/bukkit/packet/PacketStepBuilder.java b/src/main/java/org/bukkit/packet/PacketStepBuilder.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6a4faab76f71c267cbd24d9454acb6e15eca62a2
+--- /dev/null
++++ b/src/main/java/org/bukkit/packet/PacketStepBuilder.java
+@@ -0,0 +1,44 @@
++package org.bukkit.packet;
++
++import com.destroystokyo.paper.profile.PlayerProfile;
++import org.bukkit.Location;
++import org.bukkit.block.data.BlockData;
++import org.bukkit.inventory.EquipmentSlot;
++import org.bukkit.inventory.ItemStack;
++import org.bukkit.plugin.java.JavaPlugin;
++import org.bukkit.scoreboard.Team;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.UUID;
++import java.util.concurrent.TimeUnit;
++
++public interface PacketStepBuilder {
++
++    @NotNull
++    PacketStepBuilder sendPlayerProfile(@NotNull PlayerProfile playerProfile, @NotNull PacketOptions.ProfileAction profileAction);
++    @NotNull
++    PacketStepBuilder spawnPlayer(int entityId, @NotNull UUID uuid, @NotNull Location location);
++    @NotNull
++    PacketStepBuilder setPlayerTeam(@NotNull Team team, @NotNull PacketOptions.TeamMode teamMode);
++    @NotNull
++    PacketStepBuilder teleportEntity(int entityId, @NotNull Location location, boolean onGround);
++    @NotNull
++    PacketStepBuilder sendBlockChange(@NotNull Location location, @NotNull BlockData blockData);
++    @NotNull
++    PacketStepBuilder sleepAt(int entityId, @NotNull Location location);
++    @NotNull
++    PacketStepBuilder rotateHead(int entityId, float yaw);
++
++    @NotNull
++    PacketStepBuilder setEquipmentItem(int entityId, @NotNull EquipmentSlot equipmentSlot, @NotNull ItemStack itemStack);
++    @NotNull
++    PacketStepBuilder delay(@NotNull JavaPlugin javaPlugin, long time, @NotNull TimeUnit timeUnit);
++    @NotNull
++    PacketStepBuilder custom(@NotNull PacketStep packetStep);
++    @NotNull
++    PacketStepBuilder removeEntity(int entityId);
++    @NotNull
++    PacketStepBuilder animateEntity(int entityId, @NotNull PacketOptions.Animation animation);
++    @NotNull
++    PacketStep build();
++}
