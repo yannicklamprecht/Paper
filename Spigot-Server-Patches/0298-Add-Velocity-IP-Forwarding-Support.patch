@@ -14,7 +14,7 @@ forwarding, and is integrated into the Minecraft login process by using the 1.13
 login plugin message packet.
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-index 74a4593853707f5dccba597fa903e5f1194cd5c5..ba7fdf482ef8536074fcc3867d7fc142fcfe8ce8 100644
+index 20524795840a06cfe60de6ffd0a77b6814132af4..1697687405392198d2df653220465671675362c2 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
 @@ -8,6 +8,7 @@ import java.io.IOException;
@@ -25,7 +25,7 @@ index 74a4593853707f5dccba597fa903e5f1194cd5c5..ba7fdf482ef8536074fcc3867d7fc142
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
-@@ -244,7 +245,7 @@ public class PaperConfig {
+@@ -247,7 +248,7 @@ public class PaperConfig {
      }
  
      public static boolean isProxyOnlineMode() {
@@ -34,7 +34,7 @@ index 74a4593853707f5dccba597fa903e5f1194cd5c5..ba7fdf482ef8536074fcc3867d7fc142
      }
  
      public static int packetInSpamThreshold = 300;
-@@ -316,4 +317,21 @@ public class PaperConfig {
+@@ -319,4 +320,18 @@ public class PaperConfig {
          }
          tabSpamLimit = getInt("settings.spam-limiter.tab-spam-limit", tabSpamLimit);
      }
@@ -46,9 +46,6 @@ index 74a4593853707f5dccba597fa903e5f1194cd5c5..ba7fdf482ef8536074fcc3867d7fc142
 +        velocitySupport = getBoolean("settings.velocity-support.enabled", false);
 +        velocityOnlineMode = getBoolean("settings.velocity-support.online-mode", false);
 +        String secret = getString("settings.velocity-support.secret", "");
-+        if (!TimingsManager.hiddenConfigs.contains("settings.velocity-support.secret")) {
-+            TimingsManager.hiddenConfigs.add("settings.velocity-support.secret");
-+        }
 +        if (velocitySupport && secret.isEmpty()) {
 +            fatal("Velocity support is enabled, but no secret key was specified. A secret key is required!");
 +        } else {
@@ -276,10 +273,10 @@ index b52e8b72eaee87e227b7cc2fd66101550262cb7e..990cfea6c2339cd3cf688e4645de76dc
      public void a(PacketDataSerializer packetdataserializer) throws IOException {
          this.a = packetdataserializer.i();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index dce11770da204b09cdc2f89dceccb3cf4fae7ac6..251433b5a0560cdfca298aca45c53191b74bc403 100644
+index 512f99a198db7a48bcb21aadbd38125260bce812..816f0e7a5f958b4e3ea2c1fe02fc46de0b6e5664 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -678,7 +678,7 @@ public final class CraftServer implements Server {
+@@ -683,7 +683,7 @@ public final class CraftServer implements Server {
      @Override
      public long getConnectionThrottle() {
          // Spigot Start - Automatically set connection throttle for bungee configurations

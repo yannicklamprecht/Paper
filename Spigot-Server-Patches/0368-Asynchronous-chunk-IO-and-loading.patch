@@ -161,7 +161,7 @@ index 944fd203e9f39d6c6fc9e270940c76c98067273a..a27dc38d1a29ed1d63d2f44b7984c2b6
  
      public static Timing getTickList(WorldServer worldserver, String timingsType) {
 diff --git a/src/main/java/com/destroystokyo/paper/PaperCommand.java b/src/main/java/com/destroystokyo/paper/PaperCommand.java
-index 9ead9b1ea1fafaa3d684c17efbae747386b7c587..9b8b49be032d7ceebcea8d7b98f999ed7166d0a1 100644
+index e4719a5e7e5ebd91257a9c9b83fa1adad70fd585..9ad822715c9358e5ac2a0e0a0800786a9cee7be3 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperCommand.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperCommand.java
 @@ -1,5 +1,6 @@
@@ -199,7 +199,7 @@ index 9ead9b1ea1fafaa3d684c17efbae747386b7c587..9b8b49be032d7ceebcea8d7b98f999ed
                  doChunkInfo(sender, args);
                  break;
 diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-index 346da105776a0ae0cb06ed69f1f8f9160695bb85..0fcabd12408a8209da5cb3332e217f98983aec02 100644
+index 053ba1023b6d1393c0ade589ae53feb22218f413..dbabff7efb887b78545a12ae6bec42b02a3a39e2 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
 @@ -1,5 +1,6 @@
@@ -257,7 +257,7 @@ index 346da105776a0ae0cb06ed69f1f8f9160695bb85..0fcabd12408a8209da5cb3332e217f98
 +        }
 +
 +        if (!asyncChunks) {
-+            log("Async Chunks: Disabled - Chunks will be managed synchronosuly, and will cause tremendous lag.");
++            log("Async Chunks: Disabled - Chunks will be managed synchronously, and will cause tremendous lag.");
 +        } else {
 +            ChunkTaskManager.initGlobalLoadThreads(threads);
 +            log("Async Chunks: Enabled - Chunks will be loaded much faster, without lag.");
@@ -2308,10 +2308,10 @@ index 0000000000000000000000000000000000000000..49a594e5f345096cb3b9913b8ee27607
 +
 +}
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 4140de8bcd1ee93f77574d892d32e7c7821be9e0..2c47eaf07a46b068c446fc7c71da4b9dfcf39656 100644
+index bd48c23890c1b28e9838612598a5e4bdcb83e8a0..77e17feb56cc28e763640b2e37f66788241e09b4 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -311,11 +311,138 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -302,11 +302,138 @@ public class ChunkProviderServer extends IChunkProvider {
          return playerChunk.getAvailableChunkNow();
  
      }
@@ -2450,7 +2450,7 @@ index 4140de8bcd1ee93f77574d892d32e7c7821be9e0..2c47eaf07a46b068c446fc7c71da4b9d
          if (Thread.currentThread() != this.serverThread) {
              return (IChunkAccess) CompletableFuture.supplyAsync(() -> {
                  return this.getChunkAt(i, j, chunkstatus, flag);
-@@ -338,11 +465,16 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -329,11 +456,16 @@ public class ChunkProviderServer extends IChunkProvider {
              }
  
              gameprofilerfiller.c("getChunkCacheMiss");
@@ -2468,7 +2468,7 @@ index 4140de8bcd1ee93f77574d892d32e7c7821be9e0..2c47eaf07a46b068c446fc7c71da4b9d
                  this.world.timings.syncChunkLoad.stopTiming(); // Paper
              } // Paper
              ichunkaccess = (IChunkAccess) ((Either) completablefuture.join()).map((ichunkaccess1) -> {
-@@ -408,6 +540,11 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -399,6 +531,11 @@ public class ChunkProviderServer extends IChunkProvider {
      }
  
      private CompletableFuture<Either<IChunkAccess, PlayerChunk.Failure>> getChunkFutureMainThread(int i, int j, ChunkStatus chunkstatus, boolean flag) {
@@ -2480,7 +2480,7 @@ index 4140de8bcd1ee93f77574d892d32e7c7821be9e0..2c47eaf07a46b068c446fc7c71da4b9d
          ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
          long k = chunkcoordintpair.pair();
          int l = 33 + ChunkStatus.a(chunkstatus);
-@@ -807,11 +944,12 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -798,11 +935,12 @@ public class ChunkProviderServer extends IChunkProvider {
          protected boolean executeNext() {
          // CraftBukkit start - process pending Chunk loadCallback() and unloadCallback() after each run task
          try {
@@ -2938,7 +2938,7 @@ index 2507bdf7bfa65f1bc728a46322d2a570e566e32c..c470c6527b214026c230feaae0c0875c
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index dacb8563bc823c8f6f1e1e10f2b8b9894819374f..80a95441ec2b8394b74818ab74de070ba1ce2754 100644
+index 85f7cfa1fade8d574e7f85d857ab071c66ec4a95..e79ed0b5702688aaa5a86dc5a511c32685c883d9 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -171,6 +171,7 @@ public class Main {
@@ -2950,10 +2950,10 @@ index dacb8563bc823c8f6f1e1e10f2b8b9894819374f..80a95441ec2b8394b74818ab74de070b
                  DedicatedServer dedicatedserver1 = new DedicatedServer(optionset, datapackconfiguration1, thread, iregistrycustom_dimension, convertable_conversionsession, resourcepackrepository, datapackresources, null, dedicatedserversettings, DataConverterRegistry.a(), minecraftsessionservice, gameprofilerepository, usercache, WorldLoadListenerLogger::new);
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 4a184a28ac6b55e59a57ad832392f3d19a48ac0e..416658a2ddfb11c4a6929807b4e9d8bd8f708e2d 100644
+index 8e2971458b4fbac7d288c190245bb0f8e1c84d7a..10be85be566d486a486e2e0a61b3aa33858cab27 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -806,7 +806,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -801,7 +801,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
              this.getUserCache().b(false); // Paper
          }
          // Spigot end
@@ -3010,7 +3010,7 @@ index 4c52c57c02571353f71772e3650932f314da62ca..71daa0cb08d69c16bded510d1a490534
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
-index 10dfdecba53cf16f9fae8a2be1144ef8cda1006d..301836c7d465afe82737b0aa5ad68bf51122ff6b 100644
+index 5d736e4ca6098d97b6c16d2452066fbd35fe123c..a1341617ba5388d1d1f2c91ad158b0210b4505cb 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunk.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunk.java
 @@ -129,6 +129,18 @@ public class PlayerChunk {
@@ -3055,7 +3055,7 @@ index 10dfdecba53cf16f9fae8a2be1144ef8cda1006d..301836c7d465afe82737b0aa5ad68bf5
                  completablefuture = (CompletableFuture) this.statusFutures.get(i);
                  if (completablefuture != null) {
 diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
-index 8e79200b23f2dee612b0cbdcd6359a25dc2323cb..e7d9674e25c06090d57bba6c8229bc3b75cb67e6 100644
+index 325532e1585beefe1cb341580e0bb3e95020b6fe..7f72d13bb39182666a741d43769215303d1f139e 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
 @@ -65,7 +65,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
@@ -3496,7 +3496,7 @@ index 8e79200b23f2dee612b0cbdcd6359a25dc2323cb..e7d9674e25c06090d57bba6c8229bc3b
      boolean isOutsideOfRange(ChunkCoordIntPair chunkcoordintpair) {
          // Spigot start
          return isOutsideOfRange(chunkcoordintpair, false);
-@@ -1400,6 +1592,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
+@@ -1401,6 +1593,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
  
      }
  
@@ -3505,10 +3505,10 @@ index 8e79200b23f2dee612b0cbdcd6359a25dc2323cb..e7d9674e25c06090d57bba6c8229bc3b
          return this.m;
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 6c2af33d0807634a79aa092edc363d6561d0cadc..5e74436908c35bfbdba95a39119f115a9512786d 100644
+index ee8ea27e0878042d15e81ce02c250a9999723928..412442e197fff0010e06ce2b604450b91e2a984e 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -582,6 +582,13 @@ public class PlayerConnection implements PacketListenerPlayIn {
+@@ -580,6 +580,13 @@ public class PlayerConnection implements PacketListenerPlayIn {
              minecraftServer.scheduleOnMain(() -> this.disconnect(new ChatMessage("disconnect.spam", new Object[0]))); // Paper
              return;
          }
@@ -4015,7 +4015,7 @@ index ccb37f6828fe2edb9358c93daa9f67edeef1f920..a999683d6d16d3704c76b1af95255ad3
      }
      public void removeTicketsForSpawn(int radiusInBlocks, BlockPosition spawn) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index e741d1f966869b057652a93a1ef1785ad152f303..204ad44454732345be78c5c428dfb178344a96bb 100644
+index dd3c24b4de393f4eaca88484ccf94b620fd28bdc..191660c6c3fd7272daec09f8986a3668479cc6ed 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -75,6 +75,7 @@ import net.minecraft.server.IBlockData;
@@ -4058,7 +4058,7 @@ index e741d1f966869b057652a93a1ef1785ad152f303..204ad44454732345be78c5c428dfb178
  
              // fall through to load
              // we do this so we do not re-read the chunk data on disk
-@@ -2467,6 +2469,34 @@ public class CraftWorld implements World {
+@@ -2484,6 +2486,34 @@ public class CraftWorld implements World {
      public DragonBattle getEnderDragonBattle() {
          return (getHandle().getDragonBattle() == null) ? null : new CraftDragonBattle(getHandle().getDragonBattle());
      }
@@ -4094,10 +4094,10 @@ index e741d1f966869b057652a93a1ef1785ad152f303..204ad44454732345be78c5c428dfb178
      // Spigot start
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 43e9181ea50b1db2fae4645d702e64b3d2157113..fdefdef19c5330d022a27ab626d18a8566f37899 100644
+index e2d4aa9ba7fa007b3d93a166c5fb57c8a90387ed..666876943675a8c299b414f6b5ea359aac186961 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -503,6 +503,28 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -508,6 +508,28 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          entity.setHeadRotation(yaw);
      }
  

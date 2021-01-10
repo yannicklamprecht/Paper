@@ -13,10 +13,10 @@ Subject: [PATCH] Optimize Hoppers
 * Remove Streams from Item Suck In and restore restore 1.12 AABB checks which is simpler and no voxel allocations (was doing TWO Item Suck ins)
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 7453becf8c56bd41a7e532c08c4f274026eadefb..4438d567dd779650533c7128ae8b25b8fd369836 100644
+index 98858653a06c25c2bdb43b86c4115f050bdebf75..0cae631634823c4e062cba5e98c0d7cb580c678c 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -574,4 +574,13 @@ public class PaperWorldConfig {
+@@ -583,4 +583,13 @@ public class PaperWorldConfig {
      private void entitiesTargetWithFollowRange() {
          entitiesTargetWithFollowRange = getBoolean("entities-target-with-follow-range", entitiesTargetWithFollowRange);
      }
@@ -73,10 +73,10 @@ index 63aa474c73f506737cb5de31977bffcd17d4dc11..b6703378e21a6cd7e140fd35756a20d4
              itemstack.d(this.D());
              if (this.tag != null) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index bf3da57c1e709acb3fa9243fb3bb6eaf0613f145..7edc7bfe804a9b450d5873444923d26ffaa96ba0 100644
+index f12bd4b34745a67477cc7a28b5c8dfaf970bbb61..b1408a72194b7a3743cdcfd88afd22cbe8d89eaa 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1246,6 +1246,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1241,6 +1241,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
          while (iterator.hasNext()) {
              WorldServer worldserver = (WorldServer) iterator.next();
              worldserver.hasPhysicsEvent =  org.bukkit.event.block.BlockPhysicsEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper
@@ -485,7 +485,7 @@ index d9be182a574daaedcc7a106c759c2bde2e4eb19a..c6df2318762dc6542e73f18ed9a3172e
      }
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 358ea68714fe1352259b158d61a7d1954a2d621b..f74a062f89a58942ce821f25dec2da46c31bb2a8 100644
+index ea4acb47edb1b22d11e932a1b33f4297a18265f4..67a38ed5ec173ece6f072540b9fbb47400bb5af0 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -1102,8 +1102,8 @@ public abstract class World implements GeneratorAccess, AutoCloseable {

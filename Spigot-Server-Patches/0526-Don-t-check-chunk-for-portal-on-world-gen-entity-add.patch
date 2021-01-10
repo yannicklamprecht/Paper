@@ -5,10 +5,10 @@ Subject: [PATCH] Don't check chunk for portal on world gen entity add
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 445e092efc1633638af9db72141cf9a85a3ac268..fe0334b505de64ae1d96c4f0b6e66313d2b40010 100644
+index e34f3c24be9defab765aaf7c54225759ad5ce60a..6b3e521dac8823ac8103f5aa2b1ea62edb260a72 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -2929,7 +2929,7 @@ public abstract class EntityLiving extends Entity {
+@@ -2941,7 +2941,7 @@ public abstract class EntityLiving extends Entity {
          Entity entity = this.getVehicle();
  
          super.stopRiding(suppressCancellation); // Paper - suppress

@@ -23,10 +23,10 @@ index c9164dfdb27ddf3709129c8aec54903a1df121ff..e33e889c291d37a821a4fbd40d9aac7b
          }));
  
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index de95bd406173c38fa8a745c201b5cd5fbec91702..9e55c800eb8b4dd4930dbf730bb6d106a2029036 100644
+index 670737120d1b2f82a1f73e6ad1b1fda3b121d9a9..d7fcf451e22215f1bfe5cfec456c890ede0d5a08 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -621,4 +621,9 @@ public class PaperWorldConfig {
+@@ -630,4 +630,9 @@ public class PaperWorldConfig {
          phantomIgnoreCreative = getBoolean("phantoms-do-not-spawn-on-creative-players", phantomIgnoreCreative);
          phantomOnlyAttackInsomniacs = getBoolean("phantoms-only-attack-insomniacs", phantomOnlyAttackInsomniacs);
      }
@@ -37,10 +37,10 @@ index de95bd406173c38fa8a745c201b5cd5fbec91702..9e55c800eb8b4dd4930dbf730bb6d106
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 0bdd463a35d4b45fd6e50ab35046f1783600d3ee..b88a0e6a27735e124ff2be2d44c8df4192298606 100644
+index 8e91a0270a7a72f09dfc86331a788765de1f9f5e..544f4a473d1453e029111bea45483543e3bcbabb 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -201,7 +201,51 @@ public class Chunk implements IChunkAccess {
+@@ -202,7 +202,51 @@ public class Chunk implements IChunkAccess {
      }
  
      protected void onNeighbourChange(final long bitsetBefore, final long bitsetAfter) {
@@ -92,7 +92,7 @@ index 0bdd463a35d4b45fd6e50ab35046f1783600d3ee..b88a0e6a27735e124ff2be2d44c8df41
      }
  
      public final boolean isAnyNeighborsLoaded() {
-@@ -1085,7 +1129,7 @@ public class Chunk implements IChunkAccess {
+@@ -1089,7 +1133,7 @@ public class Chunk implements IChunkAccess {
                      IBlockData iblockdata = this.getType(blockposition);
                      IBlockData iblockdata1 = Block.b(iblockdata, (GeneratorAccess) this.world, blockposition);
  
@@ -151,7 +151,7 @@ index df3150072fd36dac28d83309e50342c9cfa326b3..0b5ddff008d151ad03a1f382a8f24494
              worldData.addProperty("keep-spawn-loaded-range", world.paperConfig.keepLoadedRange);
              worldData.addProperty("visible-chunk-count", visibleChunks.size());
 diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
-index 69c7bbf6a83b07a3af62b8fabaa851c7f7dc9a98..bd5643cae88b0c510a630b6166d95368c7405ae6 100644
+index 6bf27c8baf82cfc98158550f711414d9c8fb476b..20ee3d33eac121df3a5f85a9a19c21cf75961aa0 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunk.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunk.java
 @@ -57,6 +57,18 @@ public class PlayerChunk {
@@ -244,7 +244,7 @@ index 69c7bbf6a83b07a3af62b8fabaa851c7f7dc9a98..bd5643cae88b0c510a630b6166d95368
  
      public CompletableFuture<Either<IChunkAccess, PlayerChunk.Failure>> a(ChunkStatus chunkstatus, PlayerChunkMap playerchunkmap) {
 diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
-index b4067657eefe6a418b76b599b4c8ffb8359c3f89..3e73ef8059139b09518075bb6dc89a67f46be51a 100644
+index ebca5620f0bbd4173ca50f023f8333b853ab323a..025a5b24e259df04ee88cb251477c908bc909266 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
 @@ -96,7 +96,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
@@ -558,15 +558,16 @@ index b4067657eefe6a418b76b599b4c8ffb8359c3f89..3e73ef8059139b09518075bb6dc89a67
      }
  
      protected void addEntity(Entity entity) {
-@@ -1833,6 +1952,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
+@@ -1833,7 +1952,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
  
      }
  
+-    private final void sendChunk(EntityPlayer entityplayer, Packet<?>[] apacket, Chunk chunk) { this.a(entityplayer, apacket, chunk); } // Paper - OBFHELPER
 +    final void sendChunk(EntityPlayer entityplayer, Packet<?>[] apacket, Chunk chunk) { this.a(entityplayer, apacket, chunk); } // Paper - OBFHELPER
      private void a(EntityPlayer entityplayer, Packet<?>[] apacket, Chunk chunk) {
          if (apacket[0] == null) {
-             apacket[0] = new PacketPlayOutMapChunk(chunk, 65535);
-@@ -2018,7 +2138,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
+             apacket[0] = new PacketPlayOutMapChunk(chunk, 65535, chunk.world.chunkPacketBlockController.shouldModify(entityplayer, chunk, 65535)); // Paper - Anti-Xray - Bypass
+@@ -2019,7 +2138,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
                          ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(this.tracker.chunkX, this.tracker.chunkZ);
                          PlayerChunk playerchunk = PlayerChunkMap.this.getVisibleChunk(chunkcoordintpair.pair());
  
@@ -607,7 +608,7 @@ index 0f46aac9d021dc115718b1e36b8fbe28cbc820c6..b8ab8150b7dfe9e34910d35f565083e8
  
          while (iterator.hasNext()) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 5ff95f971c01fc010441dcc9099492cb627b3f0c..265dafc2e2afc98d2490fa8707a5b72a5543bc9e 100644
+index bdd1f0873c7b79106d1764eb581b55407d696242..6262db64ae1b615c6742357c32746480eeb69137 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -464,8 +464,13 @@ public abstract class World implements GeneratorAccess, AutoCloseable {
@@ -626,10 +627,10 @@ index 5ff95f971c01fc010441dcc9099492cb627b3f0c..265dafc2e2afc98d2490fa8707a5b72a
  
              if ((i & 1) != 0) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 5ef12e85d7374c137e2d7ff3e0571995070cc222..f35dda50fd9015a793708d214c648d75f9f87e2b 100644
+index e800c7cdfa2a9d5ee8e3969ed14e7453e82d9450..b2a225088753a38a3119b4db1d99de8c4529c175 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -2518,10 +2518,39 @@ public class CraftWorld implements World {
+@@ -2535,10 +2535,39 @@ public class CraftWorld implements World {
      // Spigot start
      @Override
      public int getViewDistance() {

@@ -5,10 +5,10 @@ Subject: [PATCH] Add zombie targets turtle egg config
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index dd8ed18ae93aed4b9a4f11460de5ce23d8fd8c43..5e2ae5758d6e649d00f8047c7ab0d263fd7f96e8 100644
+index 300d43fa45580f9a692cf72c14e12c51d4ed3a8b..330f7325031846d2fc41415d5595526ad58a5db5 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -657,4 +657,9 @@ public class PaperWorldConfig {
+@@ -666,4 +666,9 @@ public class PaperWorldConfig {
              maxLightningFlashDistance = 512; // Vanilla value
          }
      }

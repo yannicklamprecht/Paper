@@ -66,10 +66,10 @@ index ea0525ca0b52b3270b868cc8a526c7139baa4db8..f999920fcc61109d2359ada18fb4272e
          return 0.0F;
      }
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index eaaef11527bc325d6cd6d3b1bc24c59eb8f5ba95..e6f91f875a063a2438ddce3aee1f0a92abe4d11a 100644
+index c0703015ce72c65006e212ca1a6dbd3ce3c6a782..a68d9d709a7413f40f927c20bd53311b558d9541 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -3526,6 +3526,37 @@ public abstract class EntityLiving extends Entity {
+@@ -3538,6 +3538,37 @@ public abstract class EntityLiving extends Entity {
          return world.rayTrace(raytrace);
      }
  
@@ -108,7 +108,7 @@ index eaaef11527bc325d6cd6d3b1bc24c59eb8f5ba95..e6f91f875a063a2438ddce3aee1f0a92
  
      public int getShieldBlockingDelay() {
 diff --git a/src/main/java/net/minecraft/server/IEntitySelector.java b/src/main/java/net/minecraft/server/IEntitySelector.java
-index ff1ddb4db5406f81453a8f075033d00e06bce6a5..5319ee9314f23b3323015efc40ad8a0287ad6368 100644
+index 863f4464c688912b3e0ce61cbbbf263e38a3af4b..3d54b7a4bf102dfc568e782706f67e4b5269eaf1 100644
 --- a/src/main/java/net/minecraft/server/IEntitySelector.java
 +++ b/src/main/java/net/minecraft/server/IEntitySelector.java
 @@ -17,6 +17,7 @@ public final class IEntitySelector {

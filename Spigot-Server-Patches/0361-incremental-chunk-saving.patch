@@ -5,10 +5,10 @@ Subject: [PATCH] incremental chunk saving
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index e9c03546c42657dd5f5d4c6f71bd7e0cc7e2cb15..d1ff673d8b5aafac58b082c9abc9257f0b2dfb15 100644
+index a4fb3961c69afaefe907860977c0c512301344e3..7313916909c50fe6d97776c236c533a6bf0eb122 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -440,4 +440,19 @@ public class PaperWorldConfig {
+@@ -444,4 +444,19 @@ public class PaperWorldConfig {
          keepLoadedRange = (short) (getInt("keep-spawn-loaded-range", Math.min(spigotConfig.viewDistance, 10)) * 16);
          log( "Keep Spawn Loaded Range: " + (keepLoadedRange/16));
      }
@@ -29,7 +29,7 @@ index e9c03546c42657dd5f5d4c6f71bd7e0cc7e2cb15..d1ff673d8b5aafac58b082c9abc9257f
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 0f8745ede62894f8d88fc8985e34b32acee5c698..71efd1efab43d5aeabba2ad385016b616f4e4849 100644
+index 714ef2a305fe98895ab5eb9190826bafbb157f59..6b561332e89476dbecc0b2a044e8556c7fa70626 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -43,7 +43,7 @@ public class Chunk implements IChunkAccess {
@@ -42,10 +42,10 @@ index 0f8745ede62894f8d88fc8985e34b32acee5c698..71efd1efab43d5aeabba2ad385016b61
      private long inhabitedTime;
      @Nullable
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 0c5a14d98f824591c553684191b32ccb507ebe2f..4140de8bcd1ee93f77574d892d32e7c7821be9e0 100644
+index c4909536af2af2949a6e7ee8f72f39a6622911f5..bd48c23890c1b28e9838612598a5e4bdcb83e8a0 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -536,6 +536,15 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -527,6 +527,15 @@ public class ChunkProviderServer extends IChunkProvider {
          } // Paper - Timings
      }
  
@@ -62,7 +62,7 @@ index 0c5a14d98f824591c553684191b32ccb507ebe2f..4140de8bcd1ee93f77574d892d32e7c7
      public void close() throws IOException {
          // CraftBukkit start
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 12866eec621d9ae8801d50bdda13e757f303010e..4a184a28ac6b55e59a57ad832392f3d19a48ac0e 100644
+index 7d9a3375d289deccdfa0f4caa8a2088550c560aa..8e2971458b4fbac7d288c190245bb0f8e1c84d7a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -152,6 +152,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
@@ -73,7 +73,7 @@ index 12866eec621d9ae8801d50bdda13e757f303010e..4a184a28ac6b55e59a57ad832392f3d1
      public CommandDispatcher vanillaCommandDispatcher;
      private boolean forceTicks;
      // CraftBukkit end
-@@ -1142,14 +1143,24 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1137,14 +1138,24 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
              this.serverPing.b().a(agameprofile);
          }
  
@@ -104,7 +104,7 @@ index 12866eec621d9ae8801d50bdda13e757f303010e..4a184a28ac6b55e59a57ad832392f3d1
          this.methodProfiler.enter("snooper");
          if (((DedicatedServer) this).getDedicatedServerProperties().snooperEnabled && !this.snooper.d() && this.ticks > 100) { // Spigot
 diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
-index 94a6b5742b3ce2cac0f7567117fadeeb05e888ef..10dfdecba53cf16f9fae8a2be1144ef8cda1006d 100644
+index 346bf40bbf3026d3bf5585f06f42eec6cae95704..5d736e4ca6098d97b6c16d2452066fbd35fe123c 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunk.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunk.java
 @@ -42,6 +42,9 @@ public class PlayerChunk {

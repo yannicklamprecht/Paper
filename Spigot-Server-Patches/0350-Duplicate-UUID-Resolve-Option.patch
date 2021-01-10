@@ -33,10 +33,10 @@ But for those who are ok with leaving this inconsistent behavior, you may use WA
 It is recommended you regenerate the entities, as these were legit entities, and deserve your love.
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 6f410120018f95259e9e4f504ea1b588c2b4622b..a9a3dbbe7608d1f0dc122fe8d49928e7e3fa1438 100644
+index 480f3d69a5b599e822cc7acc171da2b816797f96..160de2b79219f526187ffeb9e49c565639612e90 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -395,4 +395,43 @@ public class PaperWorldConfig {
+@@ -399,4 +399,43 @@ public class PaperWorldConfig {
      private void preventMovingIntoUnloadedChunks() {
          preventMovingIntoUnloadedChunks = getBoolean("prevent-moving-into-unloaded-chunks", false);
      }
@@ -81,10 +81,10 @@ index 6f410120018f95259e9e4f504ea1b588c2b4622b..a9a3dbbe7608d1f0dc122fe8d49928e7
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 6154f7a7973168cbe294bc0f40894f05bf20513e..0f8745ede62894f8d88fc8985e34b32acee5c698 100644
+index a35cd4df85f0043b83f2f70cec6091d6bae89767..714ef2a305fe98895ab5eb9190826bafbb157f59 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -502,6 +502,7 @@ public class Chunk implements IChunkAccess {
+@@ -503,6 +503,7 @@ public class Chunk implements IChunkAccess {
          if (i != this.loc.x || j != this.loc.z) {
              Chunk.LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", i, j, this.loc.x, this.loc.z, entity);
              entity.dead = true;

@@ -42,7 +42,7 @@ index 11fe3524f38f7756ebd0e3807678e8848fd2217d..884b59d478aa7de49906520e77866a79
      public static final Timing commandFunctionsTimer = Timings.ofSafe("Command Functions");
      public static final Timing connectionTimer = Timings.ofSafe("Connection Handler");
 diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-index 9b1845024d16a7875ba3406da92efb003f58f8cb..01d7ad6778d4bbef6e07f7529f40dd9da6cd2ea8 100644
+index 519b43154993ec01eb13a58336ddcc745362892f..63b3726bfdd22900e7bc577c34db58ddba1084ee 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
 @@ -405,4 +405,9 @@ public class PaperConfig {
@@ -56,10 +56,10 @@ index 9b1845024d16a7875ba3406da92efb003f58f8cb..01d7ad6778d4bbef6e07f7529f40dd9d
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index dea7ff47f7a2934708d887c2c40f9328b78fc84e..e31ebda893112b932ee314fc72263fc163ed04ba 100644
+index 44aa6baed64a0d3847cd8df067e0fa32a0739c93..cc7691a2ed5eaa30071ad5e385bbd76bec3c3d80 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -695,6 +695,7 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -686,6 +686,7 @@ public class ChunkProviderServer extends IChunkProvider {
          this.world.getMethodProfiler().enter("purge");
          this.world.timings.doChunkMap.startTiming(); // Spigot
          this.chunkMapDistance.purgeTickets();
@@ -67,7 +67,7 @@ index dea7ff47f7a2934708d887c2c40f9328b78fc84e..e31ebda893112b932ee314fc72263fc1
          this.tickDistanceManager();
          this.world.timings.doChunkMap.stopTiming(); // Spigot
          this.world.getMethodProfiler().exitEnter("chunks");
-@@ -704,6 +705,7 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -695,6 +696,7 @@ public class ChunkProviderServer extends IChunkProvider {
          this.world.timings.doChunkUnload.startTiming(); // Spigot
          this.world.getMethodProfiler().exitEnter("unload");
          this.playerChunkMap.unloadChunks(booleansupplier);
@@ -75,7 +75,7 @@ index dea7ff47f7a2934708d887c2c40f9328b78fc84e..e31ebda893112b932ee314fc72263fc1
          this.world.timings.doChunkUnload.stopTiming(); // Spigot
          this.world.getMethodProfiler().exit();
          this.clearCache();
-@@ -757,7 +759,7 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -748,7 +750,7 @@ public class ChunkProviderServer extends IChunkProvider {
                  entityPlayer.playerNaturallySpawnedEvent.callEvent();
              };
              // Paper end
@@ -84,7 +84,7 @@ index dea7ff47f7a2934708d887c2c40f9328b78fc84e..e31ebda893112b932ee314fc72263fc1
                  Optional<Chunk> optional = ((Either) playerchunk.a().getNow(PlayerChunk.UNLOADED_CHUNK)).left();
  
                  if (optional.isPresent()) {
-@@ -781,6 +783,7 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -772,6 +774,7 @@ public class ChunkProviderServer extends IChunkProvider {
                              this.world.timings.chunkTicks.startTiming(); // Spigot // Paper
                              this.world.a(chunk, k);
                              this.world.timings.chunkTicks.stopTiming(); // Spigot // Paper
@@ -92,7 +92,7 @@ index dea7ff47f7a2934708d887c2c40f9328b78fc84e..e31ebda893112b932ee314fc72263fc1
                          }
                      }
                  }
-@@ -937,6 +940,41 @@ public class ChunkProviderServer extends IChunkProvider {
+@@ -928,6 +931,41 @@ public class ChunkProviderServer extends IChunkProvider {
              super.executeTask(runnable);
          }
  
@@ -135,10 +135,10 @@ index dea7ff47f7a2934708d887c2c40f9328b78fc84e..e31ebda893112b932ee314fc72263fc1
          protected boolean executeNext() {
          // CraftBukkit start - process pending Chunk loadCallback() and unloadCallback() after each run task
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627d79ee578 100644
+index 1647c36c2b8f81be59ed48eb329977331aa709b1..3149caeee2ad6e31806530b794f265315105ef5a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -940,6 +940,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -935,6 +935,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
                          // Paper end
                          tickSection = curTime;
                      }
@@ -146,7 +146,7 @@ index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627
                      // Spigot end
  
                      //MinecraftServer.currentTick = (int) (System.currentTimeMillis() / 50); // CraftBukkit // Paper - don't overwrite current tick time
-@@ -1009,7 +1010,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1004,7 +1005,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
  
      }
  
@@ -155,7 +155,7 @@ index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627
          // CraftBukkit start
          if (isOversleep) return canOversleep();// Paper - because of our changes, this logic is broken
          return this.forceTicks || this.isEntered() || SystemUtils.getMonotonicMillis() < (this.X ? this.W : this.nextTick);
-@@ -1039,6 +1040,23 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1034,6 +1035,23 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
          });
      }
  
@@ -179,7 +179,7 @@ index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627
      @Override
      protected TickTask postToMainThread(Runnable runnable) {
          return new TickTask(this.ticks, runnable);
-@@ -1125,6 +1143,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1120,6 +1138,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
          // Paper start - move oversleep into full server tick
          isOversleep = true;MinecraftTimings.serverOversleep.startTiming();
          this.awaitTasks(() -> {
@@ -187,7 +187,7 @@ index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627
              return !this.canOversleep();
          });
          isOversleep = false;MinecraftTimings.serverOversleep.stopTiming();
-@@ -1203,13 +1222,16 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1198,13 +1217,16 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
      }
  
      protected void b(BooleanSupplier booleansupplier) {
@@ -204,7 +204,7 @@ index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627
          this.methodProfiler.exitEnter("levels");
          Iterator iterator = this.getWorlds().iterator();
  
-@@ -1220,7 +1242,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1215,7 +1237,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
              processQueue.remove().run();
          }
          MinecraftTimings.processQueueTimer.stopTiming(); // Spigot
@@ -213,7 +213,7 @@ index 8e2300e22ca76562acf29c42c0025b4d4c2689b1..664daf13341285a7e24c67a62e765627
          MinecraftTimings.timeUpdateTimer.startTiming(); // Spigot // Paper
          // Send time updates to everyone, it will get the right time from the world the player is in.
          // Paper start - optimize time updates
-@@ -1262,9 +1284,11 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -1257,9 +1279,11 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
              this.methodProfiler.enter("tick");
  
              try {

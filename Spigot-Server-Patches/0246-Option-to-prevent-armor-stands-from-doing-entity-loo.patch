@@ -5,10 +5,10 @@ Subject: [PATCH] Option to prevent armor stands from doing entity lookups
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 6e7e00678295b5b714a1be4753626e21ab469fd6..54d7f6efcf42d4c7a8c209dfe3c5485318afafe3 100644
+index f9fac60c88847ff0aba9863d4c7857c6758303ba..5059b808804ee50ffa6c0cce175f737a7e4e2a50 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -373,4 +373,9 @@ public class PaperWorldConfig {
+@@ -377,4 +377,9 @@ public class PaperWorldConfig {
      private void scanForLegacyEnderDragon() {
          scanForLegacyEnderDragon = getBoolean("game-mechanics.scan-for-legacy-ender-dragon", true);
      }
@@ -19,10 +19,10 @@ index 6e7e00678295b5b714a1be4753626e21ab469fd6..54d7f6efcf42d4c7a8c209dfe3c54853
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/EntityArmorStand.java b/src/main/java/net/minecraft/server/EntityArmorStand.java
-index 96c229e5dd214d32478fe4d5b96e77d8ba2bc93c..2592a59e9506cee901802a3bdc78db8832700fd8 100644
+index b0847b4e61e587a47fd209eb2ec3772d1486802d..89f6525ef1a4c41d3b662a5ad22b353064a82f36 100644
 --- a/src/main/java/net/minecraft/server/EntityArmorStand.java
 +++ b/src/main/java/net/minecraft/server/EntityArmorStand.java
-@@ -314,6 +314,7 @@ public class EntityArmorStand extends EntityLiving {
+@@ -321,6 +321,7 @@ public class EntityArmorStand extends EntityLiving {
  
      @Override
      protected void collideNearby() {
@@ -31,7 +31,7 @@ index 96c229e5dd214d32478fe4d5b96e77d8ba2bc93c..2592a59e9506cee901802a3bdc78db88
  
          for (int i = 0; i < list.size(); ++i) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 6003201197a89fa6c46c35d711a53db690295b1e..23a38825b71ea981538f32368705e7a7b98dadaf 100644
+index fa095bb55c09a3b5f8ab70bcce5a03c7eb93dcfa..7affb75a97e49b67861b24de38ef83e72b0abd5a 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -801,6 +801,13 @@ public abstract class World implements GeneratorAccess, AutoCloseable {

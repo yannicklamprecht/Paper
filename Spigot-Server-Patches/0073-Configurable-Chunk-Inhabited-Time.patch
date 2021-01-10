@@ -11,10 +11,10 @@ For people who want all chunks to be treated equally, you can chose a fixed valu
 This allows to fine-tune vanilla gameplay.
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 6998ec2d7550094498649deb9028988700982e04..6babdde2910162a03b8abbcbb7db1f78eb3376c2 100644
+index 7ed3bcd7b1ef1a371ad1a4c38f183cef022a5363..4faedee40c731920d6fc0e032df71f8118ba9dbf 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -232,4 +232,14 @@ public class PaperWorldConfig {
+@@ -236,4 +236,14 @@ public class PaperWorldConfig {
              skeleHorseSpawnChance = 0.01D; // Vanilla value
          }
      }
@@ -30,10 +30,10 @@ index 6998ec2d7550094498649deb9028988700982e04..6babdde2910162a03b8abbcbb7db1f78
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 560d61183f28b0271739548e8b784fdaf97e8a11..f02d4726747a0992e851730c21c9423f706aa27a 100644
+index b6ff6095543d720382786e159a9f1cdd6eb6f166..f9ad646f3061914e55e424602abe27da7f1c0865 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -980,7 +980,7 @@ public class Chunk implements IChunkAccess {
+@@ -984,7 +984,7 @@ public class Chunk implements IChunkAccess {
  
      @Override
      public long getInhabitedTime() {

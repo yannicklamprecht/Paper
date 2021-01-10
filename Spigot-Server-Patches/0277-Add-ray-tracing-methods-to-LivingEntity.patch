@@ -5,10 +5,10 @@ Subject: [PATCH] Add ray tracing methods to LivingEntity
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 83d98b705875fa543de4f37b1234ad65e4e0604a..99dac0a315c29dd394ea3e8049da89c62ace65cc 100644
+index 65db092417ddf7253c0b52e98d53b6cfc3744c3a..b00c7fda9aa7328848e0aff3a5897063f8a5abd6 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -3474,6 +3474,23 @@ public abstract class EntityLiving extends Entity {
+@@ -3486,6 +3486,23 @@ public abstract class EntityLiving extends Entity {
          this.broadcastItemBreak(enumhand == EnumHand.MAIN_HAND ? EnumItemSlot.MAINHAND : EnumItemSlot.OFFHAND);
      }
      // Paper start

@@ -7,10 +7,10 @@ Fixes an AssertionError when setting the player's item in hand to null or a new 
 Fixes GH-2718
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 072fa0ba13bbad5a045cb7fd296fcca160718c8c..65187e7ce1e0ba32cc4a7547e570588cad0d22b8 100644
+index dbd212fc2f0c95ab1dcc4b6be86f0f87ac726fa7..37e3efa1fed858f735166a5c0cb97f886b2bbb4e 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -2049,6 +2049,7 @@ public abstract class EntityLiving extends Entity {
+@@ -2055,6 +2055,7 @@ public abstract class EntityLiving extends Entity {
          return predicate.test(this.getItemInMainHand().getItem()) || predicate.test(this.getItemInOffHand().getItem());
      }
  
@@ -19,10 +19,10 @@ index 072fa0ba13bbad5a045cb7fd296fcca160718c8c..65187e7ce1e0ba32cc4a7547e570588c
          if (enumhand == EnumHand.MAIN_HAND) {
              return this.getEquipment(EnumItemSlot.MAINHAND);
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 38cd2768374b44b82060b07924b17f35c466806c..9deee3cf802d43c806008b573219c69f1d62cc61 100644
+index 4dd57152cb0d09b2df08be68ab111623724d52fc..a6b83cb349386ff1fb6f3267f0d610bf31df3f16 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1549,6 +1549,10 @@ public class PlayerConnection implements PacketListenerPlayIn {
+@@ -1557,6 +1557,10 @@ public class PlayerConnection implements PacketListenerPlayIn {
                  this.player.getBukkitEntity().updateInventory(); // SPIGOT-2524
                  return;
              }

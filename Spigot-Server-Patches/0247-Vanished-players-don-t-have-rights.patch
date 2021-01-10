@@ -96,7 +96,7 @@ index ed0f9c5d29c4f88b7beee4b0ecdd7a56de2d7a9e..881cea7c466f29ff4a89db28d104e850
          if (operatorboolean.apply(false, false)) {
              throw (IllegalArgumentException) SystemUtils.c((Throwable) (new IllegalArgumentException()));
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 23a38825b71ea981538f32368705e7a7b98dadaf..514be9c4356380627032c54b4b1eda37aaefe16d 100644
+index 7affb75a97e49b67861b24de38ef83e72b0abd5a..ce596bd1268eb7d6d20709fe1e00a59ccc50957d 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -178,6 +178,46 @@ public abstract class World implements GeneratorAccess, AutoCloseable {
@@ -147,10 +147,10 @@ index 23a38825b71ea981538f32368705e7a7b98dadaf..514be9c4356380627032c54b4b1eda37
      public boolean s_() {
          return this.isClientSide;
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 52762d75edd35dd3bc9668e3f7a3c79be279b783..6458cd6823ea066588742f8105048001395e4dde 100644
+index 50047901625527e90d4d2ceb2572f30811f2ee76..6b62317f6a5e8a9bb8fdfc901835d0c28d3eeeda 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -1209,6 +1209,14 @@ public class CraftEventFactory {
+@@ -1207,6 +1207,14 @@ public class CraftEventFactory {
          Projectile projectile = (Projectile) entity.getBukkitEntity();
          org.bukkit.entity.Entity collided = position.getEntity().getBukkitEntity();
          com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = new com.destroystokyo.paper.event.entity.ProjectileCollideEvent(projectile, collided);
