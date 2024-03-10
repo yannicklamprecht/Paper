@@ -1,0 +1,158 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Yannick Lamprecht <yannicklamprecht@live.de>
+Date: Wed, 27 Dec 2023 14:51:59 +0100
+Subject: [PATCH] add disguise api
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/SkinParts.java b/src/main/java/com/destroystokyo/paper/SkinParts.java
+index 4a0c39405d4fbed457787e3c6ded4cc6591bc8c2..7db62131bccaa218954fb56c5cdfe71f48aa59a1 100644
+--- a/src/main/java/com/destroystokyo/paper/SkinParts.java
++++ b/src/main/java/com/destroystokyo/paper/SkinParts.java
+@@ -17,4 +17,23 @@ public interface SkinParts {
+     boolean hasHatsEnabled();
+ 
+     int getRaw();
++
++    interface Builder {
++        @org.jetbrains.annotations.NotNull
++        Builder withCape();
++        @org.jetbrains.annotations.NotNull
++        Builder withJacket();
++        @org.jetbrains.annotations.NotNull
++        Builder withLeftSleeve();
++        @org.jetbrains.annotations.NotNull
++        Builder withRightSleeve();
++        @org.jetbrains.annotations.NotNull
++        Builder withLeftPants();
++        @org.jetbrains.annotations.NotNull
++        Builder withRightPants();
++        @org.jetbrains.annotations.NotNull
++        Builder withHat();
++        @org.jetbrains.annotations.NotNull
++        SkinParts build();
++    }
+ }
+diff --git a/src/main/java/io/papermc/paper/disguise/DisguiseData.java b/src/main/java/io/papermc/paper/disguise/DisguiseData.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..916ea0127e75cff32d48c9f7d0b9a62d0e291e74
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/disguise/DisguiseData.java
+@@ -0,0 +1,25 @@
++package io.papermc.paper.disguise;
++
++import com.destroystokyo.paper.profile.PlayerProfile;
++import org.bukkit.entity.EntityType;
++import org.jetbrains.annotations.NotNull;
++
++public sealed interface DisguiseData permits DisguiseData.OriginalDisguise, EntityTypeDisguise, PlayerDisguise {
++    static @NotNull DisguiseData original() {
++        return new OriginalDisguise();
++    }
++
++    static @NotNull PlayerDisguise.Builder player(@NotNull PlayerProfile playerProfile) {
++        return new PlayerDisguise.Builder(playerProfile);
++    }
++
++    static @NotNull EntityTypeDisguise entity(@NotNull EntityType entityType) {
++        return new EntityTypeDisguise(entityType);
++    }
++
++    static @NotNull OriginalDisguise reset() {
++        return new OriginalDisguise();
++    }
++
++    record OriginalDisguise() implements DisguiseData{}
++}
+diff --git a/src/main/java/io/papermc/paper/disguise/EntityTypeDisguise.java b/src/main/java/io/papermc/paper/disguise/EntityTypeDisguise.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4db3e283418a328f92fb538cd93461f4770e5b0c
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/disguise/EntityTypeDisguise.java
+@@ -0,0 +1,11 @@
++package io.papermc.paper.disguise;
++
++import java.util.Objects;
++import org.bukkit.entity.EntityType;
++import org.jetbrains.annotations.NotNull;
++
++public record EntityTypeDisguise(@NotNull EntityType entityType) implements DisguiseData {
++    public EntityTypeDisguise {
++        Objects.requireNonNull(entityType, "type cannot be null");
++    }
++}
+diff --git a/src/main/java/io/papermc/paper/disguise/PlayerDisguise.java b/src/main/java/io/papermc/paper/disguise/PlayerDisguise.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a328ce26a6c7aa2fc875a571e9bb9857e59db624
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/disguise/PlayerDisguise.java
+@@ -0,0 +1,41 @@
++package io.papermc.paper.disguise;
++
++import com.destroystokyo.paper.SkinParts;
++import com.destroystokyo.paper.profile.PlayerProfile;
++import java.util.Objects;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++public record PlayerDisguise(@NotNull PlayerProfile playerProfile, boolean listed, @Nullable SkinParts skinParts) implements DisguiseData {
++
++    public  PlayerDisguise {
++        Objects.requireNonNull(playerProfile, "profile cannot be null");
++    }
++    public static @NotNull Builder builder(@NotNull PlayerProfile playerProfile) {
++        return new Builder(playerProfile);
++    }
++
++    public static class Builder {
++        private final PlayerProfile playerProfile;
++        private boolean listed;
++        private SkinParts skinParts;
++
++        public Builder(@NotNull PlayerProfile playerProfile) {
++            this.playerProfile = playerProfile;
++        }
++
++        public @NotNull Builder listed(boolean listed) {
++            this.listed = listed;
++            return this;
++        }
++
++        public @NotNull Builder skinParts(@NotNull SkinParts skinParts) {
++            this.skinParts = skinParts;
++            return this;
++        }
++
++        public @NotNull PlayerDisguise build() {
++            return new PlayerDisguise(playerProfile, listed, skinParts);
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 27084402cf0e46dcd171074629b7c4156e48aa44..158d5324972b12a0671a38aad3c0e7bd23a55b05 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2537,4 +2537,11 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+      */
+     boolean isOwnedByCurrentRegion(@NotNull Entity entity);
+     // Paper end - Folia region threading API
++    // Paper start - add disguise api
++    /**
++     * Creates a new skinparts builder used for overriding skin settintgs
++     * @return a new builder for skin parts
++     */
++    com.destroystokyo.paper.SkinParts.@NotNull Builder newSkinPartsBuilder();
++    // Paper end - add disguise api
+ }
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index 62e3793903905b94eb1a120345015149abb33713..d4e425bcab43bd129b5559dc7fb9fad87f617656 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -1155,4 +1155,8 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+      */
+     @NotNull String getScoreboardEntryName();
+     // Paper end - entity scoreboard name
++    // Paper start - disguise api
++    @NotNull io.papermc.paper.disguise.DisguiseData getDisguiseData();
++    void setDisuiseData(@NotNull io.papermc.paper.disguise.DisguiseData disguiseData);
++    // Paper end - disguise api
+ }

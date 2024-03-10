@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Yannick Lamprecht <yannicklamprecht@live.de>
+Date: Mon, 11 Mar 2024 00:52:56 +0100
+Subject: [PATCH] add paper server generator dependency
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 5d448d8a7cf6626a11791f30ad52baf41a099272..32392d95d34ac62a78c0eb1d6c1dd701dd76e9ad 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -63,6 +63,22 @@ dependencies {
+     // Paper end - Remap reflection
+ }
+ 
++// Paper start
++val generatedServerPath: java.nio.file.Path = rootProject.projectDir.toPath().resolve("paper-server-generator/generated")
++idea {
++    module {
++        generatedSourceDirs.add(generatedServerPath.toFile())
++    }
++}
++sourceSets {
++    main {
++        java {
++            srcDir(generatedServerPath)
++        }
++    }
++}
++// Paper end
++
+ paperweight {
+     craftBukkitPackageVersion.set("v1_20_R4") // also needs to be updated in MappingEnvironment
+ }
