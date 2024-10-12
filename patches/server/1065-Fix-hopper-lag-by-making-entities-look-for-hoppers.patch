@@ -1,0 +1,302 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Techcable <techcable@techcable.net>
+Date: Sun, 20 Dec 2020 14:21:32 +0100
+Subject: [PATCH] Fix hopper lag by making entities look for hoppers.
+
+Every tick hoppers try and find an block-inventory to extract from.
+If no tile entity is above the hopper (which there often isn't) it will
+do a bounding box search for minecart chests and minecart hoppers.
+If it can't find an inventory, it will then look for a dropped item,
+which is another bounding box search.
+This patch eliminates that expensive check by having dropped items and
+minecart hoppers/chests look for hoppers instead.
+Hoppers are tile entities meaning you can do a simple tile entity lookup
+to find the nearest hopper in range.
+Pushing out of hoppers causes a bouding box lookup, which this patch
+replaces with a tile entity lookup.
+
+This patch may causes a decrease in the performance of dropped items,
+which is why it can be disabled in the configuration.
+
+Co-authored-by: Yannick Lamprecht <yannicklamprecht@live.de>
+
+diff --git a/src/main/java/io/papermc/paper/HopperPusher.java b/src/main/java/io/papermc/paper/HopperPusher.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..86287f3343f7c97def6a8ce1e730ba1b3e471af3
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/HopperPusher.java
+@@ -0,0 +1,102 @@
++package io.papermc.paper;
++
++
++import net.minecraft.core.BlockPos;
++import net.minecraft.core.BlockPosition;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.world.entity.Entity;
++import net.minecraft.world.level.Level;
++import net.minecraft.world.level.World;
++import net.minecraft.world.level.block.Blocks;
++import net.minecraft.world.level.block.entity.BlockEntity;
++import net.minecraft.world.level.block.entity.HopperBlockEntity;
++import net.minecraft.world.level.block.entity.TileEntity;
++import net.minecraft.world.level.block.entity.TileEntityHopper;
++import net.minecraft.world.phys.AABB;
++import net.minecraft.world.phys.AxisAlignedBB;
++
++
++public interface HopperPusher {
++
++    default HopperBlockEntity findHopper() {
++        BlockPos pos = new BlockPos(((Entity) this).getBlockX(), ((Entity) this).getBlockY(), ((Entity) this).getBlockZ()).below();
++        HopperBlockEntity hopper = getHopper(((Entity) this).getCommandSenderWorld(), pos);
++        if (hopper == null) {
++            return null;
++        }
++        AABB hopperBoundingBox = hopper.getHopperLookupBoundingBox();
++        if (hopperBoundingBox.intersects(((Entity) this)
++            .getBoundingBox())) {
++            return hopper;
++        }
++        return null;
++    }
++
++    boolean acceptItem(HopperBlockEntity hopper);
++
++    default boolean tryPutInHopper() {
++        if (!((Entity) this).getCommandSenderWorld().paperConfig().hopper.isHopperPushBased) {
++            return false;
++        }
++        CheckData checkData = getCheckData();
++        HopperBlockEntity hopper = null;
++        if(!hasMoved()){
++            if (checkData.getHopperPosition() != null) {
++                hopper = getHopper(((Entity) this).getCommandSenderWorld(), checkData.getHopperPosition());
++            }
++        }
++        if(hopper == null && waitedLongEnoughOrMoved(checkData)) {
++            hopper = findHopper();
++            if (hopper != null) {
++                checkData.setHopperPosition(hopper.getBlockPos());
++            }
++            checkData.updateLastChecked();
++        }
++        return hopper != null && hopper.canAcceptItems() && acceptItem(hopper);
++    }
++
++    default boolean waitedLongEnoughOrMoved(CheckData checkData){
++        return hasMoved() ||
++            net.minecraft.server.MinecraftServer.currentTick - checkData.getLastChecked() > ((Entity) this).getCommandSenderWorld().paperConfig().hopper.entitySearchForHopperDelay;
++    }
++
++    default boolean hasMoved(){
++        Entity entity = (Entity) this;
++        return (entity.position().x() == entity.xOld && entity.position().y() == entity.yOld && entity.position().z() == entity.zOld);
++    }
++
++    static HopperBlockEntity getHopper(Level world, BlockPos pos) {
++        if (world.getBlockState(pos).getBlock() != Blocks.HOPPER) {
++            return null;
++        }
++        BlockEntity tileEntity = world.getBlockEntity(pos);
++        if (tileEntity instanceof HopperBlockEntity hopperBlockEntity) {
++            return hopperBlockEntity;
++        }
++        return null;
++    }
++
++    CheckData getCheckData();
++
++    class CheckData {
++
++        private long lastChecked;
++        private BlockPos hopperPosition;
++
++        public void updateLastChecked() {
++            lastChecked = MinecraftServer.currentTick;
++        }
++
++        public long getLastChecked() {
++            return lastChecked;
++        }
++
++        public void setHopperPosition(BlockPos hopperPosition) {
++            this.hopperPosition = hopperPosition;
++        }
++
++        public BlockPos getHopperPosition() {
++            return hopperPosition;
++        }
++    }
++}
+diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+index fd3b1c10695634f65c7291016bf671c084bc4d57..f900d80dfa6a44a3b916b74692dd77dd430b846a 100644
+--- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -481,6 +481,8 @@ public class WorldConfiguration extends ConfigurationPart {
+         public boolean cooldownWhenFull = true;
+         public boolean disableMoveEvent = false;
+         public boolean ignoreOccludingBlocks = false;
++        public boolean isHopperPushBased = true;
++        public int entitySearchForHopperDelay = 200;
+     }
+ 
+     public Collisions collisions;
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index 4423973d4d9a2c3879d98d1d4c8b8c117c677ac5..fcdd38c124fb712d4af523d68d593c561996976d 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -41,8 +41,10 @@ import org.bukkit.event.entity.EntityRemoveEvent;
+ import org.bukkit.event.player.PlayerPickupItemEvent;
+ // CraftBukkit end
+ import org.bukkit.event.player.PlayerAttemptPickupItemEvent; // Paper
++import net.minecraft.world.level.block.entity.HopperBlockEntity; // Paper - hopper fix
++import io.papermc.paper.HopperPusher; // Paper
+ 
+-public class ItemEntity extends Entity implements TraceableEntity {
++public class ItemEntity extends Entity implements TraceableEntity, HopperPusher {
+ 
+     private static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(ItemEntity.class, EntityDataSerializers.ITEM_STACK);
+     private static final float FLOAT_HEIGHT = 0.1F;
+@@ -97,6 +99,19 @@ public class ItemEntity extends Entity implements TraceableEntity {
+         this.bobOffs = entity.bobOffs;
+     }
+ 
++    // Paper start
++    @Override
++    public boolean acceptItem(HopperBlockEntity hopper) {
++      return HopperBlockEntity.canPickupItem(hopper, this);
++    }
++
++    private final HopperPusher.CheckData checkData = new CheckData();
++    @Override
++    public CheckData getCheckData() {
++        return checkData;
++    }
++    // Paper end
++
+     @Override
+     public boolean dampensVibrations() {
+         return this.getItem().is(ItemTags.DAMPENS_VIBRATIONS);
+@@ -153,6 +168,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+             this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
+         } else {
+             super.tick();
++            if (tryPutInHopper()) return; // Paper
+             // Paper start - remove anti tick skipping measures / wall time - revert to vanilla
+             if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
+                 --this.pickupDelay;
+@@ -241,6 +257,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+     // Spigot start - copied from above
+     @Override
+     public void inactiveTick() {
++        if (tryPutInHopper()) return; // Paper
+         // Paper start - remove anti tick skipping measures / wall time - copied from above
+         if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
+             --this.pickupDelay;
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
+index 9549eee0d92f322bd5232abd7e695213660c2e22..f85ebd27f6985aafb858e6f582f38b0fe6d24fbf 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
+@@ -18,6 +18,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.storage.loot.LootTable;
++import net.minecraft.world.level.block.entity.HopperBlockEntity; // Paper - hopper fix
+ 
+ // CraftBukkit start
+ import java.util.List;
+@@ -26,9 +27,10 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+ import org.bukkit.entity.HumanEntity;
+ import org.bukkit.event.entity.EntityRemoveEvent;
+ import org.bukkit.inventory.InventoryHolder;
++import io.papermc.paper.HopperPusher; // Paper
+ // CraftBukkit end
+ 
+-public abstract class AbstractMinecartContainer extends AbstractMinecart implements ContainerEntity {
++public abstract class AbstractMinecartContainer extends AbstractMinecart implements ContainerEntity, HopperPusher {
+ 
+     private NonNullList<ItemStack> itemStacks;
+     @Nullable
+@@ -69,6 +71,31 @@ public abstract class AbstractMinecartContainer extends AbstractMinecart impleme
+         return null;
+     }
+ 
++    // Paper start
++    @Override
++    public boolean acceptItem(HopperBlockEntity hopper) {
++        return HopperBlockEntity.acceptItem(hopper, this);
++    }
++
++    @Override
++    public void tick() {
++        super.tick();
++        tryPutInHopper();
++    }
++
++    @Override
++    public void inactiveTick() {
++        super.inactiveTick();
++        tryPutInHopper();
++    }
++
++    private final HopperPusher.CheckData checkData = new CheckData();
++    @Override
++    public CheckData getCheckData() {
++        return checkData;
++    }
++    // Paper end
++
+     @Override
+     public int getMaxStackSize() {
+         return this.maxStack;
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+index cab403efd471bb61835224eea4e99570d34dcaaa..e191f41c1c261b8264c615e172aaa72b9b6e6246 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -37,7 +37,6 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
+ import org.bukkit.entity.HumanEntity;
+ import org.bukkit.event.entity.EntityRemoveEvent;
+ import org.bukkit.event.inventory.HopperInventorySearchEvent;
+-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+ import org.bukkit.event.inventory.InventoryPickupItemEvent;
+ import org.bukkit.inventory.Inventory;
+ // CraftBukkit end
+@@ -89,6 +88,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+         this.facing = (Direction) state.getValue(HopperBlock.FACING);
+     }
+ 
++    // Paper start
++    public boolean canAcceptItems() {
++        return !this.isOnCooldown() && !this.inventoryFull() && this.getBlockState().getValue(HopperBlock.ENABLED);
++    }
++    // Paper end
++
+     @Override
+     protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+         super.loadAdditional(nbt, registryLookup);
+@@ -148,7 +153,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+             boolean result = HopperBlockEntity.tryMoveItems(world, pos, state, blockEntity, () -> {
+                 return HopperBlockEntity.suckInItems(world, blockEntity);
+             });
+-            if (!result && blockEntity.level.spigotConfig.hopperCheck > 1) {
++            if (!result && blockEntity.level.spigotConfig.hopperCheck > 1 && !world.paperConfig().hopper.isHopperPushBased /* Paper */) {
+                 blockEntity.setCooldown(blockEntity.level.spigotConfig.hopperCheck);
+             }
+             // Spigot end
+@@ -156,6 +161,16 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     }
+ 
++    public AABB getHopperLookupBoundingBox() {
++        // Change this if b(IHopper) ever changes
++        return getHopperLookupBoundingBox(this.getBlockPos().getX(), this.getBlockPos().getY() + 1.0D, this.getBlockPos().getZ());
++    }
++
++    private static AABB getHopperLookupBoundingBox(double d0, double d1, double d2) {
++        // Change this if the above ever changes
++        return new AABB(d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
++    }
++
+     // Paper start - Perf: Optimize Hoppers
+     private static final int HOPPER_EMPTY = 0;
+     private static final int HOPPER_HAS_ITEMS = 1;
