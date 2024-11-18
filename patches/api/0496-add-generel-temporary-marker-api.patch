@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Yannick Lamprecht <yannicklamprecht@live.de>
+Date: Mon, 18 Nov 2024 19:16:19 +0100
+Subject: [PATCH] add generel temporary marker api
+
+
+diff --git a/src/main/java/io/papermc/paper/marker/Markable.java b/src/main/java/io/papermc/paper/marker/Markable.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..912f194b91fbb9a7797d6bc45483674cd74c8d5c
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/marker/Markable.java
+@@ -0,0 +1,8 @@
++package io.papermc.paper.marker;
++
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public interface Markable {
++    Marker getMarker();
++}
+diff --git a/src/main/java/io/papermc/paper/marker/Marker.java b/src/main/java/io/papermc/paper/marker/Marker.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..16c22bd3407d77818b6678a7de672f77c7edb36a
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/marker/Marker.java
+@@ -0,0 +1,23 @@
++package io.papermc.paper.marker;
++
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
++import org.jetbrains.annotations.Nullable;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public class Marker {
++    private final Map<MarkerKey<?>, Object> markers = new ConcurrentHashMap<>();
++
++    public <T> void set(MarkerKey<T> key, T value) {
++        markers.put(key, value);
++    }
++
++    public <T> @Nullable T get(MarkerKey<T> key) {
++        return key.getType().cast(markers.get(key));
++    }
++
++    public <T> boolean has(MarkerKey<T> key) {
++        return markers.containsKey(key);
++    }
++}
+diff --git a/src/main/java/io/papermc/paper/marker/MarkerKey.java b/src/main/java/io/papermc/paper/marker/MarkerKey.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..edb4dda62caf7f55d16d7518121da4080385b440
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/marker/MarkerKey.java
+@@ -0,0 +1,29 @@
++package io.papermc.paper.marker;
++
++import java.util.Objects;
++import org.bukkit.NamespacedKey;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public final class MarkerKey<T> {
++
++    private final NamespacedKey key;
++    private final Class<T> type;
++
++    private MarkerKey(NamespacedKey key, Class<T> type) {
++        this.key = key;
++        this.type = type;
++    }
++    public NamespacedKey getKey() {
++        return key;
++    }
++    public Class<T> getType() {
++        return type;
++    }
++
++    public static <T> MarkerKey<T> of(NamespacedKey key, Class<T> type) {
++        Objects.requireNonNull(key, "key cannot be null");
++        Objects.requireNonNull(type, "type cannot be null");
++        return new MarkerKey<>(key, type);
++    }
++}
