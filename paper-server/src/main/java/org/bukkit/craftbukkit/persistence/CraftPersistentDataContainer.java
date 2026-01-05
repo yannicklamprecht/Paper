@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import net.kyori.adventure.key.Key;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.util.CraftNBTTagConfigSerializer;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -36,8 +36,8 @@ public class CraftPersistentDataContainer extends io.papermc.paper.persistence.P
     }
 
     @Override
-    public <T, Z> void set(@NotNull NamespacedKey key, @NotNull PersistentDataType<T, Z> type, @NotNull Z value) {
-        Preconditions.checkArgument(key != null, "The NamespacedKey key cannot be null");
+    public <T, Z> void set(@NotNull Key key, @NotNull PersistentDataType<T, Z> type, @NotNull Z value) {
+        Preconditions.checkArgument(key != null, "The key cannot be null");
         Preconditions.checkArgument(type != null, "The provided type cannot be null");
         Preconditions.checkArgument(value != null, "The provided value cannot be null");
 
@@ -46,13 +46,13 @@ public class CraftPersistentDataContainer extends io.papermc.paper.persistence.P
 
     @NotNull
     @Override
-    public Set<NamespacedKey> getKeys() {
-        Set<NamespacedKey> keys = new HashSet<>();
+    public Set<Key> keys() {
+        Set<Key> keys = new HashSet<>();
 
         this.customDataTags.keySet().forEach(key -> {
             String[] keyData = key.split(":", 2);
             if (keyData.length == 2) {
-                keys.add(new NamespacedKey(keyData[0], keyData[1]));
+                keys.add(Key.key(keyData[0], keyData[1]));
             }
         });
 
@@ -60,8 +60,8 @@ public class CraftPersistentDataContainer extends io.papermc.paper.persistence.P
     }
 
     @Override
-    public void remove(@NotNull NamespacedKey key) {
-        Preconditions.checkArgument(key != null, "The NamespacedKey key cannot be null");
+    public void remove(@NotNull Key key) {
+        Preconditions.checkArgument(key != null, "The key cannot be null");
 
         this.customDataTags.remove(key.toString());
     }

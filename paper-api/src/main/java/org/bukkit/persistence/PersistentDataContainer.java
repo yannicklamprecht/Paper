@@ -1,6 +1,6 @@
 package org.bukkit.persistence;
 
-import org.bukkit.NamespacedKey;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,11 +26,11 @@ public interface PersistentDataContainer extends io.papermc.paper.persistence.Pe
      * @throws IllegalArgumentException if the key is null
      * @throws IllegalArgumentException if the type is null
      * @throws IllegalArgumentException if the value is null. Removing a tag should
-     * be done using {@link #remove(NamespacedKey)}
+     * be done using {@link #remove(Key)}
      * @throws IllegalArgumentException if no suitable adapter was found for
      * the {@link PersistentDataType#getPrimitiveType()}
      */
-    <P, C> void set(@NotNull NamespacedKey key, @NotNull PersistentDataType<P, C> type, @NotNull C value);
+    <P, C> void set(@NotNull Key key, @NotNull PersistentDataType<P, C> type, @NotNull C value);
     // Paper - move to PersistentDataContainerView
 
     /**
@@ -40,7 +40,7 @@ public interface PersistentDataContainer extends io.papermc.paper.persistence.Pe
      *
      * @throws IllegalArgumentException if the provided key is null
      */
-    void remove(@NotNull NamespacedKey key);
+    void remove(@NotNull Key key);
     // Paper - move to PersistentDataContainerView
 
     // Paper start - byte array serialization
