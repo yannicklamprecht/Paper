@@ -347,38 +347,19 @@ public class Commodore {
 
                         if (modern) {
                             if (owner.equals("org/bukkit/Material")) {
-                                switch (name) {
-                                    case "CACTUS_GREEN":
-                                        name = "GREEN_DYE";
-                                        break;
-                                    case "DANDELION_YELLOW":
-                                        name = "YELLOW_DYE";
-                                        break;
-                                    case "ROSE_RED":
-                                        name = "RED_DYE";
-                                        break;
-                                    case "SIGN":
-                                        name = "OAK_SIGN";
-                                        break;
-                                    case "WALL_SIGN":
-                                        name = "OAK_WALL_SIGN";
-                                        break;
-                                    case "ZOMBIE_PIGMAN_SPAWN_EGG":
-                                        name = "ZOMBIFIED_PIGLIN_SPAWN_EGG";
-                                        break;
-                                    case "GRASS_PATH":
-                                        name = "DIRT_PATH";
-                                        break;
-                                    case "GRASS":
-                                        name = "SHORT_GRASS";
-                                        break;
-                                    case "SCUTE":
-                                        name = "TURTLE_SCUTE";
-                                        break;
-                                    case "CHAIN":
-                                        name = "IRON_CHAIN";
-                                        break;
-                                }
+                                name = switch (name) {
+                                    case "CACTUS_GREEN" -> "GREEN_DYE";
+                                    case "DANDELION_YELLOW" -> "YELLOW_DYE";
+                                    case "ROSE_RED" -> "RED_DYE";
+                                    case "SIGN" -> "OAK_SIGN";
+                                    case "WALL_SIGN" -> "OAK_WALL_SIGN";
+                                    case "ZOMBIE_PIGMAN_SPAWN_EGG" -> "ZOMBIFIED_PIGLIN_SPAWN_EGG";
+                                    case "GRASS_PATH" -> "DIRT_PATH";
+                                    case "GRASS" -> "SHORT_GRASS";
+                                    case "SCUTE" -> "TURTLE_SCUTE";
+                                    case "CHAIN" -> "IRON_CHAIN";
+                                    default -> name;
+                                };
                             }
 
                             super.visitFieldInsn(opcode, owner, name, desc);
@@ -548,19 +529,18 @@ public class Commodore {
                             }
 
                             switch (name) {
-                                case "values":
-                                case "valueOf":
-                                case "getMaterial":
-                                case "matchMaterial":
+                                case "values", "valueOf", "getMaterial", "matchMaterial" -> {
                                     visitor.visit(opcode, "org/bukkit/craftbukkit/legacy/CraftLegacy", name, desc, itf, samMethodType, instantiatedMethodType);
                                     return;
-                                case "ordinal":
+                                }
+                                case "ordinal" -> {
                                     visitor.visit(Opcodes.INVOKESTATIC, "org/bukkit/craftbukkit/legacy/CraftLegacy", "ordinal", "(Lorg/bukkit/Material;)I", false, samMethodType, instantiatedMethodType);
                                     return;
-                                case "name":
-                                case "toString":
+                                }
+                                case "name", "toString" -> {
                                     visitor.visit(Opcodes.INVOKESTATIC, "org/bukkit/craftbukkit/legacy/CraftLegacy", name, "(Lorg/bukkit/Material;)Ljava/lang/String;", false, samMethodType, instantiatedMethodType);
                                     return;
+                                }
                             }
                         }
 
@@ -595,7 +575,7 @@ public class Commodore {
                             }
                         }
                         // Paper end
-                        if (value instanceof String && ((String) value).equals("com.mysql.jdbc.Driver")) {
+                        if (value instanceof String && value.equals("com.mysql.jdbc.Driver")) {
                             super.visitLdcInsn("com.mysql.cj.jdbc.Driver");
                             return;
                         }
