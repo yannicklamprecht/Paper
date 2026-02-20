@@ -581,6 +581,9 @@ public class Commodore {
 
                     @Override
                     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+                        if(org.bukkit.craftbukkit.legacy.PersistentDataContainerReroute.rewrite(opcode, owner, name, desc, itf, super::visitMethodInsn)) {
+                            return;
+                        }
                         this.handleMethod((newOpcode, newOwner, newName, newDescription, newItf, newSam, newInstantiated) -> {
                             super.visitMethodInsn(newOpcode, newOwner, newName, newDescription, newItf);
                         }, opcode, owner, name, desc, itf, null, null);
