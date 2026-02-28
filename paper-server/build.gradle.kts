@@ -113,6 +113,9 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
     }
 }
 
+val asm = "9.9.1"
+val mockito = "5.21.0"
+
 dependencies {
     implementation(project(":paper-api"))
     implementation(platform("ca.spottedleaf.leafpile:bom:1.3.3"))
@@ -140,7 +143,7 @@ dependencies {
     }
     implementation("io.netty:netty-codec-haproxy:4.2.16.Final") // Add support for proxy protocol
     implementation("org.apache.logging.log4j:log4j-iostreams:2.26.0")
-    implementation("org.ow2.asm:asm-commons:9.9.1")
+    implementation("org.ow2.asm:asm-commons:$asm")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
 
     // Deps that were previously in the API but have now been moved here for backwards compat, eventually to be removed
