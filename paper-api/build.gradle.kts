@@ -16,6 +16,8 @@ val adventureVersion = "4.26.1"
 val bungeeCordChatVersion = "1.21-R0.2-deprecated+build.21"
 val slf4jVersion = "2.0.16"
 val log4jVersion = "2.24.1"
+val mockito = "5.21.0"
+val asm = "9.9.1"
 
 val apiAndDocs: Configuration by configurations.creating {
     attributes {
@@ -85,9 +87,9 @@ dependencies {
     testImplementation("org.apache.commons:commons-lang3:3.17.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
     testImplementation("org.hamcrest:hamcrest:2.2")
-    testImplementation("org.mockito:mockito-core:5.14.1")
-    testImplementation("org.ow2.asm:asm-tree:9.8")
-    mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // configure mockito agent that is needed in newer java versions
+    testImplementation("org.mockito:mockito-core:$mockito")
+    testImplementation("org.ow2.asm:asm-tree:$asm")
+    mockitoAgent("org.mockito:mockito-core:$mockito") { isTransitive = false } // configure mockito agent that is needed in newer java versions
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
