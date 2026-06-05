@@ -1,7 +1,7 @@
 package io.papermc.paper.persistence;
 
 import java.util.Set;
-import org.bukkit.NamespacedKey;
+import net.kyori.adventure.key.Key;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
@@ -47,7 +47,7 @@ public interface PersistentDataContainerView {
      * @throws IllegalArgumentException if the type to cast the found object to is
      * null
      */
-    <P, C> boolean has(NamespacedKey key, PersistentDataType<P, C> type);
+    <P, C> boolean has(Key key, PersistentDataType<P, C> type);
 
     /**
      * Returns if the persistent metadata provider has metadata registered matching
@@ -64,7 +64,7 @@ public interface PersistentDataContainerView {
      * @return if a value with the provided key exists
      * @throws IllegalArgumentException if the key to look up is null
      */
-    boolean has(NamespacedKey key);
+    boolean has(Key key);
 
     /**
      * Returns the metadata value that is stored on the
@@ -85,7 +85,7 @@ public interface PersistentDataContainerView {
      * the {@link
      * PersistentDataType#getPrimitiveType()}
      */
-    <P, C> @Nullable C get(NamespacedKey key, PersistentDataType<P, C> type);
+    <P, C> @Nullable C get(Key key, PersistentDataType<P, C> type);
 
     /**
      * Returns the metadata value that is stored on the
@@ -108,7 +108,7 @@ public interface PersistentDataContainerView {
      * @throws IllegalArgumentException if no suitable adapter was found for
      * the {@link PersistentDataType#getPrimitiveType()}
      */
-    <P, C> C getOrDefault(NamespacedKey key, PersistentDataType<P, C> type, C defaultValue);
+    <P, C> C getOrDefault(Key key, PersistentDataType<P, C> type, C defaultValue);
 
     /**
      * Get the set of keys present on this {@link PersistentDataContainer}
@@ -119,7 +119,23 @@ public interface PersistentDataContainerView {
      *
      * @return the key set
      */
-    Set<NamespacedKey> getKeys();
+    Set<Key> keys();
+
+    /**
+     * Get the set of keys present on this {@link PersistentDataContainer}
+     * instance.
+     * <p>
+     * Any changes made to the returned set will not be reflected on the
+     * instance.
+     *
+     * @deprecated Use {@link #keys()} instead
+     *
+     * @return the key set
+     */
+    @Deprecated
+    default Set<org.bukkit.NamespacedKey> getKeys(){
+        return Set.of(); // NOOP: Will be rewritten via Commodore and stays as a compatibility shim
+    }
 
     /**
      * Returns if the container instance is empty, therefore has no entries
