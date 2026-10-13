@@ -7,11 +7,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
+@NullMarked
 class DamageCalculationTest {
 
     @Test
@@ -19,7 +21,7 @@ class DamageCalculationTest {
         final DamageCalculation calculation = calculation();
         final Key customKey = Key.key("test", "water_resistance");
 
-        final DamageStage custom = calculation.before(DamageStageKeys.ARMOR).add(customKey, DamageAdjustment.flat(-4));
+        final DamageStage custom = calculation.before(DamageStageKeys.ARMOR).add(customKey, DamageAdjustmentImpl.flat(-4));
         final DamageStage armor = calculation.stage(DamageStageKeys.ARMOR).orElseThrow();
         assertEquals(20, armor.getOriginalInput());
         assertEquals(16, armor.getInput());
@@ -37,8 +39,8 @@ class DamageCalculationTest {
         final Key flatKey = Key.key("test", "flat");
         final Key multiplierKey = Key.key("test", "multiplier");
 
-        calculation.before(DamageStageKeys.ARMOR).add(flatKey, DamageAdjustment.flat(-4));
-        calculation.before(DamageStageKeys.ARMOR).add(multiplierKey, DamageAdjustment.multiply(0.5));
+        calculation.before(DamageStageKeys.ARMOR).add(flatKey, DamageAdjustmentImpl.flat(-4));
+        calculation.before(DamageStageKeys.ARMOR).add(multiplierKey, DamageAdjustmentImpl.multiply(0.5));
 
         assertEquals(List.of(flatKey, multiplierKey, DamageStageKeys.ARMOR, DamageStageKeys.RESISTANCE),
             calculation.stages().stream().map(DamageStage::key).toList());
@@ -72,7 +74,7 @@ class DamageCalculationTest {
         assertEquals(-5, event.getOriginalDamage(DamageModifier.ARMOR));
         assertEquals(-3, event.getDamage(DamageModifier.RESISTANCE));
         event.getDamageCalculation().before(DamageStageKeys.ARMOR)
-            .add(Key.key("test", "pre_armor"), DamageAdjustment.flat(-4));
+            .add(Key.key("test", "pre_armor"), DamageAdjustmentImpl.flat(-4));
         assertEquals(-4, event.getDamage(DamageModifier.ARMOR));
         assertEquals(9.6, event.getFinalDamage(), 0.0001);
 
@@ -96,7 +98,7 @@ class DamageCalculationTest {
     }
 
     private static DamageCalculation calculation() {
-        final DamageCalculation calculation = new DamageCalculation(20);
+        final DamageCalculationImpl calculation = new DamageCalculationImpl(20);
         calculation.addStage(DamageStageKeys.ARMOR, -5, input -> -input / 4);
         calculation.addStage(DamageStageKeys.RESISTANCE, -3, input -> -input / 5);
         return calculation;

@@ -4,13 +4,13 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import io.papermc.paper.InternalAPIBridge;
 import io.papermc.paper.damage.DamageCalculation;
 import io.papermc.paper.damage.DamageStage;
 import io.papermc.paper.damage.DamageStageKeys;
 import java.util.EnumMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Objects;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
 import org.bukkit.WorldBorder;
@@ -89,18 +89,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     }
 
     private static DamageCalculation fromLegacy(final Map<DamageModifier, Double> modifiers, final Map<DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions) {
-        Preconditions.checkArgument(modifiers.containsKey(DamageModifier.BASE), "BASE DamageModifier missing");
-        Preconditions.checkArgument(!modifiers.containsKey(null), "Cannot have null DamageModifier");
-        Preconditions.checkArgument(modifiers.values().stream().allMatch(Objects::nonNull), "Cannot have null modifier values");
-        Preconditions.checkArgument(modifiers.keySet().equals(modifierFunctions.keySet()), "Must have a modifier function for each DamageModifier");
-        Preconditions.checkArgument(modifierFunctions.values().stream().allMatch(Objects::nonNull), "Cannot have null modifier function");
-        final DamageCalculation calculation = new DamageCalculation(modifiers.get(DamageModifier.BASE));
-        for (final DamageModifier modifier : MODIFIERS) {
-            if (modifier != DamageModifier.BASE && modifiers.containsKey(modifier)) {
-                calculation.addStage(keyFor(modifier), modifiers.get(modifier), modifierFunctions.get(modifier)::apply);
-            }
-        }
-        return calculation;
+        return InternalAPIBridge.get().fromLegacyDamageCalculation(modifiers, modifierFunctions, MODIFIERS, EntityDamageEvent::keyFor);
     }
 
     /**
@@ -232,8 +221,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         double oldRemaining = this.getDamage(DamageModifier.BASE);
         final Map<DamageStage, Double> replacements = new IdentityHashMap<>();
         for (final DamageStage stage : this.damageCalculation.stages()) {
-            final double newVanilla = stage.calculateVanilla(remaining);
-            final double oldVanilla = stage.calculateVanilla(oldRemaining);
+            final double newVanilla = InternalAPIBridge.get().calculateVanillaStage(stage, remaining);
+            final double oldVanilla = InternalAPIBridge.get().calculateVanillaStage(stage, oldRemaining);
             final double difference = oldVanilla - newVanilla;
             if (this.modifierStages.containsValue(stage)) {
                 final double old = stage.getChange();

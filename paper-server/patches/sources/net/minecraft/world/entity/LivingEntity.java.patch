@@ -1,11 +1,10 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -142,6 +_,20 @@
+@@ -142,6 +_,19 @@
  import org.jetbrains.annotations.Contract;
  import org.jspecify.annotations.Nullable;
  import org.slf4j.Logger;
 +// Paper start - staged damage calculation
-+import io.papermc.paper.damage.DamageCalculation;
 +import io.papermc.paper.damage.DamageStageKeys;
 +// Paper end - staged damage calculation
 +
@@ -996,7 +995,7 @@
 +    // CraftBukkit start
 +    // Paper start - staged damage calculation
 +    private EntityDamageEvent handleEntityDamage(final DamageSource source, final float rawDamage, final float cooldownDamage, final boolean clampedPreArmorDamage) {
-+        final DamageCalculation calculation = new DamageCalculation(rawDamage);
++        final io.papermc.paper.damage.DamageCalculationImpl calculation = new io.papermc.paper.damage.DamageCalculationImpl(rawDamage);
 +        calculation.addStage(DamageStageKeys.BLOCKING, input -> {
 +            final float amount = (float) input;
 +            return !clampedPreArmorDamage && this.canBlockAttack(source, amount) ? -this.resolveBlockedDamage(source, amount) : 0.0F;
@@ -1052,7 +1051,7 @@
 +                return false;
 +            }
 +            // Paper start - use the resolved damage calculation
-+            final DamageCalculation calculation = event.getDamageCalculation();
++            final io.papermc.paper.damage.DamageCalculation calculation = event.getDamageCalculation();
 +            final float originalDamage = (float) calculation.getBaseDamage();
 +            final float blockingChange = (float) calculation.stage(DamageStageKeys.BLOCKING).orElseThrow().getChange();
 +            final float resistanceChange = (float) calculation.stage(DamageStageKeys.RESISTANCE).orElseThrow().getChange();

@@ -1,51 +1,25 @@
 package io.papermc.paper.damage;
 
-import com.google.common.base.Preconditions;
 import java.util.function.DoubleUnaryOperator;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * A fixed or proportional adjustment inserted into a damage calculation.
- * Damage can not be reduced below zero at the insertion point.
+ * A formula that adjusts the damage of a {@link DamageCalculation}. The formula
+ * is a function that takes the current damage as input and returns a signed
+ * change to be applied to it. Negative changes reduce damage and positive
+ * changes increase it.
  *
- * @see DamageCalculation#before(net.kyori.adventure.key.Key)
+ * <p>Plugin stages are inserted into a calculation with a {@link DamageAdjustment}
+ * and can be removed at any time. The final damage is the sum of the raw damage
+ * and all changes contributed by each stage.
+ *
+ * @see DamageCalculation
+ * @see DamageStage
  */
-public final class DamageAdjustment {
-
-    private final DoubleUnaryOperator change;
-
-    private DamageAdjustment(final DoubleUnaryOperator change) {
-        this.change = change;
-    }
-
+public interface DamageAdjustment {
     /**
-     * Creates a fixed signed damage adjustment.
+     * Gets the formula that adjusts the damage.
      *
-     * @param change the signed damage change
-     * @return a flat adjustment
-     * @throws IllegalArgumentException if the change is not finite
+     * @return the damage adjustment formula
      */
-    @NotNull
-    public static DamageAdjustment flat(final double change) {
-        Preconditions.checkArgument(Double.isFinite(change), "change must be finite");
-        return new DamageAdjustment(input -> Math.max(0, input + change) - input);
-    }
-
-    /**
-     * Creates an adjustment that multiplies the damage reaching its insertion
-     * point. For example, {@code 0.5} halves the damage.
-     *
-     * @param multiplier the nonnegative multiplier
-     * @return a proportional adjustment
-     * @throws IllegalArgumentException if the multiplier is negative or not finite
-     */
-    @NotNull
-    public static DamageAdjustment multiply(final double multiplier) {
-        Preconditions.checkArgument(Double.isFinite(multiplier) && multiplier >= 0, "multiplier must be finite and non-negative");
-        return new DamageAdjustment(input -> input * multiplier - input);
-    }
-
-    DoubleUnaryOperator formula() {
-        return this.change;
-    }
+    DoubleUnaryOperator formula();
 }

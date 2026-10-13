@@ -9,6 +9,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.attribute.UnmodifiableAttributeMap;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.damage.DamageCalculation;
+import io.papermc.paper.damage.DamageCalculationImpl;
+import io.papermc.paper.damage.DamageStage;
+import io.papermc.paper.damage.DamageStageImpl;
 import io.papermc.paper.datacomponent.item.PaperResolvableProfile;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.entity.poi.PaperPoiType;
@@ -23,6 +27,7 @@ import io.papermc.paper.world.damagesource.FallLocationType;
 import io.papermc.paper.world.damagesource.PaperCombatEntryWrapper;
 import io.papermc.paper.world.damagesource.PaperCombatTrackerWrapper;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -71,6 +76,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.SpawnCategory;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -268,5 +274,31 @@ public class PaperServerInternalAPIBridge implements InternalAPIBridge {
             ? thisKey
             : new NamespacedKey(key.namespace(), key.value());
         return new PaperPersistentDataKey<>(namespacedKey, type);
+    }
+
+    @Override
+    public DamageCalculation fromLegacyDamageCalculation(
+        final Map<EntityDamageEvent.DamageModifier, Double> modifiers,
+        final Map<EntityDamageEvent.DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions,
+        EntityDamageEvent.DamageModifier[] allModifiers,
+        Function<EntityDamageEvent.DamageModifier, Key> keyFor
+    ) {
+        Preconditions.checkArgument(modifiers.containsKey(EntityDamageEvent.DamageModifier.BASE), "BASE DamageModifier missing");
+        Preconditions.checkArgument(!modifiers.containsKey(null), "Cannot have null DamageModifier");
+        Preconditions.checkArgument(modifiers.values().stream().allMatch(Objects::nonNull), "Cannot have null modifier values");
+        Preconditions.checkArgument(modifiers.keySet().equals(modifierFunctions.keySet()), "Must have a modifier function for each DamageModifier");
+        Preconditions.checkArgument(modifierFunctions.values().stream().allMatch(Objects::nonNull), "Cannot have null modifier function");
+        final DamageCalculationImpl calculation = new DamageCalculationImpl(modifiers.get(EntityDamageEvent.DamageModifier.BASE));
+        for (final EntityDamageEvent.DamageModifier modifier : allModifiers) {
+            if (modifier != EntityDamageEvent.DamageModifier.BASE && modifiers.containsKey(modifier)) {
+                calculation.addStage(keyFor.apply(modifier), modifiers.get(modifier), modifierFunctions.get(modifier)::apply);
+            }
+        }
+        return calculation;
+    }
+
+    @Override
+    public double calculateVanillaStage(final DamageStage stage, final double input) {
+        return ((DamageStageImpl) stage).calculateVanilla(input);
     }
 }

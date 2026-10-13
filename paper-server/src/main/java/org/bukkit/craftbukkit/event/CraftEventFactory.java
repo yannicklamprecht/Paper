@@ -7,7 +7,7 @@ import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.block.bed.BedEnterProblem;
 import io.papermc.paper.connection.HorriblePlayerLoginEventHack;
 import io.papermc.paper.connection.PlayerConnection;
-import io.papermc.paper.damage.DamageCalculation;
+import io.papermc.paper.damage.DamageCalculationImpl;
 import io.papermc.paper.event.block.BlockLockCheckEvent;
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent;
 import io.papermc.paper.event.entity.EntityIgniteEvent;
@@ -1055,11 +1055,11 @@ public class CraftEventFactory {
     }
     // Paper end
 
-    private static EntityDamageEvent handleEntityDamageEvent(Entity entity, DamageSource source, DamageCalculation calculation) {
+    private static EntityDamageEvent handleEntityDamageEvent(Entity entity, DamageSource source, DamageCalculationImpl calculation) {
         return handleEntityDamageEvent(entity, source, calculation, false);
     }
 
-    private static EntityDamageEvent handleEntityDamageEvent(Entity entity, DamageSource source, DamageCalculation calculation, boolean cancelled) {
+    private static EntityDamageEvent handleEntityDamageEvent(Entity entity, DamageSource source, DamageCalculationImpl calculation, boolean cancelled) {
         CraftDamageSource bukkitDamageSource = new CraftDamageSource(source);
         final Entity damager = source.eventEntityDamager() != null ? source.eventEntityDamager() : source.getDirectEntity();
         if (damager != null) {
@@ -1151,7 +1151,7 @@ public class CraftEventFactory {
         return callEntityDamageEvent(null, entity, cause, bukkitDamageSource, calculation, cancelled, source.isCritical()); // Paper - add critical damage API
     }
 
-    private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, org.bukkit.damage.DamageSource bukkitDamageSource, DamageCalculation calculation, boolean cancelled, boolean critical) { // Paper - add critical damage API
+    private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, org.bukkit.damage.DamageSource bukkitDamageSource, DamageCalculationImpl calculation, boolean cancelled, boolean critical) { // Paper - add critical damage API
         EntityDamageEvent event;
         if (damager != null) {
             event = new EntityDamageByEntityEvent(damager.getBukkitEntity(), damagee.getBukkitEntity(), cause, bukkitDamageSource, calculation, critical);
@@ -1161,7 +1161,7 @@ public class CraftEventFactory {
         return callEntityDamageEvent(event, damagee, cancelled);
     }
 
-    private static EntityDamageEvent callEntityDamageEvent(Block damager, BlockState damagerState, Entity damagee, DamageCause cause, org.bukkit.damage.DamageSource bukkitDamageSource, DamageCalculation calculation, boolean cancelled) {
+    private static EntityDamageEvent callEntityDamageEvent(Block damager, BlockState damagerState, Entity damagee, DamageCause cause, org.bukkit.damage.DamageSource bukkitDamageSource, DamageCalculationImpl calculation, boolean cancelled) {
         EntityDamageByBlockEvent event = new EntityDamageByBlockEvent(damager, damagerState, damagee.getBukkitEntity(), cause, bukkitDamageSource, calculation);
         return callEntityDamageEvent(event, damagee, cancelled);
     }
@@ -1179,7 +1179,7 @@ public class CraftEventFactory {
         return event;
     }
 
-    public static EntityDamageEvent handleLivingEntityDamageEvent(Entity damagee, DamageSource source, DamageCalculation calculation) {
+    public static EntityDamageEvent handleLivingEntityDamageEvent(Entity damagee, DamageSource source, DamageCalculationImpl calculation) {
         return handleEntityDamageEvent(damagee, source, calculation);
     }
 
@@ -1193,7 +1193,7 @@ public class CraftEventFactory {
     }
 
     public static EntityDamageEvent callNonLivingEntityDamageEvent(Entity entity, DamageSource source, double damage, boolean cancelled) {
-        return handleEntityDamageEvent(entity, source, new DamageCalculation(damage), cancelled);
+        return handleEntityDamageEvent(entity, source, new DamageCalculationImpl(damage), cancelled);
     }
 
     public static boolean handleNonLivingEntityDamageEvent(Entity entity, DamageSource source, double damage, boolean cancelOnZeroDamage, boolean cancelled) {

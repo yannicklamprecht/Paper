@@ -3,6 +3,8 @@ package io.papermc.paper;
 import com.destroystokyo.paper.SkinParts;
 import com.destroystokyo.paper.util.VersionFetcher;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.damage.DamageCalculation;
+import io.papermc.paper.damage.DamageStage;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.entity.poi.PoiType;
 import io.papermc.paper.persistence.PersistentDataKey;
@@ -10,6 +12,7 @@ import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.world.damagesource.CombatEntry;
 import io.papermc.paper.world.damagesource.FallLocationType;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -32,6 +35,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.SpawnCategory;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -127,4 +131,9 @@ public interface InternalAPIBridge {
     ComponentFlattener componentFlattener();
 
     <C> PersistentDataKey<C> createPersistentDataKey(Key key, PersistentDataType<?, C> type);
+
+    DamageCalculation fromLegacyDamageCalculation(Map<EntityDamageEvent.DamageModifier, Double> modifiers, Map<EntityDamageEvent.DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions, EntityDamageEvent.DamageModifier[] allModifiers, Function<EntityDamageEvent.DamageModifier, Key> keyFor);
+
+    double calculateVanillaStage(DamageStage stage, double input);
+
 }
