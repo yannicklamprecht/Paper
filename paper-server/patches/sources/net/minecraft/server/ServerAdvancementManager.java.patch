@@ -10,8 +10,8 @@
 +                return;
 +            }
 +            // Spigot end
-             validate(registries, (Holder.Reference<Advancement>)advancement);
-             builder.put(advancement.key().identifier(), new AdvancementHolder(advancement.key().identifier(), advancement.value()));
+             validate((Holder.Reference<Advancement>)advancement);
+             builder.put(advancement.key().identifier(), AdvancementHolder.wrap((Holder.Reference<Advancement>)advancement));
          });
          this.advancements = builder.buildOrThrow();
          AdvancementTree tree = new AdvancementTree();

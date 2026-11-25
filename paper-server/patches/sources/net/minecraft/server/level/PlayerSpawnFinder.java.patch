@@ -4,8 +4,8 @@
      }
  
      public static CompletableFuture<Vec3> findSpawn(final ServerLevel level, final BlockPos spawnSuggestion) {
--        if (level.getServer().getWorldData().getGameType() == GameType.ADVENTURE) {
+-        if (level.getServer().getWorldData().getGameType() == GameType.SPECTATOR) {
 +        if (level.serverLevelData.getGameType() == GameType.ADVENTURE) { // CraftBukkit
-             return CompletableFuture.completedFuture(fixupSpawnHeight(level, spawnSuggestion));
+             return CompletableFuture.completedFuture(Vec3.atBottomCenterOf(spawnSuggestion));
          }
  

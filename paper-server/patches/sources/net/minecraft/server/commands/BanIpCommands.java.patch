@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/BanIpCommands.java
 +++ b/net/minecraft/server/commands/BanIpCommands.java
-@@ -63,7 +_,7 @@
+@@ -64,7 +_,7 @@
          }
  
          for (ServerPlayer player : players) {

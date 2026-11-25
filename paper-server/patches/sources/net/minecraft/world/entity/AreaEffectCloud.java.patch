@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/AreaEffectCloud.java
 +++ b/net/minecraft/world/entity/AreaEffectCloud.java
-@@ -189,7 +_,7 @@
+@@ -193,7 +_,7 @@
  
      private void serverTick(final ServerLevel serverLevel) {
          if (this.duration != -1 && this.tickCount - this.waitTime >= this.duration) {
@@ -9,7 +9,7 @@
          } else {
              boolean isWaiting = this.isWaiting();
              boolean shouldWait = this.tickCount < this.waitTime;
-@@ -202,7 +_,7 @@
+@@ -206,7 +_,7 @@
                  if (this.radiusPerTick != 0.0F) {
                      radius += this.radiusPerTick;
                      if (radius < 0.5F) {
@@ -18,7 +18,7 @@
                          return;
                      }
  
-@@ -218,12 +_,24 @@
+@@ -222,12 +_,24 @@
                          this.potionContents.forEachEffect(allEffects::add, this.potionDurationScale);
                          List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
                          if (!entities.isEmpty()) {
@@ -43,7 +43,7 @@
                                          this.victims.put(entity, this.tickCount + this.reapplicationDelay);
  
                                          for (MobEffectInstance effect : allEffects) {
-@@ -232,14 +_,14 @@
+@@ -236,14 +_,14 @@
                                                      .value()
                                                      .applyInstantaneousEffect(serverLevel, this, this.getOwner(), entity, effect.getAmplifier(), 0.5);
                                              } else {
@@ -60,7 +60,7 @@
                                                  return;
                                              }
  
-@@ -249,7 +_,7 @@
+@@ -253,7 +_,7 @@
                                          if (this.durationOnUse != 0 && this.duration != -1) {
                                              this.duration = this.duration + this.durationOnUse;
                                              if (this.duration <= 0) {

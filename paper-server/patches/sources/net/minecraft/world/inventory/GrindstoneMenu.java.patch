@@ -60,7 +60,7 @@
 +        };
 +        // Paper end - Add missing InventoryHolders
          this.access = access;
-         this.addSlot(new Slot(this.repairSlots, 0, 49, 19) {
+         this.addSlot(new Slot(this.repairSlots, 0, 49, 19, Slot.Section.INPUT) {
              @Override
 @@ -68,7 +_,11 @@
              public void onTake(final Player player, final ItemStack carried) {

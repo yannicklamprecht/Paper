@@ -20,7 +20,7 @@
      }
  
      public static <T extends SavedData> DataResult<T> readExistingSavedData(
--        final LevelStorageSource.LevelStorageAccess access, final HolderLookup.Provider registryAccess, final SavedDataType<T> savedDataType
+-        final LevelStorageSource.LevelStorageAccess access, final HolderGetter.Provider registryAccess, final SavedDataType<T> savedDataType
 +        final LevelStorageSource.LevelStorageAccess access, final ResourceKey<Level> dimension, final HolderLookup.Provider registryAccess, final SavedDataType<T> savedDataType // Paper - pass dimension
      ) {
 -        Path dataLocation = savedDataType.id().withSuffix(".dat").resolveAgainst(access.getLevelPath(LevelResource.DATA));

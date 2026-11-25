@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/material/MaterialRuleContext.java
 +++ b/net/minecraft/world/level/levelgen/material/MaterialRuleContext.java
-@@ -57,6 +_,7 @@
+@@ -56,6 +_,7 @@
      private int waterHeight;
      private int stoneDepthBelow;
      private int stoneDepthAbove;
@@ -8,9 +8,9 @@
  
      public MaterialRuleContext(
          final MaterialSystem system,
-@@ -66,7 +_,9 @@
+@@ -64,7 +_,9 @@
+         final DensitySamplerSet densitySamplers,
          final BiomeResolver biomeGetter,
-         final VerticalAnchor.Context verticalAnchorContext,
          final @Nullable Set<Holder<Biome>> possibleBiomes
 +        , final net.minecraft.server.level.@Nullable ServerLevel serverLevel // Paper - Flat bedrock generator settings
      ) {

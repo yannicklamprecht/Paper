@@ -33,7 +33,7 @@
      }
  
      public void readWithCount(final Consumer<FriendlyByteBuf> reader) {
-@@ -437,7 +_,7 @@
+@@ -441,7 +_,7 @@
  
          try {
              NbtIo.writeAnyTag(tag, new ByteBufOutputStream(output));

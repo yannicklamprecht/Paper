@@ -49,7 +49,7 @@
          super(BlockEntityTypes.SHELF, worldPosition, blockState);
      }
 @@ -64,7 +_,9 @@
-     public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
+     public CompoundTag getUpdateTag(final HolderGetter.Provider registries) {
          try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
              TagValueOutput output = TagValueOutput.createWithContext(reporter, registries);
 +            try (io.papermc.paper.util.sanitizer.ItemObfuscationSession _ = io.papermc.paper.util.sanitizer.ItemObfuscationSession.start(io.papermc.paper.configuration.GlobalConfiguration.get().anticheat.obfuscation.items.binding.level)) { // Paper - data sanitization

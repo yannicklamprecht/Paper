@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/ProjectileDispenseBehavior.java
 +++ b/net/minecraft/core/dispenser/ProjectileDispenseBehavior.java
-@@ -27,17 +_,38 @@
+@@ -27,17 +27,38 @@
          ServerLevel level = source.level();
          Direction direction = source.state().getValue(DispenserBlock.FACING);
          Position position = this.dispenseConfig.positionFunction().getDispensePosition(source, direction);

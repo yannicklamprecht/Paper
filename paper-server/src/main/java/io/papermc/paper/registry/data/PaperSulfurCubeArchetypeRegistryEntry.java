@@ -200,7 +200,8 @@ public class PaperSulfurCubeArchetypeRegistryEntry implements SulfurCubeArchetyp
                 Optional.ofNullable(this.explosion),
                 Optional.ofNullable(this.contactDamage),
                 asConfigured(this.knockbackModifiers, "knockbackModifiers"),
-                asConfigured(this.soundSettings, "soundSettings")
+                asConfigured(this.soundSettings, "soundSettings"),
+                List.of()
             );
         }
     }

@@ -63,7 +63,7 @@
 @@ -70,7 +_,14 @@
  
      @Override
-     public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
+     public CompoundTag getUpdateTag(final HolderGetter.Provider registries) {
 -        return this.saveCustomOnly(registries);
 +        // Paper start - hide unnecessary update data
 +        // Like chests, decorated pots should not allow clients to inspect their contents without breaking them.

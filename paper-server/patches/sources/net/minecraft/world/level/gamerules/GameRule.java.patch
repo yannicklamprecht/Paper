@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/gamerules/GameRule.java
 +++ b/net/minecraft/world/level/gamerules/GameRule.java
-@@ -41,7 +_,13 @@
+@@ -42,7 +_,13 @@
          this.commandResultFunction = commandResultFunction;
          this.defaultValue = defaultValue;
          this.requiredFeatures = requiredFeatures;

@@ -55,6 +55,7 @@ public record PaperTooltipDisplay(
         @Override
         public TooltipDisplay build() {
             return new PaperTooltipDisplay(new net.minecraft.world.item.component.TooltipDisplay(
+                true,
                 this.hideTooltip,
                 this.hiddenComponents.stream().map(PaperDataComponentType::bukkitToMinecraft).collect(Collectors.toCollection(ReferenceLinkedOpenHashSet::new))
             ));

@@ -16,10 +16,10 @@
          if (!EnchantmentHelper.hasTag(destroyedWith, EnchantmentTags.PREVENTS_ICE_MELTING)) {
              if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos)) {
                  level.removeBlock(pos, false);
-@@ -69,7 +_,13 @@
-     }
+@@ -70,7 +_,13 @@
  
      protected void melt(final BlockState state, final Level level, final BlockPos pos) {
+         level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
 -        if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos)) {
 +        // Paper start - call BlockFadeEvent
 +        final boolean waterEvaporates = level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos);

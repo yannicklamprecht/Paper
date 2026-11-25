@@ -1,15 +1,15 @@
 --- a/net/minecraft/server/commands/ScheduleCommand.java
 +++ b/net/minecraft/server/commands/ScheduleCommand.java
-@@ -32,7 +_,7 @@
+@@ -34,7 +_,7 @@
      );
      private static final SimpleCommandExceptionType ERROR_MACRO = new SimpleCommandExceptionType(Component.translatableEscape("commands.schedule.macro"));
-     private static final SuggestionProvider<CommandSourceStack> SUGGEST_SCHEDULE = (c, p) -> SharedSuggestionProvider.suggestResource(
--        c.getSource().getServer().getScheduledEvents().getEventsIds().stream().map(Identifier::parse), p
+     private static final SuggestionProvider<CommandSourceStack> SUGGEST_SCHEDULE = SuggestionProviders.serverOnly(
+-        (server, var1, builder) -> SuggestionContext.suggestResource(server.getScheduledEvents().getEventsIds().stream().map(Identifier::parse), builder)
 +        c.getSource().getLevel().scheduledEvents.getEventsIds().stream().map(Identifier::parse), p // Paper - Make schedule command per-world
      );
  
      public static void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
-@@ -102,7 +_,7 @@
+@@ -101,7 +_,7 @@
  
          long tickTime = source.getLevel().getGameTime() + time;
          Identifier callbackId = callback.getFirst();
@@ -18,7 +18,7 @@
          Optional<CommandFunction<CommandSourceStack>> function = callback.getSecond().left();
          if (function.isPresent()) {
              if (function.get() instanceof MacroFunction) {
-@@ -131,7 +_,7 @@
+@@ -130,7 +_,7 @@
  
      private static int remove(final CommandSourceStack source, final Identifier id) throws CommandSyntaxException {
          String stringId = id.toString();

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/OminousItemSpawner.java
 +++ b/net/minecraft/world/entity/OminousItemSpawner.java
-@@ -78,7 +_,7 @@
+@@ -83,7 +_,7 @@
                      spawnedEntity = this.spawnProjectile(level, projectileItem, item);
                  } else {
                      spawnedEntity = new ItemEntity(level, this.getX(), this.getY(), this.getZ(), item);
@@ -9,16 +9,16 @@
                  }
  
                  level.levelEvent(LevelEvent.PARTICLES_TRIAL_SPAWNER_SPAWN_ITEM, this.blockPosition(), 1);
-@@ -92,7 +_,7 @@
-         ProjectileItem.DispenseConfig dispenseConfig = projectileItem.createDispenseConfig();
-         dispenseConfig.overrideDispenseEvent().ifPresent(event -> level.levelEvent(event, this.blockPosition(), 0));
+@@ -116,7 +_,7 @@
+                 )
+             );
          Direction direction = Direction.DOWN;
 -        Projectile projectile = Projectile.spawnProjectileUsingShoot(
 +        Projectile projectile = Projectile.spawnProjectileUsingShootDelayed( // Paper - fixes and addition to spawn reason API
              projectileItem.asProjectile(level, this.position(), item, direction),
              level,
              item,
-@@ -101,7 +_,7 @@
+@@ -125,7 +_,7 @@
              direction.getStepZ(),
              dispenseConfig.power(),
              dispenseConfig.uncertainty()

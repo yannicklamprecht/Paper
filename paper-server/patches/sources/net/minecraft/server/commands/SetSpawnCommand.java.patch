@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/SetSpawnCommand.java
 +++ b/net/minecraft/server/commands/SetSpawnCommand.java
-@@ -102,8 +_,11 @@
+@@ -103,8 +_,11 @@
          ServerPlayer.RespawnConfig respawnConfig = new ServerPlayer.RespawnConfig(respawnData, true);
  
          for (ServerPlayer target : targets) {

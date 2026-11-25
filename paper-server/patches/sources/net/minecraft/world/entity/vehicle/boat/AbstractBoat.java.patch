@@ -73,7 +73,7 @@
 +        this.lastLocation = vehicle.getLocation();
 +        // CraftBukkit end
          this.applyEffectsFromBlocks();
-         this.applyEffectsFromBlocks();
+         this.applyEffectsFromBlocks(List.of(new Entity.Movement(this.oldPosition(), this.position())), false);
          this.tickBubbleColumn();
 @@ -567,7 +_,7 @@
              this.waterLevel = this.getY(1.0);

@@ -13,7 +13,7 @@
 +        }
 +        // Paper end - Force entity dismount during teleportation
          if (!this.level().isClientSide() && this.getRemovalReason() == null) {
-             this.playSound(SoundEvents.CUSHION_GET_UP, 1.0F, 1.0F);
+             this.playSound(SoundEvents.CUSHION_GET_UP);
          }
 +        return true; // Paper
      }

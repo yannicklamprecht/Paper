@@ -8,7 +8,7 @@
                      Player player = context.getPlayer();
                      TypedEntityData<EntityType<?>> entityData = itemStack.get(DataComponents.ENTITY_DATA);
                      if (player != null && entityData != null && level.getServer().getPlayerList().isOp(player.nameAndId())) {
-@@ -178,7 +_,7 @@
+@@ -173,7 +_,7 @@
  
          offspring.snapTo(pos.x(), pos.y(), pos.z(), 0.0F, 0.0F);
          offspring.applyComponentsFromItemStack(spawnEggStack);

@@ -2,9 +2,9 @@
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
 @@ -421,12 +_,12 @@
  
-         boolean couldHeal = this.getHealth() < this.getMaxHealth();
-         if (couldHeal) {
--            this.heal(2.0F);
+         boolean canHealNaturally = this.canHealNaturally();
+         if (canHealNaturally) {
+-            this.healNaturally(2.0F);
 +            this.heal(2.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); // Paper - Add missing regain reason
          }
  

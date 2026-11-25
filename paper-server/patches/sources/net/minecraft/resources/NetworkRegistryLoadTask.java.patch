@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/NetworkRegistryLoadTask.java
 +++ b/net/minecraft/resources/NetworkRegistryLoadTask.java
-@@ -80,7 +_,7 @@
+@@ -81,7 +_,7 @@
          }
  
          return Util.sequence(elements).thenAcceptAsync(pendingRegistrations -> {

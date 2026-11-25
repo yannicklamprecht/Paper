@@ -41,6 +41,6 @@
 +                level.addFreshEntity(entity);
 +            }
 +            // Paper end - Add PlayerShearBlockEvent
-             level.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS);
              level.setBlock(pos, Blocks.CARVED_PUMPKIN.defaultBlockState().setValue(CarvedPumpkinBlock.FACING, direction), Block.UPDATE_ALL_IMMEDIATE);
              itemStack.hurtAndBreak(1, player, hand.asEquipmentSlot());

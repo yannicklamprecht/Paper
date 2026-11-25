@@ -12,6 +12,7 @@ import io.papermc.paper.registry.entry.RegistryEntryMeta;
 import java.util.function.Consumer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -29,16 +30,16 @@ public class Conversions {
         if (globalInstance == null) {
             final RegistryAccess globalAccess = CraftRegistry.getMinecraftRegistry();
             Preconditions.checkState(globalAccess != null, "Global registry access is not available");
-            globalInstance = new Conversions(new RegistryOps.HolderLookupAdapter(globalAccess));
+            globalInstance = new Conversions(globalAccess);
         }
         return globalInstance;
     }
 
-    private final RegistryOps.RegistryInfoLookup lookup;
+    private final HolderGetter.Provider lookup;
     private final RegistryOps<Object> javaOps;
     private final WrapperAwareSerializer serializer;
 
-    public Conversions(final RegistryOps.RegistryInfoLookup lookup) {
+    public Conversions(final HolderGetter.Provider lookup) {
         this.lookup = lookup;
         this.javaOps = RegistryOps.create(JavaOps.INSTANCE, lookup);
         this.serializer = new WrapperAwareSerializer(() -> this.javaOps);
@@ -52,7 +53,7 @@ public class Conversions {
             .getFirst();
     }
 
-    public RegistryOps.RegistryInfoLookup lookup() {
+    public HolderGetter.Provider lookup() {
         return this.lookup;
     }
 

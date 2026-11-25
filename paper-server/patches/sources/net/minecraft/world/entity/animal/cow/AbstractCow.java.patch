@@ -11,7 +11,7 @@
 +                return InteractionResult.PASS;
 +            }
 +            // CraftBukkit end
-             player.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);
+             player.playSound(SoundEvents.COW_MILK);
 -            ItemStack bucketOrMilkBucket = ItemUtils.createFilledResult(itemStack, player, Items.MILK_BUCKET.getDefaultInstance());
 +            ItemStack bucketOrMilkBucket = ItemUtils.createFilledResult(itemStack, player, org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(event.getItemStack())); // CraftBukkit
              player.setItemInHand(hand, bucketOrMilkBucket);

@@ -14,7 +14,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 public class NbtPathSerializer extends ScalarSerializer.Annotated<NbtPathArgument.NbtPath> {
 
     public static final NbtPathSerializer SERIALIZER = new NbtPathSerializer();
-    private static final NbtPathArgument DUMMY_ARGUMENT = new NbtPathArgument();
+    private static final NbtPathArgument DUMMY_ARGUMENT = NbtPathArgument.INSTANCE;
 
     private NbtPathSerializer() {
         super(NbtPathArgument.NbtPath.class);

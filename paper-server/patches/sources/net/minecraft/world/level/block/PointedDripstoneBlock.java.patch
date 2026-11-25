@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -92,10 +_,11 @@
-                             if (stalactiteTipPos != null) {
-                                 if (fluidInfo.sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-                                     BlockState newState = Blocks.CLAY.defaultBlockState();
--                                    level.setBlockAndUpdate(fluidInfo.pos, newState);
+@@ -83,10 +_,11 @@
+                                 if (stalactiteTipPos != null) {
+                                     if (fluidInfo.sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
+                                         BlockState newState = Blocks.CLAY.defaultBlockState();
+-                                        level.setBlockAndUpdate(fluidInfo.pos, newState);
 +                                    if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, fluidInfo.pos, newState, Block.UPDATE_ALL)) { // Paper - Call BlockFormEvent
-                                     Block.pushEntitiesUp(fluidInfo.sourceState, newState, level, fluidInfo.pos);
-                                     level.gameEvent(GameEvent.BLOCK_CHANGE, fluidInfo.pos, GameEvent.Context.of(newState));
-                                     level.levelEvent(LevelEvent.DRIPSTONE_DRIP, stalactiteTipPos, 0);
+                                         Block.pushEntitiesUp(fluidInfo.sourceState, newState, level, fluidInfo.pos);
+                                         level.gameEvent(GameEvent.BLOCK_CHANGE, fluidInfo.pos, GameEvent.Context.of(newState));
+                                         level.levelEvent(LevelEvent.DRIPSTONE_DRIP, stalactiteTipPos, 0);
 +                                    } // Paper - Call BlockFormEvent
-                                 } else {
-                                     BlockPos cauldronPos = findFillableCauldronBelowStalactiteTip(level, stalactiteTipPos, fluid);
-                                     if (cauldronPos != null) {
+                                     } else {
+                                         BlockPos cauldronPos = findFillableCauldronBelowStalactiteTip(level, stalactiteTipPos, fluid);
+                                         if (cauldronPos != null) {

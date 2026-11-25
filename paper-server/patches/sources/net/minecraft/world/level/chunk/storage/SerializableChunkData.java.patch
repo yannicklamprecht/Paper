@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -106,6 +_,7 @@
+@@ -107,6 +_,7 @@
      List<CompoundTag> entities,
      List<CompoundTag> blockEntities,
      CompoundTag structureData
@@ -8,7 +8,7 @@
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
      private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
-@@ -124,6 +_,24 @@
+@@ -125,6 +_,24 @@
      private static final String STRUCTURES_TAG = "structures";
      private static final String STRUCTURE_STARTS_TAG = "starts";
  
@@ -33,7 +33,7 @@
      public static SerializableChunkData parse(
          final LevelHeightAccessor levelHeight, final PalettedContainerFactory containerFactory, final CompoundTag chunkData
      ) {
-@@ -131,7 +_,15 @@
+@@ -132,7 +_,15 @@
              return null;
          }
  
@@ -50,7 +50,7 @@
          long lastUpdateTime = chunkData.getLongOr("LastUpdate", 0L);
          long inhabitedTime = chunkData.getLongOr("InhabitedTime", 0L);
          ChunkStatus status = chunkData.read("status", ChunkStatus.CODEC).orElse(ChunkStatus.EMPTY);
-@@ -170,7 +_,7 @@
+@@ -171,7 +_,7 @@
          ListTag sectionTags = chunkData.getListOrEmpty("sections");
          List<SerializableChunkData.SectionData> sectionData = new ArrayList<>(sectionTags.size());
          Codec<PalettedContainerRO<Holder<Biome>>> noiseBiomeCodec = containerFactory.noiseBiomeContainerCodec();
@@ -59,7 +59,7 @@
          Codec<PalettedContainer<BlockState>> blockStatesCodec = containerFactory.blockStatesContainerCodec();
          NoiseBiomeChunk.Builder noiseBiomeChunkBuilder = new NoiseBiomeChunk.Builder(levelHeight, chunkPos);
  
-@@ -188,7 +_,7 @@
+@@ -189,7 +_,7 @@
                                  .getOrThrow(SerializableChunkData.ChunkReadException::new)
                          )
                          .orElseGet(containerFactory::createForBlockStates);
@@ -68,7 +68,7 @@
                          .map(
                              container -> biomesCodec.parse(NbtOps.INSTANCE, container)
                                  .promotePartial(msg -> logErrors(chunkPos, y, msg))
-@@ -233,6 +_,7 @@
+@@ -234,6 +_,7 @@
              entities,
              blockEntities,
              structureData
@@ -76,7 +76,7 @@
          );
      }
  
-@@ -311,6 +_,12 @@
+@@ -312,6 +_,12 @@
              protoChunk.setNoiseBiomeChunk(this.noiseBiomeChunk);
          }
  
@@ -89,7 +89,7 @@
          chunk.setLightCorrect(this.lightCorrect);
          Set<Heightmap.Types> toPrime = EnumSet.copyOf(chunk.getPersistedStatus().heightmapsAfter());
  
-@@ -402,6 +_,12 @@
+@@ -403,6 +_,12 @@
              .toArray(ShortList[]::new);
          CompoundTag structureData = packStructureData(StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences());
          NoiseBiomeChunk noiseBiomeChunk = chunk instanceof ProtoChunk protoChunk ? protoChunk.getNoiseBiomeChunk() : null;
@@ -102,7 +102,7 @@
          return new SerializableChunkData(
              level.palettedContainerFactory(),
              pos,
-@@ -421,6 +_,7 @@
+@@ -422,6 +_,7 @@
              entities,
              blockEntities,
              structureData
@@ -110,7 +110,7 @@
          );
      }
  
-@@ -492,6 +_,11 @@
+@@ -493,6 +_,11 @@
          this.heightmaps.forEach((type, data) -> heightmapsTag.put(type.getSerializationKey(), new LongArrayTag(data)));
          tag.put("Heightmaps", heightmapsTag);
          tag.put("structures", this.structureData);
@@ -122,7 +122,7 @@
          return tag;
      }
  
-@@ -575,6 +_,12 @@
+@@ -576,6 +_,12 @@
              } else {
                  StructureStart start = StructureStart.load(context, startsTag.getCompoundOrEmpty(key), seed, structure);
                  if (start != null) {
@@ -135,7 +135,7 @@
                      starts.put(structure, start);
                  }
              }
-@@ -643,7 +_,7 @@
+@@ -648,7 +_,7 @@
                      if (collectFields.getResult() instanceof CompoundTag chunkTag) {
                          int version = NbtUtils.getDataVersion(chunkTag);
                          SimpleRegionStorage.injectDatafixingContext(

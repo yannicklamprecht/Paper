@@ -15,7 +15,7 @@
              ServerLevel level = (ServerLevel)attacker.level();
              attacker.setDeltaMovement(attacker.getDeltaMovement().with(Direction.Axis.Y, 0.01F));
              attacker.setIgnoreFallDamageFromCurrentImpulse(true, this.calculateImpactPosition(attacker));
-@@ -124,7 +_,7 @@
+@@ -128,7 +_,7 @@
              double knockbackPower = getKnockbackPower(attacker, nearby, direction);
              Vec3 knockbackVector = direction.normalize().scale(knockbackPower);
              if (knockbackPower > 0.0) {

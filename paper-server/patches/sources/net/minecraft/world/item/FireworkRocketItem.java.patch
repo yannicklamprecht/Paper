@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/FireworkRocketItem.java
 +++ b/net/minecraft/world/item/FireworkRocketItem.java
-@@ -37,7 +_,7 @@
+@@ -35,7 +_,7 @@
              ItemStack itemStack = context.getItemInHand();
              Vec3 clickLocation = context.getClickLocation();
              Direction direction = context.getClickedFace();
@@ -9,7 +9,7 @@
                  new FireworkRocketEntity(
                      level,
                      context.getPlayer(),
-@@ -47,9 +_,14 @@
+@@ -45,9 +_,14 @@
                      itemStack
                  ),
                  serverLevel,
@@ -26,12 +26,12 @@
          }
  
          return InteractionResult.SUCCESS;
-@@ -60,13 +_,24 @@
+@@ -58,13 +_,24 @@
          if (player.isFallFlying()) {
              ItemStack itemStack = player.getItemInHand(hand);
              if (level instanceof ServerLevel serverLevel) {
 -                if (player.dropAllLeashConnections(null)) {
--                    level.playSound(null, player, SoundEvents.LEAD_BREAK, SoundSource.NEUTRAL, 1.0F, 1.0F);
+-                    level.playSound(null, player, SoundEvents.LEAD_BREAK, SoundSource.NEUTRAL);
 +                // Paper start - PlayerElytraBoostEvent
 +                final Projectile.Delayed<FireworkRocketEntity> delayed = Projectile.spawnProjectileDelayed(new FireworkRocketEntity(level, itemStack, player), serverLevel, itemStack, f -> f.spawningEntity = player.getUUID()); // Paper - firework api - assign spawning entity uuid
 +                com.destroystokyo.paper.event.player.PlayerElytraBoostEvent event = new com.destroystokyo.paper.event.player.PlayerElytraBoostEvent((org.bukkit.entity.Player) player.getBukkitEntity(), org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(itemStack), (org.bukkit.entity.Firework) delayed.projectile().getBukkitEntity(), org.bukkit.craftbukkit.CraftEquipmentSlot.getHand(hand));

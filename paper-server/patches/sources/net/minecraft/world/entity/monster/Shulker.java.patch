@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
-@@ -291,8 +_,10 @@
+@@ -294,8 +_,10 @@
      }
  
      @Override
@@ -13,7 +13,7 @@
          if (this.level().isClientSide()) {
              this.clientOldAttachPosition = this.blockPosition();
          }
-@@ -406,6 +_,14 @@
+@@ -409,6 +_,14 @@
                      Direction attachmentDirection = this.findAttachableSurface(target);
                      if (attachmentDirection != null
                          && !this.level().getBlockState(target.relative(attachmentDirection)).is(BlockTags.SHULKER_DOES_NOT_TELEPORT_TO)) {
@@ -27,8 +27,8 @@
 +                        // CraftBukkit end
                          this.unRide();
                          this.setAttachFace(attachmentDirection);
-                         this.playSound(SoundEvents.SHULKER_TELEPORT, 1.0F, 1.0F);
-@@ -471,7 +_,12 @@
+                         this.playSound(SoundEvents.SHULKER_TELEPORT);
+@@ -474,7 +_,12 @@
                  if (baby != null) {
                      baby.setVariant(this.getVariant());
                      baby.snapTo(oldPosition);

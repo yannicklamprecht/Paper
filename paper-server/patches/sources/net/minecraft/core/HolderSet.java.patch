@@ -6,7 +6,7 @@
          private @Nullable List<Holder<T>> contents;
 +        private @Nullable Set<io.papermc.paper.registry.TypedKey<?>> typedKeys; // Paper - cache typed key set for constant contains calls
  
-         Named(final HolderOwner<T> owner, final TagKey<T> key) {
+         protected Named(final HolderOwner<T> owner, final TagKey<T> key) {
              this.owner = owner;
 @@ -172,6 +_,7 @@
  

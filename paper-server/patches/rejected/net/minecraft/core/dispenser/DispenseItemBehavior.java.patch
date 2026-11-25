@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -83,13 +_,39 @@
+@@ -83,13 +83,39 @@
                      Direction direction = source.state().getValue(DispenserBlock.FACING);
                      BlockPos pos = source.pos().relative(direction);
                      ServerLevel serverLevel = source.level();
@@ -42,7 +43,7 @@
                      }
  
                      return dispensed;
-@@ -107,9 +_,34 @@
+@@ -107,9 +133,34 @@
                          .getEntitiesOfClass(AbstractChestedHorse.class, new AABB(pos), entity -> entity.isAlive() && !entity.hasChest())) {
                          if (abstractChestedHorse.isTamed()) {
                              SlotAccess slot = abstractChestedHorse.getSlot(AbstractHorse.CHEST_SLOT_OFFSET);
@@ -79,7 +80,7 @@
                                  this.setSuccess(true);
                                  return dispensed;
                              }
-@@ -150,8 +_,45 @@
+@@ -150,8 +201,45 @@
                  DispensibleContainerItem bucket = (DispensibleContainerItem)dispensed.getItem();
                  BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
                  Level level = source.level();
@@ -126,7 +127,7 @@
                      return this.consumeWithRemainder(source, dispensed, new ItemStack(Items.BUCKET));
                  } else {
                      return this.defaultDispenseItemBehavior.dispense(source, dispensed);
-@@ -175,7 +_,7 @@
+@@ -175,7 +263,7 @@
                  BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
                  BlockState blockState = level.getBlockState(target);
                  if (blockState.getBlock() instanceof BucketPickup bucket) {
@@ -135,7 +136,7 @@
                      if (pickup.isEmpty()) {
                          return super.execute(source, dispensed);
                      }
-@@ -183,6 +_,13 @@
+@@ -183,6 +271,13 @@
                      bucket.getPickupSound().ifPresent(soundEvent -> level.playSound(null, target, soundEvent, SoundSource.BLOCKS));
                      level.gameEvent(null, GameEvent.FLUID_PICKUP, target);
                      Item targetType = pickup.getItem();
@@ -149,7 +150,7 @@
                      return this.consumeWithRemainder(source, dispensed, new ItemStack(targetType));
                  } else {
                      return super.execute(source, dispensed);
-@@ -196,11 +_,54 @@
+@@ -196,11 +291,54 @@
                  this.setSuccess(true);
                  Level level = source.level();
                  BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
@@ -204,7 +205,7 @@
  
                  return dispensed;
              }
-@@ -215,15 +_,41 @@
+@@ -215,15 +353,41 @@
                  }
  
                  BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
@@ -253,7 +254,7 @@
                  this.setSuccess(true);
                  return dispensed;
              }
-@@ -236,6 +_,13 @@
+@@ -236,6 +400,13 @@
                      Level level = source.level();
                      Direction direction = source.state().getValue(DispenserBlock.FACING);
                      BlockPos target = source.pos().relative(direction);
@@ -267,7 +268,7 @@
                      if (level.isEmptyBlock(target) && WitherSkullBlock.canSpawnMob(level, target, dispensed)) {
                          level.setBlockAndUpdate(
                              target, Blocks.WITHER_SKELETON_SKULL.defaultBlockState().setValue(SkullBlock.ROTATION, RotationSegment.convertToSegment(direction))
-@@ -248,7 +_,7 @@
+@@ -248,7 +419,7 @@
                          dispensed.shrink(1);
                          this.setSuccess(true);
                      } else {
@@ -276,7 +277,7 @@
                      }
  
                      return dispensed;
-@@ -261,6 +_,13 @@
+@@ -261,6 +432,13 @@
                  Level level = source.level();
                  BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
                  CarvedPumpkinBlock pumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
@@ -290,7 +291,7 @@
                  if (level.isEmptyBlock(target) && pumpkinBlock.canSpawnGolem(level, target)) {
                      if (!level.isClientSide()) {
                          level.setBlockAndUpdate(target, pumpkinBlock.defaultBlockState());
-@@ -270,7 +_,7 @@
+@@ -270,7 +448,7 @@
                      dispensed.shrink(1);
                      this.setSuccess(true);
                  } else {
@@ -299,7 +300,7 @@
                  }
  
                  return dispensed;
-@@ -296,6 +_,12 @@
+@@ -296,6 +474,12 @@
                      ServerLevel level = source.level();
                      BlockPos target = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
                      BlockState state = level.getBlockState(target);
@@ -312,7 +313,7 @@
                      if (state.is(BlockTags.BEEHIVES, s -> s.getBlock() instanceof BeehiveBlock) && state.getValueOrElse(BeehiveBlock.HONEY_LEVEL, 0) >= 5) {
                          ((BeehiveBlock)state.getBlock())
                              .releaseBeesAndResetHoneyLevel(level, state, target, null, BeehiveBlockEntity.BeeReleaseStatus.BEE_RELEASED);
-@@ -320,6 +_,13 @@
+@@ -320,6 +504,13 @@
                  this.setSuccess(true);
                  if (blockState.is(Blocks.RESPAWN_ANCHOR)) {
                      if (blockState.getValue(RespawnAnchorBlock.CHARGE) != 4) {
@@ -326,7 +327,7 @@
                          RespawnAnchorBlock.charge(null, level, pos, blockState);
                          dispensed.shrink(1);
                      } else {
-@@ -344,6 +_,28 @@
+@@ -344,6 +535,28 @@
                      return dispensed;
                  }
  
@@ -355,7 +356,7 @@
                  for (Armadillo armadillo : armadillos) {
                      if (armadillo.brushOffScute(null, dispensed)) {
                          dispensed.hurtAndBreak(16, level, null, item -> {});
-@@ -363,6 +_,13 @@
+@@ -363,6 +576,13 @@
                  BlockState blockState = level.getBlockState(pos);
                  Optional<BlockState> maybeWaxed = HoneycombItem.getWaxed(blockState);
                  if (maybeWaxed.isPresent()) {
@@ -369,7 +370,7 @@
                      level.setBlockAndUpdate(pos, maybeWaxed.get());
                      level.levelEvent(LevelEvent.PARTICLES_WAX_ON, pos, 0);
                      level.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
-@@ -393,6 +_,12 @@
+@@ -393,6 +613,12 @@
                          return this.defaultDispenseItemBehavior.dispense(source, dispensed);
                      }
  

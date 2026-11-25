@@ -164,18 +164,18 @@
              }
          }
  
-@@ -426,6 +_,7 @@
-         output.putBoolean("CanBreakDoors", this.canBreakDoors());
-         this.drowningTracker.addAdditionalSaveData(output);
-         this.freezingTracker.addAdditionalSaveData(output);
+@@ -431,6 +_,7 @@
+         if (this.convertsWhenFreezing()) {
+             this.freezingTracker.addAdditionalSaveData(output);
+         }
 +        output.putBoolean("Paper.ShouldBurnInDay", this.shouldBurnInDay); // Paper - Add more Zombie API
      }
  
      @Override
-@@ -435,13 +_,15 @@
-         this.setCanBreakDoors(input.getBooleanOr("CanBreakDoors", false));
-         this.drowningTracker.readAdditionalSaveData(input);
-         this.freezingTracker.readAdditionalSaveData(input);
+@@ -445,13 +_,15 @@
+         if (this.convertsWhenFreezing()) {
+             this.freezingTracker.readAdditionalSaveData(input);
+         }
 +        this.shouldBurnInDay = input.getBooleanOr("Paper.ShouldBurnInDay", true); // Paper - Add more Zombie API
      }
  
@@ -190,7 +190,7 @@
                  return perished;
              }
  
-@@ -476,7 +_,7 @@
+@@ -486,7 +_,7 @@
          groupData = super.finalizeSpawn(level, difficulty, spawnReason, groupData);
          float difficultyModifier = difficulty.getSpecialMultiplier();
          if (spawnReason != EntitySpawnReason.CONVERSION) {
@@ -199,7 +199,7 @@
          }
  
          if (groupData == null) {
-@@ -503,7 +_,7 @@
+@@ -513,7 +_,7 @@
                              chicken.finalizeSpawn(level, difficulty, EntitySpawnReason.JOCKEY, null);
                              chicken.setChickenJockey(true);
                              this.startRiding(chicken, false, false);
@@ -208,7 +208,7 @@
                          }
                      }
                  }
-@@ -529,7 +_,7 @@
+@@ -539,7 +_,7 @@
      protected void onOffspringSpawnedFromEgg(final Player spawner, final Mob offspring) {
          if (this.level() instanceof ServerLevel serverLevel) {
              float difficultyModifier = serverLevel.getCurrentDifficultyAt(offspring.blockPosition()).getSpecialMultiplier();

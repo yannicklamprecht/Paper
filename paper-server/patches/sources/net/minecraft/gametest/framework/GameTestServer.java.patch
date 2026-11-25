@@ -9,7 +9,7 @@
              serverThread,
              levelStorageSource,
              packRepository,
-@@ -175,9 +_,17 @@
+@@ -176,9 +_,17 @@
  
      @Override
      protected boolean initServer() {
@@ -29,7 +29,7 @@
          this.testBatches = this.evaluateTestsToRun(this);
          LOGGER.info("Started game test server");
          return true;
-@@ -392,6 +_,13 @@
+@@ -393,6 +_,13 @@
          return false;
      }
  
@@ -43,7 +43,7 @@
      @Override
      public boolean isSingleplayerOwner(final NameAndId nameAndId) {
          return false;
-@@ -439,5 +_,16 @@
+@@ -440,5 +_,16 @@
          @Override
          public void save() {
          }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/behavior/TransportItemsBetweenContainers.java
 +++ b/net/minecraft/world/entity/ai/behavior/TransportItemsBetweenContainers.java
-@@ -329,7 +_,10 @@
+@@ -339,7 +_,10 @@
  
          boolean isValidTarget = this.isWantedBlock(body, transportItemTarget.state)
              && !this.isPositionAlreadyVisited(visitedPositions, unreachablePositions, transportItemTarget, level)
@@ -12,7 +12,7 @@
          return isValidTarget ? transportItemTarget : null;
      }
  
-@@ -377,8 +_,17 @@
+@@ -387,8 +_,17 @@
      }
  
      private boolean targetHasNotChanged(final Level level, final TransportItemsBetweenContainers.TransportItemTarget target) {
@@ -32,7 +32,7 @@
  
      private Stream<TransportItemsBetweenContainers.TransportItemTarget> getConnectedTargets(
          final TransportItemsBetweenContainers.TransportItemTarget target, final Level level
-@@ -505,6 +_,13 @@
+@@ -515,6 +_,13 @@
      }
  
      private static boolean matchesLeavingItemsRequirement(final PathfinderMob body, final Container container) {

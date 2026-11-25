@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -149,6 +_,33 @@
+@@ -147,6 +_,33 @@
      public int serverViewDistance;
      private final WorldGenContext worldGenContext;
  
@@ -34,29 +34,24 @@
      public ChunkMap(
          final ServerLevel level,
          final LevelStorageSource.LevelStorageAccess levelStorage,
-@@ -174,13 +_,19 @@
+@@ -172,8 +_,14 @@
          this.level = level;
-         RegistryAccess registryAccess = level.registryAccess();
+         HolderLookup.Provider registryAccess = level.registryAccess();
          long levelSeed = level.getSeed();
--        if (generator instanceof NoiseBasedChunkGenerator noiseGenerator) {
+-        this.randomState = RandomState.createForGenerator(registryAccess.lookupOrThrow(Registries.NOISE), levelSeed, generator, level);
+-        this.chunkGeneratorState = generator.createState(registryAccess.lookupOrThrow(Registries.STRUCTURE_SET), this.randomState, levelSeed);
 +        // CraftBukkit start - SPIGOT-7051: It's a rigged game! Use delegate for random state creation, otherwise it is not so random.
 +        ChunkGenerator randomGenerator = generator;
 +        if (randomGenerator instanceof org.bukkit.craftbukkit.generator.CustomChunkGenerator customChunkGenerator) {
 +            randomGenerator = customChunkGenerator.getDelegate();
 +        }
-+        if (randomGenerator instanceof NoiseBasedChunkGenerator noiseGenerator) {
-+            // CraftBukkit end
-             this.randomState = RandomState.create(registryAccess.lookupOrThrow(Registries.NOISE), levelSeed, noiseGenerator.generatorSettings().value());
-         } else {
-             this.randomState = RandomState.create(registryAccess.lookupOrThrow(Registries.NOISE), levelSeed, false, 63, NoiseRouterData.none());
-         }
- 
--        this.chunkGeneratorState = generator.createState(registryAccess.lookupOrThrow(Registries.STRUCTURE_SET), this.randomState, levelSeed);
++        // CraftBukkit end
++        this.randomState = RandomState.createForGenerator(registryAccess.lookupOrThrow(Registries.NOISE), levelSeed, randomGenerator, level);
 +        this.chunkGeneratorState = generator.createState(registryAccess.lookupOrThrow(Registries.STRUCTURE_SET), this.randomState, levelSeed, level.spigotConfig); // Spigot
          this.mainThreadExecutor = mainThreadExecutor;
          ConsecutiveExecutor worldgen = new ConsecutiveExecutor(executor, "worldgen");
          this.chunkStatusListener = chunkStatusListener;
-@@ -206,6 +_,12 @@
+@@ -199,6 +_,12 @@
          this.chunksToEagerlySave.add(chunkPos.pack());
      }
  
@@ -69,7 +64,7 @@
      protected ChunkGenerator generator() {
          return this.worldGenContext.generator();
      }
-@@ -342,9 +_,9 @@
+@@ -335,9 +_,9 @@
              }
          });
          sb.append("Updating:").append(System.lineSeparator());
@@ -81,7 +76,7 @@
          CrashReport report = CrashReport.forThrowable(exception, "Chunk loading");
          CrashReportCategory category = report.addCategory("Chunk loading");
          category.setDetail("Details", details);
-@@ -380,6 +_,7 @@
+@@ -373,6 +_,7 @@
                  chunk.setTicketLevel(level);
              } else {
                  chunk = new ChunkHolder(ChunkPos.unpack(node), level, this.level, this.lightEngine, this::onLevelChange, this);
@@ -89,7 +84,7 @@
              }
  
              this.updatingChunkMap.put(node, chunk);
-@@ -407,8 +_,8 @@
+@@ -400,8 +_,8 @@
  
      protected void saveAllChunks(final boolean flushStorage) {
          if (flushStorage) {
@@ -100,7 +95,7 @@
                  .stream()
                  .filter(ChunkHolder::wasAccessibleSinceLastSave)
                  .peek(ChunkHolder::refreshAccessibility)
-@@ -434,7 +_,7 @@
+@@ -427,7 +_,7 @@
              this.nextChunkSaveTime.clear();
              long now = Util.getMillis();
  
@@ -109,7 +104,7 @@
                  this.saveChunkIfNeeded(chunk, now);
              }
          }
-@@ -455,6 +_,7 @@
+@@ -448,6 +_,7 @@
      public boolean hasWork() {
          return this.lightEngine.hasLightWork()
              || !this.pendingUnloads.isEmpty()
@@ -117,7 +112,7 @@
              || !this.updatingChunkMap.isEmpty()
              || this.poiManager.hasWork()
              || !this.toDrop.isEmpty()
-@@ -513,7 +_,11 @@
+@@ -506,7 +_,11 @@
                  this.scheduleUnload(pos, chunkHolder);
              } else {
                  ChunkAccess chunk = chunkHolder.getLatestChunk();
@@ -130,7 +125,7 @@
                      if (chunk instanceof LevelChunk levelChunk) {
                          levelChunk.setLoaded(false);
                      }
-@@ -526,7 +_,9 @@
+@@ -519,7 +_,9 @@
                      this.lightEngine.updateChunkStatus(chunk.getPos());
                      this.lightEngine.tryScheduleUpdate();
                      this.nextChunkSaveTime.remove(chunk.getPos().pack());
@@ -141,7 +136,7 @@
              }
          }, this.unloadQueue::add).whenComplete((ignored, throwable) -> {
              if (throwable != null) {
-@@ -835,7 +_,7 @@
+@@ -832,7 +_,7 @@
      }
  
      public int size() {
@@ -150,7 +145,7 @@
      }
  
      public net.minecraft.server.level.DistanceManager getDistanceManager() {
-@@ -862,10 +_,10 @@
+@@ -859,10 +_,10 @@
              .addColumn("fluid_ticks")
              .build(output);
  
@@ -165,7 +160,7 @@
              Optional<ChunkAccess> chunk = Optional.ofNullable(holder.getLatestChunk());
              Optional<LevelChunk> fullChunk = chunk.flatMap(
                  chunkAccess -> chunkAccess instanceof LevelChunk levelChunk ? Optional.of(levelChunk) : Optional.empty()
-@@ -914,14 +_,15 @@
+@@ -911,14 +_,15 @@
          return this.upgradeChunkTag(
              tag,
              -1,
@@ -184,7 +179,7 @@
          generatorIdentifier.ifPresent(identifier -> contextTag.putString("generator", identifier.toString()));
          return contextTag;
      }
-@@ -933,7 +_,7 @@
+@@ -930,7 +_,7 @@
              ChunkHolder holder = this.visibleChunkMap.get(spawnCandidateChunks.nextLong());
              if (holder != null) {
                  LevelChunk chunk = holder.getTickingChunk();
@@ -193,7 +188,7 @@
                      output.add(chunk);
                  }
              }
-@@ -953,8 +_,14 @@
+@@ -950,8 +_,14 @@
      }
  
      public boolean anyPlayerCloseEnoughForSpawning(final ChunkPos pos) {
@@ -209,7 +204,7 @@
      }
  
      public boolean anyPlayerCloseEnoughTo(final BlockPos pos, final int maxDistance) {
-@@ -970,8 +_,24 @@
+@@ -967,8 +_,24 @@
      }
  
      private boolean anyPlayerCloseEnoughForSpawningInternal(final ChunkPos pos) {
@@ -235,7 +230,7 @@
                  return true;
              }
          }
-@@ -988,7 +_,7 @@
+@@ -985,7 +_,7 @@
          Builder<ServerPlayer> builder = ImmutableList.builder();
  
          for (ServerPlayer player : this.playerMap.getAllPlayers()) {
@@ -244,7 +239,7 @@
                  builder.add(player);
              }
          }
-@@ -996,13 +_,13 @@
+@@ -993,13 +_,13 @@
          return builder.build();
      }
  
@@ -260,7 +255,7 @@
      }
  
      private boolean playerIsCloseEnoughTo(final ServerPlayer player, final Vec3 pos, final int maxDistance) {
-@@ -1134,9 +_,19 @@
+@@ -1131,9 +_,19 @@
      }
  
      protected void addEntity(final Entity entity) {
@@ -280,7 +275,7 @@
              if (range != 0) {
                  if (this.entityMap.containsKey(entity.getId())) {
                      throw (IllegalStateException)DevUtil.pauseInIde(new IllegalStateException("Entity is already tracked!"));
-@@ -1160,6 +_,7 @@
+@@ -1157,6 +_,7 @@
      }
  
      protected void removeEntity(final Entity entity) {
@@ -288,10 +283,10 @@
          if (entity instanceof ServerPlayer player) {
              this.updatePlayerStatus(player, false);
  
-@@ -1316,10 +_,10 @@
-         private final Entity entity;
+@@ -1317,10 +_,10 @@
          private final int range;
          private SectionPos lastSectionPos;
+         private boolean sectionPosChanged;
 -        public final Set<ServerPlayerConnection> seenBy = Sets.newIdentityHashSet();
 +        public final Set<ServerPlayerConnection> seenBy = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(); // Paper - Perf: optimise map impl
  
@@ -301,7 +296,7 @@
              this.entity = entity;
              this.range = range;
              this.lastSectionPos = SectionPos.of(entity);
-@@ -1366,6 +_,7 @@
+@@ -1367,6 +_,7 @@
          }
  
          public void removePlayer(final ServerPlayer player) {
@@ -309,7 +304,7 @@
              if (this.seenBy.remove(player.connection)) {
                  this.serverEntity.removePairing(player);
                  if (this.seenBy.isEmpty()) {
-@@ -1375,23 +_,47 @@
+@@ -1376,23 +_,47 @@
          }
  
          public void updatePlayer(final ServerPlayer player) {
@@ -360,7 +355,7 @@
                      }
                  } else {
                      this.removePlayer(player);
-@@ -1408,6 +_,7 @@
+@@ -1409,6 +_,7 @@
  
              for (Entity passenger : this.entity.getIndirectPassengers()) {
                  int passengerRange = passenger.getType().clientTrackingRange() * 16;

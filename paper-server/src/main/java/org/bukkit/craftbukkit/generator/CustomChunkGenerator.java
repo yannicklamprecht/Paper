@@ -124,7 +124,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<ChunkAccess> createStructures(RegistryAccess registryAccess, ChunkGeneratorStructureState state, StructureManager structureManager, ChunkAccess centerChunk, StructureTemplateManager structureTemplateManager, ResourceKey<Level> level) {
+    public CompletableFuture<ChunkAccess> createStructures(net.minecraft.core.HolderGetter.Provider registryAccess, ChunkGeneratorStructureState state, StructureManager structureManager, ChunkAccess centerChunk, StructureTemplateManager structureTemplateManager, ResourceKey<Level> level) {
         WorldgenRandom random = CustomChunkGenerator.getSeededRandom();
         int x = centerChunk.getPos().x();
         int z = centerChunk.getPos().z();

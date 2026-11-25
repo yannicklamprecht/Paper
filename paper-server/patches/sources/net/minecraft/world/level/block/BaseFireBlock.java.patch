@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -133,12 +_,13 @@
+@@ -131,12 +_,13 @@
          final InsideBlockEffectApplier effectApplier,
          final boolean isPrecise
      ) {
@@ -15,7 +15,7 @@
          if (!entity.fireImmune()) {
              if (entity.getRemainingFireTicks() < 0) {
                  entity.setRemainingFireTicks(entity.getRemainingFireTicks() + 1);
-@@ -148,30 +_,41 @@
+@@ -146,30 +_,41 @@
              }
  
              if (entity.getRemainingFireTicks() >= 0) {
@@ -61,8 +61,8 @@
 +        return level.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.OVERWORLD || level.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.NETHER; // CraftBukkit - getTypeKey()
      }
  
-     @Override
-@@ -211,4 +_,12 @@
+     public static boolean canBePlacedAt(final Level level, final BlockPos pos, final Direction forwardDirection) {
+@@ -196,4 +_,12 @@
  
          return false;
      }

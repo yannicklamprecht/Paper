@@ -1,14 +1,13 @@
 --- a/net/minecraft/core/registries/BuiltinRegistryBuilder.java
 +++ b/net/minecraft/core/registries/BuiltinRegistryBuilder.java
-@@ -53,6 +_,7 @@
+@@ -49,18 +_,37 @@
          final ResourceKey<? extends Registry<T>> name, final R registry, final BuiltinRegistryBuilder.RegistryBootstrap<T> loader
      ) {
          Bootstrap.checkBootstrapCalled(() -> "registry " + name.identifier());
 +        io.papermc.paper.registry.PaperRegistryAccess.instance().registerRegistry(registry); // Paper - initialize API registry
-         Identifier key = name.identifier();
-         this.loaders.put(key, () -> loader.run(registry));
+         this.loaders.add(() -> loader.run(registry));
          this.registry.register((ResourceKey)name, registry, RegistrationInfo.BUILT_IN);
-@@ -60,16 +_,34 @@
+         return registry;
      }
  
      public void bootStrap() {
@@ -35,15 +34,11 @@
 +            throw new RuntimeException(ex);
 +        }
 +        // Paper end - class-load org.bukkit.Registry
-         this.loaders.forEach((key, value) -> {
-             if (value.get() == null) {
-                 LOGGER.error("Unable to bootstrap registry '{}'", key);
-             }
 +            io.papermc.paper.registry.PaperRegistryAccess.instance().lockReferenceHolders(ResourceKey.createRegistryKey(key)); // Paper - lock reference holder creation
-         });
+         this.loaders.forEach(Runnable::run);
      }
  
-@@ -78,6 +_,7 @@
+@@ -69,6 +_,7 @@
  
          for (Registry<?> registry : this.registry) {
              bindBootstrappedTagsToEmpty(registry);

@@ -156,7 +156,7 @@
 +                */ // CraftBukkit end
              }
  
-             level.playSound(null, blockPos, SoundEvents.BEEHIVE_EXIT, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.playSound(null, blockPos, SoundEvents.BEEHIVE_EXIT, SoundSource.BLOCKS);
              level.gameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Context.of(entity, level.getBlockState(blockPos)));
 -            return level.addFreshEntity(entity);
 +            return true; // CraftBukkit - moved up

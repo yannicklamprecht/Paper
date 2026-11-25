@@ -72,7 +72,7 @@
 +            if (blockState == null || blockState.isAir()) { // Paper - Don't allow digging into unloaded chunks
                  this.hasDelayedDestroy = false;
              } else {
--                float destroyProgress = this.incrementDestroyProgress(blockState, this.delayedDestroyPos, this.delayedTickStart);
+-                float destroyProgress = this.incrementDestroyProgress(blockState, this.delayedDestroyPos, this.gameTicks - this.delayedTickStart);
 +                float destroyProgress = this.incrementDestroyProgress(blockState, this.delayedDestroyPos, this.gameTicks - this.delayedTickStart); // Paper - fix delayed destroy using the start tick as ticks spent destroying
                  if (destroyProgress >= 1.0F) {
                      this.hasDelayedDestroy = false;

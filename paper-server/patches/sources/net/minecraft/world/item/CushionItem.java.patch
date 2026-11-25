@@ -11,4 +11,4 @@
 +            // Paper end
              serverLevel.addFreshEntity(cushion);
              cushion.destroyIfInFire(serverLevel);
-             level.playSound(null, cushion.getX(), cushion.getY(), cushion.getZ(), SoundEvents.CUSHION_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
+             if (!cushion.isSilent()) {

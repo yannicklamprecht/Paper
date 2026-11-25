@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/HolderLookup.java
 +++ b/net/minecraft/core/HolderLookup.java
-@@ -68,6 +_,8 @@
+@@ -73,6 +_,8 @@
      }
  
      interface RegistryLookup<T> extends HolderLookup<T> {
@@ -9,7 +9,7 @@
          ResourceKey<? extends Registry<? extends T>> key();
  
          Lifecycle registryLifecycle();
-@@ -78,6 +_,13 @@
+@@ -83,6 +_,13 @@
  
          default HolderLookup.RegistryLookup<T> filterElements(final Predicate<T> filter) {
              return new HolderLookup.RegistryLookup.Delegate<T>() {
@@ -23,7 +23,7 @@
                  @Override
                  public HolderLookup.RegistryLookup<T> parent() {
                      return RegistryLookup.this;
-@@ -97,6 +_,13 @@
+@@ -102,6 +_,13 @@
  
          interface Delegate<T> extends HolderLookup.RegistryLookup<T> {
              HolderLookup.RegistryLookup<T> parent();

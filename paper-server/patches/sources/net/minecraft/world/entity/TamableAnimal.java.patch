@@ -13,7 +13,7 @@
      protected void feed(final Player player, final InteractionHand hand, final ItemStack itemStack, final float healingFactor, final float defaultHeal) {
          FoodProperties foodProperties = itemStack.get(DataComponents.FOOD);
          this.usePlayerItem(player, hand, itemStack);
--        this.heal(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal);
+-        this.healNaturally(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal);
 +        this.heal(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); // Paper - Add missing regain reason
          this.playEatingSound();
      }

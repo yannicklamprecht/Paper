@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
-@@ -11,24 +_,37 @@
+@@ -11,24 +11,37 @@
  
  public class DefaultDispenseItemBehavior implements DispenseItemBehavior {
      private static final int DEFAULT_ACCURACY = 6;
@@ -41,7 +42,7 @@
          double spawnX = position.x();
          double spawnY = position.y();
          double spawnZ = position.z();
-@@ -46,7 +_,43 @@
+@@ -46,7 +59,43 @@
              random.triangle(0.2, 0.0172275 * accuracy),
              random.triangle(direction.getStepZ() * pow, 0.0172275 * accuracy)
          );

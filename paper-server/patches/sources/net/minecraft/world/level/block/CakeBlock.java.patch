@@ -11,7 +11,7 @@
 +            }
 +            // Paper end - call change block event
              itemStack.consume(1, player);
-             level.playSound(null, pos, SoundEvents.CAKE_ADD_CANDLE, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.playSound(null, pos, SoundEvents.CAKE_ADD_CANDLE, SoundSource.BLOCKS);
              level.setBlockAndUpdate(pos, CandleCakeBlock.byCandle(candleBlock));
 @@ -89,9 +_,28 @@
              return InteractionResult.PASS;

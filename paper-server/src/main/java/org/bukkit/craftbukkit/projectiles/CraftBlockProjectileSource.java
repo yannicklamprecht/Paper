@@ -85,9 +85,8 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
 
         ItemStack itemstack = new ItemStack(item);
         ProjectileItem projectileItem = (ProjectileItem) item;
-        ProjectileItem.DispenseConfig dispenseConfig = projectileItem.createDispenseConfig();
-
-        Position position = dispenseConfig.positionFunction().getDispensePosition(source, direction);
+        net.minecraft.core.dispenser.ShootProjectileDispenseBehavior dispenseConfig = net.minecraft.core.dispenser.ShootProjectileDispenseBehavior.DEFAULT;
+        Position position = net.minecraft.world.level.block.DispenserBlock.getDispensePosition(source, dispenseConfig.scale(), dispenseConfig.offset());
         net.minecraft.world.entity.projectile.Projectile launch = projectileItem.asProjectile(level, position, itemstack, direction);
         launch.projectileSource = this;
         projectileItem.shoot(launch, direction.getStepX(), direction.getStepY(), direction.getStepZ(), dispenseConfig.power(), dispenseConfig.uncertainty());

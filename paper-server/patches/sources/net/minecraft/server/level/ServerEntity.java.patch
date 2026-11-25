@@ -65,7 +65,7 @@
                      boolean shouldSendPosition = positionChanged || this.tickCount % 60 == 0;
                      packet = this.createMovePacket(position, yRotn, xRotn, shouldSendPosition, shouldSendRotation);
                  }
-@@ -212,6 +_,25 @@
+@@ -216,6 +_,25 @@
  
          this.tickCount++;
          if (this.entity.syncVelocity) {
@@ -91,7 +91,7 @@
              this.entity.syncVelocity = false;
              this.synchronizer.sendToTrackingPlayersAndSelf(new ClientboundSetEntityMotionPacket(this.entity));
          }
-@@ -308,7 +_,10 @@
+@@ -312,7 +_,10 @@
      public void sendPairingData(final ServerPlayer player, final Consumer<Packet<ClientGamePacketListener>> broadcast) {
          this.entity.updateDataBeforeSync();
          if (this.entity.isRemoved()) {
@@ -103,7 +103,7 @@
          }
  
          Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket(this);
-@@ -320,6 +_,11 @@
+@@ -324,6 +_,11 @@
          if (this.entity instanceof LivingEntity livingEntity) {
              Collection<AttributeInstance> attributes = livingEntity.getAttributes().getSyncableAttributes();
              if (!attributes.isEmpty()) {
@@ -115,7 +115,7 @@
                  broadcast.accept(new ClientboundUpdateAttributesPacket(this.entity.getId(), attributes));
              }
          }
-@@ -335,8 +_,9 @@
+@@ -339,8 +_,9 @@
              }
  
              if (!slots.isEmpty()) {
@@ -126,7 +126,7 @@
          }
  
          if (!this.entity.getPassengers().isEmpty()) {
-@@ -383,6 +_,11 @@
+@@ -387,6 +_,11 @@
          if (this.entity instanceof LivingEntity livingEntity) {
              Set<AttributeInstance> attributes = livingEntity.getAttributes().getAttributesToSync();
              if (!attributes.isEmpty()) {

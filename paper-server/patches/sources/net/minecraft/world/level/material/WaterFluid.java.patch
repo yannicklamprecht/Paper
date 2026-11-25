@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/WaterFluid.java
 +++ b/net/minecraft/world/level/material/WaterFluid.java
-@@ -92,4 +_,9 @@
+@@ -87,4 +_,9 @@
      public boolean canBeReplacedWith(final FluidState state, final BlockGetter level, final BlockPos pos, final FluidState other, final Direction direction) {
          return direction == Direction.DOWN && !other.is(FluidTags.WATER);
      }

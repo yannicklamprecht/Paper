@@ -25,7 +25,7 @@
 @@ -525,19 +_,20 @@
              thrownItem.setPickUpDelay(40);
              thrownItem.setThrower(this);
-             this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
+             this.playSound(SoundEvents.FOX_SPIT);
 -            this.level().addFreshEntity(thrownItem);
 +            this.spawnAtLocation((ServerLevel) this.level(), thrownItem); // Paper - Call EntityDropItemEvent
          }
@@ -55,7 +55,7 @@
              this.ticksSinceEaten = 0;
          }
      }
-@@ -639,12 +_,12 @@
+@@ -640,12 +_,12 @@
      }
  
      @Override
@@ -70,7 +70,7 @@
      }
  
      private void wakeUp() {
-@@ -706,7 +_,13 @@
+@@ -707,7 +_,13 @@
      }
  
      @Override
@@ -85,7 +85,7 @@
          ItemStack itemStack = this.getItemBySlot(EquipmentSlot.MAINHAND);
          if (!itemStack.isEmpty()) {
              this.spawnAtLocation(level, itemStack);
-@@ -886,6 +_,19 @@
+@@ -887,6 +_,19 @@
                      offspring.addTrustedEntity(partnerLoveCause);
                  }
  
@@ -105,7 +105,7 @@
                  if (loveCause != null) {
                      loveCause.awardStat(Stats.ANIMALS_BRED);
                      CriteriaTriggers.BRED_ANIMALS.trigger(loveCause, this.animal, this.partner, offspring);
-@@ -895,14 +_,12 @@
+@@ -896,14 +_,12 @@
                  this.partner.setAge(6000);
                  this.animal.resetLove();
                  this.partner.resetLove();
@@ -123,7 +123,7 @@
                          );
                  }
              }
-@@ -966,6 +_,7 @@
+@@ -967,6 +_,7 @@
          private void pickSweetBerries(final BlockState state) {
              int age = state.getValue(SweetBerryBushBlock.AGE);
              state.setValue(SweetBerryBushBlock.AGE, 1);

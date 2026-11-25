@@ -82,7 +82,7 @@
 +            return false;
 +        }
 +        // CraftBukkit end
-         this.playSound(SoundEvents.SHULKER_BULLET_HURT, 1.0F, 1.0F);
+         this.playSound(SoundEvents.SHULKER_BULLET_HURT);
          level.sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
 -        this.destroy();
 +        this.destroy(org.bukkit.event.entity.EntityRemoveEvent.Cause.DEATH); // CraftBukkit - add Bukkit remove cause

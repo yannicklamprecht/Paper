@@ -8,7 +8,7 @@ import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.minecraft.Optionull;
 import net.minecraft.util.Util;
-import net.minecraft.world.damagesource.FallLocation;
+import net.minecraft.world.damagesource.FellFromLocation;
 import org.bukkit.entity.LivingEntity;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -75,7 +75,7 @@ public record PaperCombatTrackerWrapper(
 
     @Override
     public FallLocationType calculateFallLocationType() {
-        final FallLocation fallLocation = FallLocation.getCurrentFallLocation(this.handle().mob);
+        final FellFromLocation fallLocation = FellFromLocation.getCurrentFellFromLocation(this.handle().mob);
         return Optionull.map(fallLocation, PaperCombatTrackerWrapper::minecraftToPaper);
     }
 
@@ -84,28 +84,28 @@ public record PaperCombatTrackerWrapper(
         return this.handle.mob.tickCount - this.handle.lastDamageTime;
     }
 
-    private static final BiMap<FallLocation, FallLocationType> FALL_LOCATION_MAPPING = Util.make(() -> {
-        final BiMap<FallLocation, FallLocationType> map = HashBiMap.create(8);
-        map.put(FallLocation.GENERIC, FallLocationType.GENERIC);
-        map.put(FallLocation.LADDER, FallLocationType.LADDER);
-        map.put(FallLocation.VINES, FallLocationType.VINES);
-        map.put(FallLocation.WEEPING_VINES, FallLocationType.WEEPING_VINES);
-        map.put(FallLocation.TWISTING_VINES, FallLocationType.TWISTING_VINES);
-        map.put(FallLocation.SCAFFOLDING, FallLocationType.SCAFFOLDING);
-        map.put(FallLocation.OTHER_CLIMBABLE, FallLocationType.OTHER_CLIMBABLE);
-        map.put(FallLocation.WATER, FallLocationType.WATER);
+    private static final BiMap<FellFromLocation, FallLocationType> FALL_LOCATION_MAPPING = Util.make(() -> {
+        final BiMap<FellFromLocation, FallLocationType> map = HashBiMap.create(8);
+        map.put(FellFromLocation.GENERIC, FallLocationType.GENERIC);
+        map.put(FellFromLocation.LADDER, FallLocationType.LADDER);
+        map.put(FellFromLocation.VINES, FallLocationType.VINES);
+        map.put(FellFromLocation.WEEPING_VINES, FallLocationType.WEEPING_VINES);
+        map.put(FellFromLocation.TWISTING_VINES, FallLocationType.TWISTING_VINES);
+        map.put(FellFromLocation.SCAFFOLDING, FallLocationType.SCAFFOLDING);
+        map.put(FellFromLocation.OTHER_CLIMBABLE, FallLocationType.OTHER_CLIMBABLE);
+        map.put(FellFromLocation.WATER, FallLocationType.WATER);
         return map;
     });
 
-    public static FallLocation paperToMinecraft(final FallLocationType fallLocationType) {
-        final FallLocation fallLocation = FALL_LOCATION_MAPPING.inverse().get(fallLocationType);
+    public static FellFromLocation paperToMinecraft(final FallLocationType fallLocationType) {
+        final FellFromLocation fallLocation = FALL_LOCATION_MAPPING.inverse().get(fallLocationType);
         if (fallLocation == null) {
             throw new IllegalArgumentException("Unknown fall location type: " + fallLocationType.id());
         }
         return fallLocation;
     }
 
-    public static FallLocationType minecraftToPaper(final FallLocation fallLocation) {
+    public static FallLocationType minecraftToPaper(final FellFromLocation fallLocation) {
         final FallLocationType fallLocationType = FALL_LOCATION_MAPPING.get(fallLocation);
         if (fallLocationType == null) {
             throw new IllegalArgumentException("Unknown fall location: " + fallLocation.id());

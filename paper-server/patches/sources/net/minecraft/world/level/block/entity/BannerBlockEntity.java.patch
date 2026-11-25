@@ -25,7 +25,7 @@
 +    // Paper start - always send patterns to client
 +    ThreadLocal<Boolean> serialisingForNetwork = ThreadLocal.withInitial(() -> Boolean.FALSE);
      @Override
-     public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
+     public CompoundTag getUpdateTag(final HolderGetter.Provider registries) {
 +        final Boolean wasSerialisingForNetwork = serialisingForNetwork.get();
 +        try {
 +            serialisingForNetwork.set(Boolean.TRUE);

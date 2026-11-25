@@ -37,7 +37,7 @@
 +    @Override
 +    public void shear(final ServerLevel level, final SoundSource soundSource, final ItemStack tool, final java.util.List<ItemStack> drops) {
 +        // Paper end - custom shear drops
-         level.playSound(null, this, SoundEvents.BOGGED_SHEAR, soundSource, 1.0F, 1.0F);
+         level.playSound(null, this, SoundEvents.BOGGED_SHEAR, soundSource);
 -        this.spawnShearedMushrooms(level, tool);
 +        this.spawnShearedMushrooms(level, tool, drops); // Paper - custom shear drops
          this.setSheared(true);

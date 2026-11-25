@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -159,15 +_,22 @@
+@@ -161,15 +_,22 @@
      }
  
      protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
@@ -24,7 +24,7 @@
              Block block = state.getBlock();
              if (block.dropFromExplosion(explosion)) {
                  BlockEntity blockEntity = state.hasBlockEntity() ? level.getBlockEntity(pos) : null;
-@@ -176,8 +_,10 @@
+@@ -178,8 +_,10 @@
                      .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
                      .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity)
                      .withOptionalParameter(LootContextParams.THIS_ENTITY, explosion.getDirectSourceEntity());
@@ -37,7 +37,7 @@
                  }
  
                  boolean doDropExperienceHack = explosion.getIndirectSourceEntity() instanceof Player;
-@@ -258,7 +_,7 @@
+@@ -260,7 +_,7 @@
      }
  
      protected boolean canBeReplaced(final BlockState state, final BlockPlaceContext context) {
@@ -46,7 +46,7 @@
      }
  
      protected boolean canBeReplaced(final BlockState state, final Fluid fluid) {
-@@ -488,6 +_,15 @@
+@@ -494,6 +_,15 @@
              this.replaceable = properties.replaceable;
          }
  
@@ -62,7 +62,7 @@
          private boolean calculateSolid() {
              if (this.owner.properties.forceSolidOn) {
                  return SolidDebugger.logAndGet(this.typeHolder(), SolidDebugger.Reason.FORCE_SOLID_ON);
-@@ -512,12 +_,14 @@
+@@ -518,12 +_,14 @@
              }
          }
  
@@ -77,7 +77,7 @@
  
              this.legacySolid = this.calculateSolid();
              this.occlusionShape = this.canOcclude ? this.owner.getOcclusionShape(this.asState()) : Shapes.empty();
-@@ -552,6 +_,12 @@
+@@ -558,6 +_,12 @@
              return this.legacySolid;
          }
  
@@ -90,7 +90,7 @@
          public boolean isValidSpawn(final BlockGetter level, final BlockPos pos, final EntityType<?> type) {
              return this.getBlock().properties.isValidSpawn.test(this.asState(), level, pos, type);
          }
-@@ -572,19 +_,19 @@
+@@ -578,19 +_,19 @@
              return this.occlusionShape;
          }
  
@@ -115,7 +115,7 @@
              return this.isAir;
          }
  
-@@ -598,7 +_,7 @@
+@@ -604,7 +_,7 @@
          }
  
          public MapColor getMapColor(final BlockGetter level, final BlockPos pos) {
@@ -124,7 +124,7 @@
          }
  
          public BlockState rotate(final Rotation rotation) {
-@@ -662,14 +_,14 @@
+@@ -668,14 +_,14 @@
          }
  
          public PushReaction getPistonPushReaction() {
@@ -141,7 +141,7 @@
              return this.canOcclude;
          }
  
-@@ -760,7 +_,13 @@
+@@ -766,7 +_,13 @@
          }
  
          public void onPlace(final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
@@ -156,7 +156,7 @@
          }
  
          public void affectNeighborsAfterRemoval(final ServerLevel level, final BlockPos pos, final boolean movedByPiston) {
-@@ -789,6 +_,7 @@
+@@ -799,6 +_,7 @@
              final ServerLevel level, final BlockPos pos, final ItemStack tool, final boolean dropExperience, final @Nullable Entity breaker
          ) {
              this.getBlock().spawnAfterBreak(this.asState(), level, pos, tool, dropExperience, breaker);
@@ -164,7 +164,7 @@
          }
  
          public List<ItemStack> getDrops(final LootParams.Builder params) {
-@@ -881,11 +_,11 @@
+@@ -891,11 +_,11 @@
              return this.getBlock() instanceof EntityBlock ? ((EntityBlock)this.getBlock()).getTicker(level, this.asState(), type) : null;
          }
  

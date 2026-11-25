@@ -21,8 +21,8 @@
  
      public void recordDamage(final DamageSource source, final float damage) {
          this.recheckStatus();
-         FallLocation fallLocation = FallLocation.getCurrentFallLocation(this.mob);
-         CombatEntry entry = new CombatEntry(source, damage, fallLocation, (float)this.mob.fallDistance);
+         FellFromLocation fellFromLocation = FellFromLocation.getCurrentFellFromLocation(this.mob);
+         CombatEntry entry = new CombatEntry(source, damage, fellFromLocation, (float)this.mob.fallDistance);
 +        // Paper start - Combat tracker API
 +        this.recordDamageAndCheckCombatState(entry);
 +    }

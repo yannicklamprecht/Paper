@@ -1,0 +1,14 @@
+++++ REJECTED HUNK: 1
+@@ -113,6 +113,11 @@
+     }
+ 
+     public static <S> boolean allowSelectors(final S source) {
++        // Paper start - Fix EntityArgument permissions
++        if (source instanceof net.minecraft.commands.CommandSourceStack stack) {
++            return stack.bypassSelectorPermissions || stack.hasPermission(Permissions.COMMANDS_ENTITY_SELECTORS, "minecraft.command.selector");
++        }
++        // Paper end - Fix EntityArgument permissions
+         return source instanceof PermissionSetSupplier sender && sender.permissions().hasPermission(Permissions.COMMANDS_ENTITY_SELECTORS);
+     }
+ 
+++++ END HUNK

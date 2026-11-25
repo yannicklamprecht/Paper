@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/BanPlayerCommands.java
 +++ b/net/minecraft/server/commands/BanPlayerCommands.java
-@@ -47,7 +_,7 @@
+@@ -48,7 +_,7 @@
                  source.sendSuccess(() -> Component.translatable("commands.ban.success", Component.literal(player.name()), entry.getReasonMessage()), true);
                  ServerPlayer online = source.getServer().getPlayerList().getPlayer(player.id());
                  if (online != null) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -66,8 +_,10 @@
+@@ -67,8 +_,10 @@
      private static final Logger LOGGER = LogUtils.getLogger();
  
      @SuppressForbidden(reason = "System.out needed before bootstrap")
@@ -12,7 +12,7 @@
          OptionParser parser = new OptionParser();
          OptionSpec<Void> nogui = parser.accepts("nogui");
          OptionSpec<Void> initSettings = parser.accepts("initSettings", "Initializes 'server.properties' and 'eula.txt', then quits");
-@@ -92,43 +_,99 @@
+@@ -93,43 +_,99 @@
                  parser.printHelpOn(System.err);
                  return;
              }
@@ -120,7 +120,7 @@
              LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(universePath.toPath());
              LevelStorageSource.LevelStorageAccess access = levelStorageSource.validateAndCreateAccess(levelName);
              Dynamic<?> levelDataTag;
-@@ -156,13 +_,20 @@
+@@ -157,13 +_,20 @@
              } else {
                  levelDataTag = null;
              }
@@ -142,7 +142,7 @@
  
              WorldStem worldStem;
              try {
-@@ -171,17 +_,31 @@
+@@ -172,17 +_,31 @@
                          executor -> WorldLoader.load(
                              worldLoadConfig,
                              context -> {
@@ -176,7 +176,7 @@
                                  }
                              },
                              WorldStem::new,
-@@ -197,6 +_,7 @@
+@@ -198,6 +_,7 @@
                  return;
              }
  
@@ -184,7 +184,7 @@
              RegistryAccess.Frozen registryHolder = worldStem.registries().compositeAccess();
              WorldData data = worldStem.worldDataAndGenSettings().data();
              boolean recreateRegionFilesValue = options.has(recreateRegionFiles);
-@@ -205,9 +_,12 @@
+@@ -206,9 +_,12 @@
              }
  
              access.saveDataTag(data);
@@ -197,7 +197,7 @@
                          thread,
                          access,
                          packRepository,
-@@ -220,17 +_,35 @@
+@@ -221,17 +_,35 @@
                          notificationManager
                      );
                      notificationManager.setServer(server);
@@ -235,7 +235,7 @@
              Thread shutdownThread = new Thread("Server Shutdown Thread") {
                  @Override
                  public void run() {
-@@ -239,12 +_,13 @@
+@@ -240,12 +_,13 @@
              };
              shutdownThread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
              Runtime.getRuntime().addShutdownHook(shutdownThread);
@@ -250,8 +250,8 @@
          final DedicatedServerSettings settings,
          final WorldLoader.DataLoadContext context,
          final Registry<LevelStem> datapackDimensions,
-@@ -315,7 +_,11 @@
-         final RegistryAccess registryAccess,
+@@ -316,7 +_,11 @@
+         final HolderLookup.Provider registryAccess,
          final boolean recreateRegionFiles
      ) {
 -        LOGGER.info("Forcing world upgrade!");
@@ -263,7 +263,7 @@
  
          try (WorldUpgrader upgrader = new WorldUpgrader(storageSource, fixerUpper, registryAccess, eraseCache, recreateRegionFiles)) {
              Component lastStatus = null;
-@@ -343,5 +_,6 @@
+@@ -344,5 +_,6 @@
                  }
              }
          }

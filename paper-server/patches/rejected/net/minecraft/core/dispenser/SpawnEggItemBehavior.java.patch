@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/SpawnEggItemBehavior.java
 +++ b/net/minecraft/core/dispenser/SpawnEggItemBehavior.java
-@@ -20,9 +_,32 @@
+@@ -20,9 +20,32 @@
              return dispensed;
          }
  
@@ -34,7 +35,7 @@
              );
              if (spawned == null) {
                  return dispensed;
-@@ -32,7 +_,7 @@
+@@ -32,7 +55,7 @@
              return ItemStack.EMPTY;
          }
  

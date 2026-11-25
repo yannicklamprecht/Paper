@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/WindChargeItem.java
 +++ b/net/minecraft/world/item/WindChargeItem.java
-@@ -28,7 +_,7 @@
+@@ -26,7 +_,7 @@
      public InteractionResult use(final Level level, final Player player, final InteractionHand hand) {
          ItemStack stack = player.getItemInHand(hand);
          if (level instanceof ServerLevel serverLevel) {
@@ -9,7 +9,7 @@
                  (source, l, itemStack) -> new WindCharge(player, level, player.position().x(), player.getEyePosition().y(), player.position().z()),
                  serverLevel,
                  stack,
-@@ -37,6 +_,22 @@
+@@ -35,6 +_,22 @@
                  1.5F,
                  1.0F
              );
@@ -32,7 +32,7 @@
          }
  
          level.playSound(
-@@ -49,8 +_,7 @@
+@@ -47,8 +_,7 @@
              0.5F,
              0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F)
          );

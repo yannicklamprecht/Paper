@@ -13,7 +13,7 @@
 +                // CraftBukkit end
                  l.addFreshEntity(entity);
              });
-             this.playSound(SoundEvents.SNIFFER_DROP_SEED, 1.0F, 1.0F);
+             this.playSound(SoundEvents.SNIFFER_DROP_SEED);
 @@ -346,12 +_,17 @@
  
      @Override

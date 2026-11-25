@@ -93,19 +93,19 @@ public class CraftWorldInfo implements WorldInfo {
     public BiomeProvider vanillaBiomeProvider() {
         final RandomState randomState;
         if (this.vanillaChunkGenerator instanceof NoiseBasedChunkGenerator noiseBasedChunkGenerator) {
-            randomState = RandomState.create(
+            randomState = RandomState.createForTesting(
                 this.registryAccess.lookupOrThrow(Registries.NOISE),
                 this.getSeed(),
                 noiseBasedChunkGenerator.generatorSettings().value()
             );
         } else {
             // Values copied from net.minecraft.server.level.ChunkMap constructor
-            randomState = RandomState.create(
+            randomState = new RandomState(
                 this.registryAccess.lookupOrThrow(Registries.NOISE),
                 this.getSeed(),
                 false,
-                63,
-                NoiseRouterData.none()
+                NoiseRouterData.none(),
+                new net.minecraft.world.level.levelgen.VerticalAnchor.Context(this.minHeight, this.maxHeight - this.minHeight, 63)
             );
         }
 

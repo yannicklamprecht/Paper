@@ -113,13 +113,13 @@
          return result;
      }
  
--    protected abstract T reload(final RegistryAccess registryAccess, final Properties properties);
+-    protected abstract T reload(HolderGetter.Provider registryAccess, Properties properties);
 +    protected abstract T reload(final RegistryAccess registryAccess, final Properties properties, final joptsimple.OptionSet options); // CraftBukkit
  
      public class MutableValue<V> implements Supplier<V> {
          private final String key;
 @@ -204,7 +_,7 @@
-         public T update(final RegistryAccess registryAccess, final V value) {
+         public T update(final HolderGetter.Provider registryAccess, final V value) {
              Properties properties = Settings.this.cloneProperties();
              properties.put(this.key, this.serializer.apply(value));
 -            return Settings.this.reload(registryAccess, properties);

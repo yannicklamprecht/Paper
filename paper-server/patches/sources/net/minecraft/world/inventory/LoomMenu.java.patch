@@ -72,7 +72,7 @@
 +            }
 +            // CraftBukkit end
 +        };
-         this.bannerSlot = this.addSlot(new Slot(this.inputContainer, 0, 13, 26) {
+         this.bannerSlot = this.addSlot(new Slot(this.inputContainer, 0, 13, 26, Slot.Section.INPUT) {
              @Override
              public boolean mayPlace(final ItemStack itemStack) {
 @@ -106,6 +_,7 @@

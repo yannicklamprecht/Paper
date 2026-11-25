@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -189,9 +_,17 @@
+@@ -193,9 +_,17 @@
                  if (itemStack.isEmpty()) {
                      output.writeVarInt(0);
                  } else {
@@ -19,16 +19,16 @@
                  }
              }
          };
-@@ -203,7 +_,7 @@
+@@ -207,7 +_,7 @@
              public ItemStack decode(final RegistryFriendlyByteBuf input) {
                  ItemStack itemStack = codec.decode(input);
                  if (!itemStack.isEmpty()) {
--                    RegistryOps<Unit> ops = input.registryAccess().createSerializationContext(NullOps.INSTANCE);
+-                    RegistryOps<Unit> ops = input.registries().createSerializationContext(NullOps.INSTANCE);
 +                    RegistryOps<io.papermc.paper.util.CountingOps.Value> ops = input.registryAccess().createSerializationContext(io.papermc.paper.util.CountingOps.INSTANCE); // Paper - Track codec depth
                      ItemStack.CODEC.encodeStart(ops, itemStack).getOrThrow(DecoderException::new);
                  }
  
-@@ -368,12 +_,144 @@
+@@ -372,10 +_,144 @@
          } else {
              ItemStack stackBeforeUse = this.copy();
              Item usedItem = this.getItem();
@@ -99,9 +99,7 @@
 +
              if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
 -                player.awardStat(Stats.ITEM_USED.get(usedItem));
--                ItemStack transformTo = success.heldItemTransformedTo() == null ? this : success.heldItemTransformedTo();
--                ItemStack resultItemStack = transformTo.applyAfterUseComponentSideEffects(player, stackBeforeUse);
--                return success.heldItemTransformedTo(resultItemStack);
+-                return this.transformAfterSuccessfulInteraction(success, player, stackBeforeUse);
 +                InteractionHand hand = context.getHand();
 +                org.bukkit.event.block.BlockPlaceEvent placeEvent = null;
 +                if (capturedBlockStates.size() > 1) {
@@ -178,7 +176,7 @@
              } else {
                  return result;
              }
-@@ -451,31 +_,67 @@
+@@ -457,31 +_,67 @@
          return this.isDamageableItem() && this.getDamageValue() >= this.getMaxDamage() - 1;
      }
  
@@ -254,7 +252,7 @@
              this.shrink(1);
              onBreak.accept(broken);
          }
-@@ -488,7 +_,26 @@
+@@ -494,7 +_,26 @@
                  return;
              }
  
@@ -282,7 +280,7 @@
              this.applyDamage(newDamage, serverPlayer, i -> {});
          }
      }
-@@ -498,9 +_,14 @@
+@@ -504,9 +_,14 @@
      }
  
      public void hurtAndBreak(final int amount, final LivingEntity owner, final EquipmentSlot slot) {
@@ -298,7 +296,7 @@
              );
          }
      }
-@@ -759,6 +_,12 @@
+@@ -765,6 +_,12 @@
          return this.getItem().useOnRelease(this);
      }
  
@@ -311,7 +309,7 @@
      public <T> @Nullable T set(final DataComponentType<T> type, final @Nullable T value) {
          return this.components.set(type, value);
      }
-@@ -1031,6 +_,18 @@
+@@ -1037,6 +_,18 @@
          EnchantmentHelper.forEachModifier(this, slot, consumer);
      }
  
@@ -330,7 +328,7 @@
      public Component getDisplayName() {
          MutableComponent hoverName = Component.empty().append(this.getHoverName());
          if (this.has(DataComponents.CUSTOM_NAME)) {
-@@ -1099,7 +_,7 @@
+@@ -1105,7 +_,7 @@
      }
  
      public void consume(final int amount, final @Nullable LivingEntity owner) {

@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/SulfurCubeBlockDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/SulfurCubeBlockDispenseItemBehavior.java
-@@ -12,12 +_,19 @@
+@@ -12,12 +12,19 @@
  
      @Override
      protected ItemStack execute(final BlockSource source, final ItemStack dispensed) {

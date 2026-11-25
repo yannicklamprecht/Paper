@@ -53,8 +53,8 @@
              }
          }
  
-         if (this.getHealth() < this.getMaxHealth() && heal > 0.0F) {
--            this.heal(heal);
+         if (this.canHealNaturally() && heal > 0.0F) {
+-            this.healNaturally(heal);
 +            this.heal(heal, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); // CraftBukkit
              itemUsed = true;
          }
@@ -63,12 +63,12 @@
          super.aiStep();
          if (this.level() instanceof ServerLevel level && this.isAlive()) {
              if (this.random.nextInt(900) == 0 && this.deathTime == 0) {
--                this.heal(1.0F);
+-                this.healNaturally(1.0F);
 +                this.heal(1.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.REGEN); // CraftBukkit
              }
  
              if (this.canEatGrass()) {
-@@ -632,6 +_,16 @@
+@@ -625,6 +_,16 @@
          }
      }
  
@@ -85,7 +85,7 @@
      @Override
      public InteractionResult mobInteract(final Player player, final InteractionHand hand) {
          if (this.isVehicle() || this.isBaby()) {
-@@ -785,6 +_,7 @@
+@@ -783,6 +_,7 @@
          output.putInt("Temper", this.getTemper());
          output.putBoolean("Tame", this.isTamed());
          EntityReference.store(this.owner, output, "Owner");
@@ -93,7 +93,7 @@
      }
  
      @Override
-@@ -795,6 +_,7 @@
+@@ -793,6 +_,7 @@
          this.setTemper(input.getIntOr("Temper", 0));
          this.setTamed(input.getBooleanOr("Tame", false));
          this.owner = EntityReference.readWithOldOwnerConversion(input, "Owner", this.level());
@@ -101,7 +101,7 @@
      }
  
      @Override
-@@ -888,6 +_,17 @@
+@@ -886,6 +_,17 @@
  
      @Override
      public void handleStartJump(final int jumpScale) {

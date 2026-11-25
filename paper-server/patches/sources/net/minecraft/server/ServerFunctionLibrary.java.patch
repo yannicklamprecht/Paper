@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/ServerFunctionLibrary.java
 +++ b/net/minecraft/server/ServerFunctionLibrary.java
-@@ -111,7 +_,7 @@
+@@ -145,7 +_,7 @@
                          return null;
                      }).join());
                      this.functions = newFunctions.build();

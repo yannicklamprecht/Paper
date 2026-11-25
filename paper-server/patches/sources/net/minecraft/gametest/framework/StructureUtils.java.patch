@@ -1,9 +1,9 @@
 --- a/net/minecraft/gametest/framework/StructureUtils.java
 +++ b/net/minecraft/gametest/framework/StructureUtils.java
-@@ -75,7 +_,7 @@
+@@ -74,7 +_,7 @@
          level.clearBlockEvents(structureBoundingBox);
          AABB bounds = AABB.of(structureBoundingBox);
-         List<Entity> livingEntities = level.getEntitiesOfClass(Entity.class, bounds, mob -> !(mob instanceof Player));
+         List<Entity> livingEntities = level.getEntitiesOfClass(Entity.class, bounds, GameTestHelper::isNonPlayerEntity);
 -        livingEntities.forEach(Entity::discard);
 +        livingEntities.forEach(entity -> entity.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.DISCARD)); // Paper
      }

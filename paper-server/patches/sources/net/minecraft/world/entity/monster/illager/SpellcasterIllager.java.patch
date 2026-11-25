@@ -10,5 +10,5 @@
 +                }
 +                // CraftBukkit end
                  this.performSpellCasting();
-                 SpellcasterIllager.this.playSound(SpellcasterIllager.this.getCastingSoundEvent(), 1.0F, 1.0F);
+                 SpellcasterIllager.this.playSound(SpellcasterIllager.this.getCastingSoundEvent());
              }

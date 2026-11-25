@@ -17,7 +17,7 @@ import org.bukkit.craftbukkit.CraftRegistry;
 
 public final class PaperRegistrySets {
 
-    public static <A extends Keyed, M> HolderSet<M> convertToNms(final ResourceKey<? extends Registry<M>> resourceKey, final RegistryOps.RegistryInfoLookup lookup, final RegistryKeySet<A> registryKeySet) { // TODO remove Keyed
+    public static <A extends Keyed, M> HolderSet<M> convertToNms(final ResourceKey<? extends Registry<M>> resourceKey, final HolderGetter.Provider lookup, final RegistryKeySet<A> registryKeySet) { // TODO remove Keyed
         if (registryKeySet instanceof NamedRegistryKeySetImpl<A, ?>) {
             return ((NamedRegistryKeySetImpl<A, M>) registryKeySet).namedSet();
         } else {
@@ -26,7 +26,7 @@ public final class PaperRegistrySets {
         }
     }
 
-    public static <A extends Keyed, M> HolderSet<M> convertToNmsWithDirects(final ResourceKey<? extends Registry<M>> resourceKey, final RegistryOps.RegistryInfoLookup lookup, final RegistrySet<A> registrySet) { // TODO remove Keyed
+    public static <A extends Keyed, M> HolderSet<M> convertToNmsWithDirects(final ResourceKey<? extends Registry<M>> resourceKey, final HolderGetter.Provider lookup, final RegistrySet<A> registrySet) { // TODO remove Keyed
         if (registrySet instanceof NamedRegistryKeySetImpl<A, ?>) {
             return ((NamedRegistryKeySetImpl<A, M>) registrySet).namedSet();
         } else if (registrySet.isEmpty()) {

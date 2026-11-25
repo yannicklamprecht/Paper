@@ -1,11 +1,12 @@
 --- a/net/minecraft/network/chat/Component.java
 +++ b/net/minecraft/network/chat/Component.java
-@@ -26,7 +_,19 @@
+@@ -25,8 +_,19 @@
  import net.minecraft.world.level.ChunkPos;
  import org.jspecify.annotations.Nullable;
  
 -public interface Component extends Message, FormattedText {
 +public interface Component extends Message, FormattedText, Iterable<Component> { // CraftBukkit
+     int STRING_SIZE_LIMIT = 1048576;
 +
 +    // CraftBukkit start
 +    default java.util.stream.Stream<Component> stream() {
@@ -17,7 +18,6 @@
 +        return this.stream().iterator();
 +    }
 +    // CraftBukkit end
-+
+ 
      Style getStyle();
  
-     ComponentContents getContents();

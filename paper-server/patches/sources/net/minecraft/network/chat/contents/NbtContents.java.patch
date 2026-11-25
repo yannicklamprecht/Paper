@@ -8,4 +8,4 @@
 +                ComponentUtils.resolveSeparator(context, this.separator, recursionDepth), ComponentUtils.DEFAULT_NO_STYLE_SEPARATOR // Paper - validate separator
              );
              if (this.interpreting) {
-                 RegistryOps<Tag> registryOps = source.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+                 RegistryOps<Tag> registryOps = source.holderGetters().createSerializationContext(NbtOps.INSTANCE);

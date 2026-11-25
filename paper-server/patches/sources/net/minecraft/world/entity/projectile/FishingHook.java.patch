@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -71,10 +_,26 @@
+@@ -72,10 +_,26 @@
      private final int luck;
      private final int lureSpeed;
  
@@ -65,7 +65,7 @@
                              this.currentState = FishingHook.FishHookState.FLYING;
                          }
                      }
-@@ -260,13 +_,13 @@
+@@ -261,13 +_,13 @@
              }
          }
  
@@ -81,7 +81,7 @@
      }
  
      @Override
-@@ -297,11 +_,11 @@
+@@ -298,11 +_,11 @@
          ServerLevel serverLevel = (ServerLevel)this.level();
          int fishingSpeed = 1;
          BlockPos above = blockPos.above();
@@ -95,7 +95,7 @@
              fishingSpeed--;
          }
  
-@@ -311,6 +_,10 @@
+@@ -312,6 +_,10 @@
                  this.timeUntilLured = 0;
                  this.timeUntilHooked = 0;
                  this.getEntityData().set(DATA_BITING, false);
@@ -106,7 +106,7 @@
              }
          } else if (this.timeUntilHooked > 0) {
              this.timeUntilHooked -= fishingSpeed;
-@@ -334,6 +_,12 @@
+@@ -335,6 +_,12 @@
                      serverLevel.sendParticles(ParticleTypes.FISHING, fishX, fishY, fishZ, 0, -particleZMovement, 0.01, particleXMovement, 1.0);
                  }
              } else {
@@ -119,7 +119,7 @@
                  this.playSound(SoundEvents.FISHING_BOBBER_SPLASH, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
                  double y = this.getY() + 0.5;
                  serverLevel.sendParticles(
-@@ -377,14 +_,31 @@
+@@ -378,14 +_,31 @@
              }
  
              if (this.timeUntilLured <= 0) {
@@ -155,7 +155,7 @@
  
      public boolean calculateOpenWater(final BlockPos blockPos) {
          FishingHook.OpenWaterType previousLayer = FishingHook.OpenWaterType.INVALID;
-@@ -443,15 +_,30 @@
+@@ -444,15 +_,30 @@
      protected void readAdditionalSaveData(final ValueInput input) {
      }
  
@@ -186,7 +186,7 @@
              } else if (this.nibble > 0) {
                  LootParams params = new LootParams.Builder((ServerLevel)this.level())
                      .withParameter(LootContextParams.ORIGIN, this.position())
-@@ -465,14 +_,27 @@
+@@ -466,14 +_,27 @@
  
                  for (ItemStack itemStack : items) {
                      ItemEntity entity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), itemStack);
@@ -216,7 +216,7 @@
                      if (itemStack.is(ItemTags.FISHES)) {
                          owner.awardStat(Stats.FISH_CAUGHT, 1);
                      }
-@@ -482,10 +_,24 @@
+@@ -483,10 +_,24 @@
              }
  
              if (this.onGround()) {
@@ -242,7 +242,7 @@
              return dmg;
          } else {
              return 0;
-@@ -520,9 +_,9 @@
+@@ -521,9 +_,9 @@
      }
  
      @Override
@@ -254,7 +254,7 @@
      }
  
      @Override
-@@ -568,7 +_,7 @@
+@@ -569,7 +_,7 @@
          if (this.getPlayerOwner() == null) {
              int ownerId = packet.getData();
              LOGGER.error("Failed to recreate fishing hook on client. {} (id: {}) is not a valid owner.", this.level().getEntity(ownerId), ownerId);

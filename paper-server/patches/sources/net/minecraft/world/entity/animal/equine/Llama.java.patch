@@ -31,8 +31,8 @@
              }
          }
  
-         if (this.getHealth() < this.getMaxHealth() && heal > 0.0F) {
--            this.heal(heal);
+         if (this.canHealNaturally() && heal > 0.0F) {
+-            this.healNaturally(heal);
 +            this.heal(heal, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); // Paper - Add missing regain reason
              itemUsed = true;
          }

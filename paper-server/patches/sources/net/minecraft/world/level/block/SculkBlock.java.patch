@@ -1,13 +1,12 @@
 --- a/net/minecraft/world/level/block/SculkBlock.java
 +++ b/net/minecraft/world/level/block/SculkBlock.java
-@@ -41,9 +_,10 @@
+@@ -41,8 +_,9 @@
                      BlockPos growthPlacement = chargePos.above();
-                     BlockState growthState = this.getRandomGrowthState(level, growthPlacement, random, spreader.isWorldGeneration());
+                     BlockState growthState = this.getRandomGrowthState(level, growthPlacement, random, spreader);
                      BlockSoundSet blockSoundSet = growthState.getSounds(level);
 -                    level.setBlockAndUpdate(growthPlacement, growthState);
 +                    if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(level, originPos, growthPlacement, growthState, Block.UPDATE_ALL)) { // CraftBukkit - Call BlockSpreadEvent
-                     blockSoundSet.placeSound()
-                         .ifPresent(placeSound -> level.playSound(null, chargePos, (Holder<SoundEvent>)placeSound, SoundSource.BLOCKS, 1.0F, 1.0F));
+                     blockSoundSet.placeSound().ifPresent(placeSound -> level.playSound(null, chargePos, (Holder<SoundEvent>)placeSound, SoundSource.BLOCKS));
 +                    } // CraftBukkit - Call BlockSpreadEvent
                  }
  

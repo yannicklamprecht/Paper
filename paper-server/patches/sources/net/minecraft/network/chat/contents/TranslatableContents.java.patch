@@ -1,9 +1,9 @@
 --- a/net/minecraft/network/chat/contents/TranslatableContents.java
 +++ b/net/minecraft/network/chat/contents/TranslatableContents.java
-@@ -177,6 +_,16 @@
+@@ -163,6 +_,16 @@
  
      @Override
-     public <T> Optional<T> visit(final FormattedText.ContentConsumer<T> output) {
+     public <T> Optional<T> visitUnbounded(final FormattedText.StyledContentConsumer<T> output, final Style currentStyle) {
 +        // Paper start - Count visited parts
 +        try {
 +            return this.visit(new TranslatableContentConsumer<>(output));
@@ -17,7 +17,7 @@
          this.decompose();
  
          for (FormattedText part : this.decomposedParts) {
-@@ -188,6 +_,27 @@
+@@ -189,6 +_,27 @@
  
          return Optional.empty();
      }

@@ -115,7 +115,7 @@
      public int tickCount;
      private int remainingFireTicks;
      protected final EntityFluidInteraction fluidInteraction = new EntityFluidInteraction();
-@@ -278,7 +_,7 @@
+@@ -277,7 +_,7 @@
      protected UUID uuid = Mth.createInsecureUUID(this.random);
      protected String stringUUID = this.uuid.toString();
      private boolean hasGlowingTag;
@@ -125,7 +125,7 @@
      private long pistonDeltasGameTime;
      private EntityDimensions dimensions;
 @@ -292,6 +_,7 @@
-     private boolean hasVisualFire;
+     private int extinguishSoundCooldown;
      private Vec3 lastKnownSpeed = Vec3.ZERO;
      private @Nullable Vec3 lastKnownPosition;
 +    public net.kyori.adventure.util.TriState visualFire = net.kyori.adventure.util.TriState.NOT_SET; // Paper - improve visual fire API
@@ -396,18 +396,7 @@
          if (this.canSpawnSprintParticle()) {
              this.spawnSprintParticle();
          }
-@@ -563,6 +_,10 @@
- 
-         if (this.isInLava()) {
-             this.fallDistance *= 0.5;
-+            // CraftBukkit start
-+        } else {
-+            this.lastLavaContact = null;
-+            // CraftBukkit end
-         }
- 
-         this.checkBelowWorld();
-@@ -588,11 +_,16 @@
+@@ -584,11 +_,16 @@
      }
  
      public void setSharedFlagOnFire(final boolean value) {
@@ -426,7 +415,7 @@
              this.onBelowWorld();
          }
      }
-@@ -620,15 +_,41 @@
+@@ -616,15 +_,41 @@
      }
  
      public void lavaIgnite() {
@@ -470,7 +459,7 @@
                  && this.shouldPlayLavaHurtSound()
                  && !this.isSilent()) {
                  serverLevel.playSound(
-@@ -643,6 +_,20 @@
+@@ -639,6 +_,20 @@
      }
  
      public final void igniteForSeconds(final float numberOfSeconds) {
@@ -491,7 +480,7 @@
          this.igniteForTicks(Mth.floor(numberOfSeconds * 20.0F));
      }
  
-@@ -667,7 +_,7 @@
+@@ -663,7 +_,7 @@
      }
  
      protected void onBelowWorld() {
@@ -500,7 +489,7 @@
      }
  
      public boolean isFree(final double xa, final double ya, final double za) {
-@@ -723,6 +_,16 @@
+@@ -719,6 +_,16 @@
          return this.onGround;
      }
  
@@ -517,7 +506,7 @@
      public void move(final MoverType moverType, Vec3 delta) {
          if (DevUtil.IS_RUNNING_IN_IDE && !moverType.isServerAndClientSimulated() && !this.canSimulateMovement()) {
              throw (IllegalStateException)DevUtil.pauseInIde(
-@@ -730,6 +_,17 @@
+@@ -726,6 +_,17 @@
              );
          }
  
@@ -535,10 +524,10 @@
          if (this.noPhysics) {
              this.setPos(this.getX() + delta.x, this.getY() + delta.y, this.getZ() + delta.z);
              this.recordMovement(moverType, delta);
-@@ -807,6 +_,27 @@
-                 if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
-                     this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
-                 }
+@@ -786,6 +_,27 @@
+             if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
+                 this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
+             }
 +                // CraftBukkit start
 +                if (this.horizontalCollision && this.getBukkitEntity() instanceof org.bukkit.entity.Vehicle) {
 +                    org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
@@ -561,11 +550,11 @@
 +                }
 +                // CraftBukkit end
  
-                 if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
-                     Entity.MovementEmission emission = this.getMovementEmission();
-@@ -820,6 +_,13 @@
-                 profiler.pop();
-             }
+             if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
+                 Entity.MovementEmission emission = this.getMovementEmission();
+@@ -798,6 +_,13 @@
+             this.setDeltaMovement(this.getDeltaMovement().multiply(blockSpeedFactor, 1.0, blockSpeedFactor));
+             profiler.pop();
          }
 +        // Paper start - detailed watchdog information
 +        } finally {
@@ -577,7 +566,18 @@
      }
  
      public void recordMovement(final MoverType moverType, final Vec3 movement) {
-@@ -1088,7 +_,7 @@
+@@ -1051,6 +_,10 @@
+     public void extinguishFire() {
+         if (this.isOnFire()) {
+             this.playEntityOnFireExtinguishedSound();
++            // CraftBukkit start
++        } else {
++            this.lastLavaContact = null;
++            // CraftBukkit end
+         }
+ 
+         this.clearFire();
+@@ -1079,7 +_,7 @@
      }
  
      protected BlockPos getOnPos(final float offset) {
@@ -586,25 +586,26 @@
              BlockPos getOnPos = this.mainSupportingBlockPos.get();
              if (!(offset > 1.0E-5F)) {
                  return getOnPos;
-@@ -1379,7 +_,7 @@
+@@ -1371,7 +_,7 @@
                          if (insideBlock) {
                              try {
                                  boolean isPrecise = movedFar || deflatedBoundingBoxAtTarget.intersects(blockIntersection);
 -                                effectCollector.advanceStep(iteration);
 +                                effectCollector.advanceStep(iteration, blockIntersection); // Paper - track position inside effect was triggered on
                                  state.entityInside(this.level(), blockIntersection, this, effectCollector, isPrecise);
-                                 this.onInsideBlock(state);
-                             } catch (Throwable t) {
-@@ -1393,7 +_,7 @@
+                                 BooleanSupplier centerPassedThroughBlock = () -> intersectShape.clip(from, to, blockIntersection) != null;
+                                 this.onInsideBlock(state, centerPassedThroughBlock);
+@@ -1386,8 +_,8 @@
                          }
  
                          if (insideFluid) {
 -                            effectCollector.advanceStep(iteration);
+                             this.fluidInteraction.visitedFluidDuringMovement(fluidState.getType());
 +                            effectCollector.advanceStep(iteration, blockIntersection); // Paper - track position inside effect was triggered on
-                             state.getFluidState().entityInside(this.level(), blockIntersection, this, effectCollector);
+                             fluidState.entityInside(this.level(), blockIntersection, this, effectCollector);
                          }
  
-@@ -1821,6 +_,7 @@
+@@ -1824,6 +_,7 @@
          this.setXRot(Math.clamp(xRot, -90.0F, 90.0F) % 360.0F);
          this.yRotO = this.getYRot();
          this.xRotO = this.getXRot();
@@ -612,7 +613,7 @@
      }
  
      public void absSnapTo(final double x, final double y, final double z) {
-@@ -1830,6 +_,7 @@
+@@ -1833,6 +_,7 @@
          this.yo = y;
          this.zo = cz;
          this.setPos(cx, y, cz);
@@ -620,7 +621,7 @@
      }
  
      public void snapTo(final Vec3 pos) {
-@@ -1854,6 +_,7 @@
+@@ -1857,6 +_,7 @@
          this.setXRot(xRot);
          this.setOldPosAndRot();
          this.reapplyPosition();
@@ -628,7 +629,7 @@
      }
  
      public final void setOldPosAndRot() {
-@@ -1920,6 +_,12 @@
+@@ -1923,6 +_,12 @@
      public void push(final Entity entity) {
          if (!this.isPassengerOfSameVehicle(entity)) {
              if (!entity.noPhysics && !this.noPhysics) {
@@ -641,7 +642,7 @@
                  double xa = entity.getX() - this.getX();
                  double za = entity.getZ() - this.getZ();
                  double dd = Mth.absMax(xa, za);
-@@ -1959,8 +_,24 @@
+@@ -1962,8 +_,24 @@
      }
  
      public void push(final double xa, final double ya, final double za) {
@@ -667,7 +668,7 @@
              this.needsSync = true;
          }
      }
-@@ -2075,8 +_,20 @@
+@@ -2078,8 +_,20 @@
      }
  
      public boolean isPushable() {
@@ -688,7 +689,7 @@
  
      public void awardKillScore(final Entity victim, final DamageSource killingBlow) {
          if (victim instanceof ServerPlayer serverPlayer) {
-@@ -2103,17 +_,25 @@
+@@ -2106,17 +_,25 @@
      }
  
      public boolean saveAsPassenger(final ValueOutput output) {
@@ -718,7 +719,7 @@
          return true;
      }
  
-@@ -2122,14 +_,34 @@
+@@ -2125,14 +_,34 @@
      }
  
      public void saveWithoutId(final ValueOutput output) {
@@ -753,7 +754,7 @@
              output.store("Rotation", Vec2.CODEC, new Vec2(this.getYRot(), this.getXRot()));
              output.putDouble("fall_distance", this.fallDistance);
              output.putShort("Fire", (short)this.remainingFireTicks);
-@@ -2141,7 +_,29 @@
+@@ -2144,7 +_,29 @@
                  output.putInt("invulnerable_time", this.invulnerableTime);
              }
  
@@ -783,7 +784,7 @@
              output.storeNullable("CustomName", ComponentSerialization.CODEC, this.getCustomName());
              if (this.isCustomNameVisible()) {
                  output.putBoolean("CustomNameVisible", this.isCustomNameVisible());
-@@ -2164,9 +_,14 @@
+@@ -2167,9 +_,14 @@
                  output.putInt("TicksFrozen", this.getTicksFrozen());
              }
  
@@ -801,7 +802,7 @@
  
              if (!this.tags.isEmpty()) {
                  output.store("Tags", TAG_LIST_CODEC, List.copyOf(this.tags));
-@@ -2176,13 +_,13 @@
+@@ -2179,13 +_,13 @@
                  output.store("data", CustomData.CODEC, this.customData);
              }
  
@@ -817,7 +818,7 @@
                          passengersList.discardLast();
                      }
                  }
-@@ -2191,6 +_,33 @@
+@@ -2194,6 +_,33 @@
                      output.discard("Passengers");
                  }
              }
@@ -851,7 +852,7 @@
          } catch (Throwable t) {
              CrashReport report = CrashReport.forThrowable(t, "Saving entity NBT");
              CrashReportCategory category = report.addCategory("Entity being saved");
-@@ -2239,13 +_,27 @@
+@@ -2242,13 +_,27 @@
                  this.setNoGravity(input.getBooleanOr("NoGravity", false));
                  this.setGlowingTag(input.getBooleanOr("Glowing", false));
                  this.setTicksFrozen(input.getIntOr("TicksFrozen", 0));
@@ -880,7 +881,7 @@
                      boolean success = team != null && scoreboard.addPlayerToTeam(this.getStringUUID(), team);
                      if (!success) {
                          LOGGER.warn("Unable to add entity to team \"{}\" (that team probably doesn't exist)", teamName);
-@@ -2258,6 +_,54 @@
+@@ -2261,6 +_,54 @@
              } else {
                  throw new IllegalStateException("Entity has invalid rotation");
              }
@@ -935,7 +936,7 @@
          } catch (Throwable t) {
              CrashReport report = CrashReport.forThrowable(t, "Loading entity NBT");
              CrashReportCategory category = report.addCategory("Entity being loaded");
-@@ -2274,7 +_,13 @@
+@@ -2277,7 +_,13 @@
      }
  
      public final @Nullable String getEncodeId() {
@@ -950,7 +951,7 @@
              return null;
          }
  
-@@ -2284,6 +_,12 @@
+@@ -2287,6 +_,12 @@
  
      protected abstract void readAdditionalSaveData(ValueInput input);
  
@@ -963,67 +964,7 @@
      protected abstract void addAdditionalSaveData(ValueOutput output);
  
      public @Nullable ItemEntity spawnAtLocation(final ServerLevel level, final ItemLike resource) {
-@@ -2295,12 +_,57 @@
-     }
- 
-     public @Nullable ItemEntity spawnAtLocation(final ServerLevel level, final ItemStack itemStack, final Vec3 offset) {
-+        // Paper start - Restore vanilla drops behavior
-+        return this.spawnAtLocation(level, itemStack, offset, null);
-+    }
-+
-+    public record DefaultDrop(Item item, org.bukkit.inventory.ItemStack stack, java.util.function.@Nullable Consumer<ItemStack> dropConsumer) {
-+        public DefaultDrop(final ItemStack stack, final java.util.function.Consumer<ItemStack> dropConsumer) {
-+            this(stack.getItem(), org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(stack), dropConsumer);
-+        }
-+
-+        public void runConsumer(final java.util.function.Consumer<org.bukkit.inventory.ItemStack> fallback) {
-+            if (this.dropConsumer == null || org.bukkit.craftbukkit.inventory.CraftItemType.bukkitToMinecraft(this.stack.getType()) != this.item) {
-+                fallback.accept(this.stack);
-+            } else {
-+                this.dropConsumer.accept(org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(this.stack));
-+            }
-+        }
-+    }
-+
-+    public @Nullable ItemEntity spawnAtLocation(final ServerLevel level, final ItemStack itemStack, final Vec3 offset, java.util.function.@Nullable Consumer<? super ItemEntity> delayedAddConsumer) {
-+        // Paper end - Restore vanilla drops behavior
-         if (itemStack.isEmpty()) {
-             return null;
-         }
--
-+        // CraftBukkit start - Capture drops for death event
-+        if (this instanceof LivingEntity livingEntity && livingEntity.deathDropItems != null) {
-+            // Paper start - Restore vanilla drops behavior
-+            livingEntity.deathDropItems.add(new DefaultDrop(itemStack, dropStack -> {
-+                ItemEntity dropEntity = new ItemEntity(this.level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, dropStack); // stack is copied before consumer
-+                dropEntity.setDefaultPickUpDelay();
-+                this.level.addFreshEntity(dropEntity);
-+                if (delayedAddConsumer != null) delayedAddConsumer.accept(dropEntity);
-+            }));
-+            // Paper end - Restore vanilla drops behavior
-+            return null;
-+        }
-+        // CraftBukkit end
-         ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
--        entity.setDefaultPickUpDelay();
-+        entity.setDefaultPickUpDelay(); // Paper - diff on change (in dropConsumer)
-+        // Paper start - Call EntityDropItemEvent
-+        return this.spawnAtLocation(level, entity);
-+    }
-+
-+    public @Nullable ItemEntity spawnAtLocation(final ServerLevel level, final ItemEntity entity) {
-+        // Paper end - Call EntityDropItemEvent
-+        // CraftBukkit start
-+        org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) entity.getBukkitEntity());
-+        org.bukkit.Bukkit.getPluginManager().callEvent(event);
-+        if (event.isCancelled()) {
-+            return null;
-+        }
-+        // CraftBukkit end
-         level.addFreshEntity(entity);
-         return entity;
-     }
-@@ -2344,6 +_,15 @@
+@@ -2347,6 +_,15 @@
  
                  for (Leashable mob : mobsToLeash) {
                      if (mob.canHaveALeashAttachedTo(this)) {
@@ -1039,7 +980,7 @@
                          mob.setLeashedTo(this, true);
                          anyLeashed = true;
                      }
-@@ -2358,7 +_,7 @@
+@@ -2361,7 +_,7 @@
          }
  
          ItemStack heldItem = player.getItemInHand(hand);
@@ -1048,7 +989,7 @@
              heldItem.hurtAndBreak(1, player, hand);
              return InteractionResult.SUCCESS;
          } else if (this instanceof Mob target
-@@ -2371,11 +_,13 @@
+@@ -2374,11 +_,13 @@
              if (this.isAlive() && this instanceof Leashable leashable) {
                  if (leashable.getLeashHolder() == player) {
                      if (!this.level().isClientSide()) {
@@ -1066,7 +1007,7 @@
  
                          this.gameEvent(GameEvent.ENTITY_INTERACT, player);
                          this.playSound(SoundEvents.LEAD_UNTIED);
-@@ -2392,9 +_,22 @@
+@@ -2395,9 +_,22 @@
  
                      if (leashable.canHaveALeashAttachedTo(player)) {
                          if (leashable.isLeashed()) {
@@ -1090,7 +1031,7 @@
                          leashable.setLeashedTo(player, true);
                          this.playSound(SoundEvents.LEAD_TIED);
                          itemStack.shrink(1);
-@@ -2408,7 +_,13 @@
+@@ -2411,7 +_,13 @@
      }
  
      public boolean shearOffAllLeashConnections(final @Nullable Player player) {
@@ -1103,9 +1044,9 @@
 +        // Paper end - EntityUnleashEvent - overload
 +        boolean dropped = this.dropAllLeashConnections(player, hand); // Paper - EntityUnleashEvent - overload
          if (dropped && this.level() instanceof ServerLevel serverLevel) {
-             serverLevel.playSound(
-                 null, this.blockPosition(), SoundEvents.SHEARS_SNIP, player != null ? player.getSoundSource() : this.getSoundSource(), 1.0F, 1.0F
-@@ -2419,15 +_,39 @@
+             serverLevel.playSound(null, this.blockPosition(), SoundEvents.SHEARS_SNIP, player != null ? player.getSoundSource() : this.getSoundSource());
+         }
+@@ -2420,15 +_,39 @@
      }
  
      public boolean dropAllLeashConnections(final @Nullable Player player) {
@@ -1149,7 +1090,7 @@
          }
  
          if (dropped) {
-@@ -2495,7 +_,7 @@
+@@ -2496,7 +_,7 @@
      }
  
      public boolean startRiding(final Entity entityToRide, final boolean force, final boolean sendEventAndTriggers) {
@@ -1158,7 +1099,7 @@
              return false;
          }
  
-@@ -2503,7 +_,7 @@
+@@ -2504,7 +_,7 @@
              return false;
          }
  
@@ -1167,7 +1108,7 @@
              return false;
          }
  
-@@ -2514,6 +_,27 @@
+@@ -2515,6 +_,27 @@
          }
  
          if (force || this.canRide(entityToRide) && entityToRide.canAddPassenger(this)) {
@@ -1195,7 +1136,7 @@
              if (this.isPassenger()) {
                  this.stopRiding();
              }
-@@ -2551,10 +_,16 @@
+@@ -2552,10 +_,16 @@
      }
  
      public void removeVehicle() {
@@ -1213,7 +1154,7 @@
              Entity.RemovalReason removalReason = this.getRemovalReason();
              if (removalReason == null || removalReason.shouldDestroy()) {
                  this.level().gameEvent(this, GameEvent.ENTITY_DISMOUNT, oldVehicle.position);
-@@ -2563,7 +_,13 @@
+@@ -2564,7 +_,13 @@
      }
  
      public void stopRiding() {
@@ -1228,7 +1169,7 @@
      }
  
      protected void addPassenger(final Entity passenger) {
-@@ -2585,11 +_,43 @@
+@@ -2586,11 +_,43 @@
          }
      }
  
@@ -1273,7 +1214,7 @@
          if (this.passengers.size() == 1 && this.passengers.get(0) == passenger) {
              this.passengers = ImmutableList.of();
          } else {
-@@ -2597,6 +_,7 @@
+@@ -2598,6 +_,7 @@
          }
  
          passenger.boardingCooldown = 60;
@@ -1281,7 +1222,7 @@
      }
  
      protected boolean canAddPassenger(final Entity passenger) {
-@@ -2797,7 +_,7 @@
+@@ -2798,7 +_,7 @@
      }
  
      public boolean isCrouching() {
@@ -1290,7 +1231,7 @@
      }
  
      public boolean isSprinting() {
-@@ -2813,7 +_,7 @@
+@@ -2814,7 +_,7 @@
      }
  
      public boolean isVisuallySwimming() {
@@ -1299,7 +1240,7 @@
      }
  
      public boolean isVisuallyCrawling() {
-@@ -2821,6 +_,13 @@
+@@ -2822,6 +_,13 @@
      }
  
      public void setSwimming(final boolean swimming) {
@@ -1313,7 +1254,64 @@
          this.setSharedFlag(FLAG_SWIMMING, swimming);
      }
  
-@@ -2858,6 +_,7 @@
+@@ -2843,10 +_,56 @@
+     }
+ 
+     public boolean isInvisibleTo(final Player player) {
++        // Paper start - Restore vanilla drops behavior
++        return this.spawnAtLocation(level, itemStack, offset, null);
++    }
++
++    public record DefaultDrop(Item item, org.bukkit.inventory.ItemStack stack, java.util.function.@Nullable Consumer<ItemStack> dropConsumer) {
++        public DefaultDrop(final ItemStack stack, final java.util.function.Consumer<ItemStack> dropConsumer) {
++            this(stack.getItem(), org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(stack), dropConsumer);
++        }
++
++        public void runConsumer(final java.util.function.Consumer<org.bukkit.inventory.ItemStack> fallback) {
++            if (this.dropConsumer == null || org.bukkit.craftbukkit.inventory.CraftItemType.bukkitToMinecraft(this.stack.getType()) != this.item) {
++                fallback.accept(this.stack);
++            } else {
++                this.dropConsumer.accept(org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(this.stack));
++            }
++        }
++    }
++
++    public @Nullable ItemEntity spawnAtLocation(final ServerLevel level, final ItemStack itemStack, final Vec3 offset, java.util.function.@Nullable Consumer<? super ItemEntity> delayedAddConsumer) {
++        // Paper end - Restore vanilla drops behavior
+         if (player.isSpectator()) {
+             return false;
+         }
++        // CraftBukkit start - Capture drops for death event
++        if (this instanceof LivingEntity livingEntity && livingEntity.deathDropItems != null) {
++            // Paper start - Restore vanilla drops behavior
++            livingEntity.deathDropItems.add(new DefaultDrop(itemStack, dropStack -> {
++                ItemEntity dropEntity = new ItemEntity(this.level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, dropStack); // stack is copied before consumer
++                dropEntity.setDefaultPickUpDelay();
++                this.level.addFreshEntity(dropEntity);
++                if (delayedAddConsumer != null) delayedAddConsumer.accept(dropEntity);
++            }));
++            // Paper end - Restore vanilla drops behavior
++            return null;
++        }
++        // CraftBukkit end
++        entity.setDefaultPickUpDelay(); // Paper - diff on change (in dropConsumer)
++        // Paper start - Call EntityDropItemEvent
++        return this.spawnAtLocation(level, entity);
++    }
+ 
++    public @Nullable ItemEntity spawnAtLocation(final ServerLevel level, final ItemEntity entity) {
++        // Paper end - Call EntityDropItemEvent
++        // CraftBukkit start
++        org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) entity.getBukkitEntity());
++        org.bukkit.Bukkit.getPluginManager().callEvent(event);
++        if (event.isCancelled()) {
++            return null;
++        }
++        // CraftBukkit end
+         Team team = this.getTeam();
+         return (team == null || player == null || player.getTeam() != team || !team.canSeeFriendlyInvisibles()) && this.isInvisible();
+     }
+@@ -2859,6 +_,7 @@
      }
  
      public @Nullable PlayerTeam getTeam() {
@@ -1321,7 +1319,7 @@
          return this.level().getScoreboard().getPlayersTeam(this.getScoreboardName());
      }
  
-@@ -2866,7 +_,7 @@
+@@ -2867,7 +_,7 @@
      }
  
      protected boolean considersEntityAsAlly(final Entity other) {
@@ -1330,7 +1328,7 @@
      }
  
      public boolean isAlliedTo(final @Nullable Team other) {
-@@ -2874,7 +_,11 @@
+@@ -2875,7 +_,11 @@
      }
  
      public void setInvisible(final boolean invisible) {
@@ -1343,7 +1341,7 @@
      }
  
      public boolean getSharedFlag(final @Entity.Flags int flag) {
-@@ -2891,7 +_,7 @@
+@@ -2892,7 +_,7 @@
      }
  
      public int getMaxAirSupply() {
@@ -1352,7 +1350,7 @@
      }
  
      public int getAirSupply() {
-@@ -2899,10 +_,24 @@
+@@ -2900,10 +_,24 @@
      }
  
      public void setAirSupply(final int supply) {
@@ -1378,7 +1376,7 @@
          this.setTicksFrozen(0);
      }
  
-@@ -2915,7 +_,7 @@
+@@ -2916,7 +_,7 @@
      }
  
      public void freezeForTicks(final int numberOfTicks) {
@@ -1387,7 +1385,7 @@
              this.setTicksFrozen(Math.min(this.getTicksRequiredToFreeze(), this.getTicksFrozen() + numberOfTicks));
          }
      }
-@@ -2935,11 +_,38 @@
+@@ -2936,11 +_,38 @@
  
      public void thunderHit(final ServerLevel level, final LightningBolt lightningBolt) {
          this.setRemainingFireTicks(this.remainingFireTicks + 1);
@@ -1430,7 +1428,7 @@
      }
  
      public void onAboveBubbleColumn(final boolean dragDown, final BlockPos pos) {
-@@ -2997,6 +_,12 @@
+@@ -2998,6 +_,12 @@
          entity.resetFallDistance();
      }
  
@@ -1443,7 +1441,7 @@
      public boolean killedEntity(final ServerLevel level, final LivingEntity entity, final DamageSource source) {
          return true;
      }
-@@ -3099,26 +_,30 @@
+@@ -3096,26 +_,30 @@
          return this.removalReason != null
              ? String.format(
                  Locale.ROOT,
@@ -1477,7 +1475,7 @@
              );
      }
  
-@@ -3154,6 +_,13 @@
+@@ -3151,6 +_,13 @@
      }
  
      public void restoreFrom(final Entity oldEntity) {
@@ -1491,7 +1489,7 @@
          try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
              TagValueOutput entityData = TagValueOutput.createWithContext(reporter, oldEntity.registryAccess());
              oldEntity.saveWithoutId(entityData);
-@@ -3164,8 +_,66 @@
+@@ -3161,8 +_,66 @@
          this.portalProcess = oldEntity.portalProcess;
      }
  
@@ -1559,7 +1557,7 @@
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
              if (!transition.asPassenger()) {
-@@ -3215,10 +_,15 @@
+@@ -3212,10 +_,15 @@
              return null;
          }
  
@@ -1576,7 +1574,7 @@
  
          for (Entity newPassenger : newPassengers) {
              newPassenger.startRiding(newEntity, true, false);
-@@ -3243,6 +_,13 @@
+@@ -3240,6 +_,13 @@
      private TeleportTransition calculatePassengerTransition(final TeleportTransition transition, final Entity passenger) {
          float passengerYRot = transition.yRot() + (transition.relatives().contains(Relative.Y_ROT) ? 0.0F : passenger.getYRot() - this.getYRot());
          float passengerXRot = transition.xRot() + (transition.relatives().contains(Relative.X_ROT) ? 0.0F : passenger.getXRot() - this.getXRot());
@@ -1590,7 +1588,7 @@
          Vec3 passengerOffset = passenger.position().subtract(this.position());
          Vec3 passengerPos = transition.position()
              .add(
-@@ -3314,9 +_,17 @@
+@@ -3311,9 +_,17 @@
      }
  
      protected void removeAfterChangingDimensions() {
@@ -1611,7 +1609,7 @@
          }
  
          if (this instanceof WaypointTransmitter waypoint && this.level instanceof ServerLevel serverLevel) {
-@@ -3333,6 +_,7 @@
+@@ -3330,6 +_,7 @@
      }
  
      public boolean canTeleport(final Level from, final Level to) {
@@ -1619,7 +1617,7 @@
          if (from.dimension() == Level.END && to.dimension() == Level.OVERWORLD) {
              for (Entity passenger : this.getPassengers()) {
                  if (passenger instanceof ServerPlayer player && !player.seenCredits) {
-@@ -3453,7 +_,7 @@
+@@ -3454,7 +_,7 @@
          return null;
      }
  
@@ -1628,7 +1626,7 @@
          final ServerLevel level,
          final double x,
          final double y,
-@@ -3463,14 +_,30 @@
+@@ -3464,14 +_,30 @@
          final float newXRot,
          final boolean resetCamera
      ) {
@@ -1661,7 +1659,7 @@
      }
  
      public void teleportTo(final double x, final double y, final double z) {
-@@ -3592,7 +_,26 @@
+@@ -3593,7 +_,26 @@
      }
  
      public final void setBoundingBox(final AABB bb) {
@@ -1689,7 +1687,7 @@
      }
  
      public final float getEyeHeight(final Pose pose) {
-@@ -3616,6 +_,12 @@
+@@ -3617,6 +_,12 @@
      }
  
      public void stopSeenByPlayer(final ServerPlayer player) {
@@ -1702,7 +1700,7 @@
      }
  
      public float rotate(final Rotation rotation) {
-@@ -3674,21 +_,32 @@
+@@ -3675,21 +_,32 @@
      }
  
      private Stream<Entity> getIndirectPassengersStream() {
@@ -1736,7 +1734,7 @@
      }
  
      public int countPlayerPassengers() {
-@@ -3696,6 +_,7 @@
+@@ -3697,6 +_,7 @@
      }
  
      public boolean hasExactlyOnePlayerPassenger() {
@@ -1744,7 +1742,7 @@
          return this.countPlayerPassengers() == 1;
      }
  
-@@ -3784,9 +_,38 @@
+@@ -3798,9 +_,38 @@
          return 0;
      }
  
@@ -1784,7 +1782,7 @@
          );
      }
  
-@@ -3876,7 +_,9 @@
+@@ -3890,7 +_,9 @@
  
      public void setDeltaMovement(final Vec3 deltaMovement) {
          if (deltaMovement.isFinite()) {
@@ -1794,7 +1792,7 @@
          }
      }
  
-@@ -3951,8 +_,34 @@
+@@ -3965,8 +_,34 @@
      }
  
      public final void setPosRaw(final double x, final double y, final double z) {
@@ -1829,7 +1827,7 @@
              int fx = Mth.floor(x);
              int fy = Mth.floor(y);
              int fz = Mth.floor(z);
-@@ -3974,7 +_,18 @@
+@@ -3988,7 +_,18 @@
                      serverLevel.getWaypointManager().updatePlayer(player);
                  }
              }
@@ -1849,7 +1847,7 @@
      }
  
      public void checkDespawn() {
-@@ -4026,6 +_,12 @@
+@@ -4040,6 +_,12 @@
          return this.getTicksFrozen() > 0;
      }
  
@@ -1862,7 +1860,7 @@
      public float getYRot() {
          return this.yRot;
      }
-@@ -4089,9 +_,12 @@
+@@ -4103,9 +_,12 @@
      }
  
      @Override
@@ -1876,7 +1874,7 @@
          }
  
          if (this.removalReason.shouldDestroy()) {
-@@ -4101,11 +_,31 @@
+@@ -4115,11 +_,31 @@
          this.getPassengers().forEach(Entity::stopRiding);
          this.levelCallback.onRemove(reason);
          this.onRemoval(reason);
@@ -1909,7 +1907,7 @@
  
      @Override
      public void setLevelCallback(final EntityInLevelCallback levelCallback) {
-@@ -4323,4 +_,10 @@
+@@ -4341,4 +_,10 @@
              return this.save;
          }
      }

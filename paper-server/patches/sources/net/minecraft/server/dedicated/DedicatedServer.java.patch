@@ -1,10 +1,18 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -34,6 +_,7 @@
+ import net.minecraft.network.ServerConnectionDetails;
+ import net.minecraft.network.protocol.game.ClientboundLowDiskSpaceWarningPacket;
+ import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.ConsoleInput;
+ import net.minecraft.server.ServerInterface;
+ import net.minecraft.server.ServerLinks;
+ import net.minecraft.server.Services;
 @@ -79,9 +_,9 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int CONVERSION_RETRY_DELAY_MS = 5000;
      private static final int CONVERSION_RETRIES = 2;
--    private final List<ConsoleInput> consoleInput = Collections.synchronizedList(new ArrayList<>());
+-    private final Queue<String> consoleInput = new ConcurrentLinkedQueue<>();
 +    private final java.util.Queue<ConsoleInput> serverCommandQueue = new java.util.concurrent.ConcurrentLinkedQueue<>(); // Paper - Perf: use a proper queue
      private @Nullable QueryThreadGs4 queryThreadGs4;
 -    private final RconConsoleSource rconConsoleSource;
@@ -28,8 +36,8 @@
              serverThread,
              levelStorageSource,
              packRepository,
-@@ -118,7 +_,8 @@
-             notificationManager
+@@ -119,7 +_,8 @@
+             settings.getProperties().keyRotationPeriodSeconds * TimeUtil.MILLISECONDS_PER_SECOND
          );
          this.settings = settings;
 -        this.rconConsoleSource = new RconConsoleSource(this);
@@ -38,7 +46,7 @@
          this.serverTextFilter = ServerTextFilter.createFromConfig(settings.getProperties());
          this.jsonRpcServer = jsonRpcServer;
          this.serverLinks = createServerLinks(settings);
-@@ -170,6 +_,10 @@
+@@ -171,6 +_,10 @@
          Thread consoleThread = new Thread("Server console handler") {
              @Override
              public void run() {
@@ -49,7 +57,7 @@
                  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
                  String line;
-@@ -180,16 +_,41 @@
+@@ -181,16 +_,41 @@
                  } catch (IOException e) {
                      DedicatedServer.LOGGER.error("Exception handling console input", e);
                  }
@@ -92,7 +100,7 @@
          LOGGER.info("Loading properties");
          DedicatedServerProperties properties = this.settings.getProperties();
          if (this.isSingleplayer()) {
-@@ -200,8 +_,45 @@
+@@ -201,8 +_,45 @@
              this.setLocalIp(properties.serverIp);
          }
  
@@ -139,7 +147,7 @@
          InetAddress localAddress = null;
          if (!this.getLocalIp().isEmpty()) {
              localAddress = InetAddress.getByName(this.getLocalIp());
-@@ -210,47 +_,73 @@
+@@ -211,46 +_,72 @@
          if (this.getPort() < 0) {
              this.setPort(properties.serverPort);
          }
@@ -147,7 +155,6 @@
 +        }
 +        // Paper end - Unix domain socket support
  
-         this.initializeKeyPair();
          LOGGER.info("Starting Minecraft server on {}:{}", this.getLocalIp().isEmpty() ? "*" : this.getLocalIp(), this.getPort());
  
          try {
@@ -284,31 +291,37 @@
      }
  
      @Override
-@@ -429,12 +_,20 @@
+@@ -429,18 +_,20 @@
      }
  
-     public void handleConsoleInput(final String msg, final CommandSourceStack source) {
--        this.consoleInput.add(new ConsoleInput(msg, source));
+     public void handleConsoleInput(final String msg) {
+-        this.consoleInput.add(msg);
++        this.handleConsoleInput(msg, this.createCommandSourceStack());
++    }
++
++    public void handleConsoleInput(final String msg, final CommandSourceStack source) {
 +        this.serverCommandQueue.add(new ConsoleInput(msg, source)); // Paper - Perf: use proper queue
      }
  
      public void handleConsoleInputs() {
--        while (!this.consoleInput.isEmpty()) {
--            ConsoleInput input = this.consoleInput.remove(0);
-+        // Paper start - Perf: use proper queue
+-        String input;
+-        while ((input = this.consoleInput.poll()) != null) {
+-            CommandSourceStack source = this.createCommandSourceStack();
+-            if (source == null) {
+-                LOGGER.warn("Rejecting command '{}', server has not started", input);
+-            } else {
+-                this.getCommands().performPrefixedCommand(source, input);
+-            }
 +        ConsoleInput input;
 +        while ((input = this.serverCommandQueue.poll()) != null) {
-+            // Paper end - Perf: use proper queue
-+            // CraftBukkit start - ServerCommand for preprocessing
 +            org.bukkit.event.server.ServerCommandEvent event = new org.bukkit.event.server.ServerCommandEvent(this.console, input.msg);
 +            this.server.getPluginManager().callEvent(event);
 +            if (event.isCancelled()) continue;
-+            input = new ConsoleInput(event.getCommand(), input.source);
-+            // CraftBukkit end
-             this.getCommands().performPrefixedCommand(input.source, input.msg);
++            this.getCommands().performPrefixedCommand(input.source, event.getCommand());
          }
      }
-@@ -600,12 +_,15 @@
+ 
+@@ -605,12 +_,15 @@
  
      @Override
      public String getMotd() {
@@ -326,7 +339,7 @@
      }
  
      @Override
-@@ -631,7 +_,11 @@
+@@ -636,7 +_,11 @@
      @Override
      public boolean enforceSecureProfile() {
          DedicatedServerProperties properties = this.getProperties();
@@ -339,7 +352,7 @@
      }
  
      @Override
-@@ -721,21 +_,60 @@
+@@ -726,21 +_,60 @@
  
      @Override
      public String getPluginNames() {
@@ -405,7 +418,7 @@
      }
  
      @Override
-@@ -871,4 +_,15 @@
+@@ -876,4 +_,15 @@
      public Map<String, String> getCodeOfConducts() {
          return this.codeOfConductTexts;
      }

@@ -10,10 +10,10 @@
 +                        return InteractionResult.FAIL;
 +                    }
 +                    // Paper end - Add PlayerSetSpawnEvent
-                     serverLevel.playSound(
-                         null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.BLOCKS, 1.0F, 1.0F
-                     );
-@@ -150,6 +_,7 @@
+                     serverLevel.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.BLOCKS);
+                     return InteractionResult.SUCCESS_SERVER;
+                 }
+@@ -148,6 +_,7 @@
      }
  
      private void explode(final BlockState state, final ServerLevel level, final BlockPos pos) {
@@ -21,7 +21,7 @@
          level.removeBlock(pos, false);
          boolean anyWaterNeighbors = Direction.Plane.HORIZONTAL.stream().map(pos::relative).anyMatch(neighborPos -> isWaterThatWouldFlow(neighborPos, level));
          final boolean inWater = anyWaterNeighbors || level.getFluidState(pos.above()).is(FluidTags.WATER);
-@@ -164,7 +_,7 @@
+@@ -162,7 +_,7 @@
              }
          };
          Vec3 boomPos = Vec3.atCenterOf(pos);

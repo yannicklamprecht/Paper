@@ -31,7 +31,7 @@
      }
  
      @Override
-@@ -168,15 +_,15 @@
+@@ -168,16 +_,16 @@
      }
  
      @Override
@@ -39,8 +39,9 @@
 +    public boolean killedEntityPreEvent(final ServerLevel level, final LivingEntity entity, final DamageSource source) { // Paper
          if (this.shouldDropLoot(level) && this.isPowered() && !this.droppedSkulls) {
              entity.dropFromLootTable(level, source, false, BuiltInLootTables.CHARGED_CREEPER, itemStack -> {
-                 entity.spawnAtLocation(level, itemStack);
--                this.droppedSkulls = true;
+                 if (entity.spawnAtLocation(level, itemStack) != null) {
+-                    this.droppedSkulls = true;
+                 }
 +                entity.postDeathEventTasks.add(() -> this.droppedSkulls = true); // Paper
              });
          }
@@ -50,7 +51,7 @@
      }
  
      @Override
-@@ -203,9 +_,20 @@
+@@ -204,9 +_,20 @@
      @Override
      public void thunderHit(final ServerLevel level, final LightningBolt lightningBolt) {
          super.thunderHit(level, lightningBolt);
@@ -71,7 +72,7 @@
      @Override
      protected InteractionResult mobInteract(final Player player, final InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);
-@@ -214,8 +_,9 @@
+@@ -215,8 +_,9 @@
              this.level()
                  .playSound(player, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
              if (!this.level().isClientSide()) {
@@ -82,7 +83,7 @@
                      itemStack.shrink(1);
                  } else {
                      itemStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
-@@ -231,18 +_,29 @@
+@@ -232,18 +_,29 @@
      public void explodeCreeper() {
          if (this.level() instanceof ServerLevel level) {
              float explosionMultiplier = this.isPowered() ? 2.0F : 1.0F;
@@ -115,7 +116,7 @@
              cloud.setRadius(2.5F);
              cloud.setRadiusOnUse(-0.5F);
              cloud.setWaitTime(10);
-@@ -254,15 +_,26 @@
+@@ -255,15 +_,26 @@
                  cloud.addEffect(new MobEffectInstance(mobEffect));
              }
  

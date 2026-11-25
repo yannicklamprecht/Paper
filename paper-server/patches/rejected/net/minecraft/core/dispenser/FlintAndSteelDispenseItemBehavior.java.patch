@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/FlintAndSteelDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/FlintAndSteelDispenseItemBehavior.java
-@@ -24,8 +_,15 @@
+@@ -24,8 +24,15 @@
          ServerLevel level = source.level();
          Direction facing = source.state().getValue(DispenserBlock.FACING);
          BlockPos targetPos = source.pos().relative(facing);
@@ -17,7 +18,7 @@
          this.setSuccess(ignited);
          if (this.isSuccess()) {
              FlintAndSteelItem.playSound(level, targetPos);
-@@ -36,19 +_,23 @@
+@@ -36,19 +43,23 @@
      }
  
      private static boolean tryIgnite(

@@ -43,7 +43,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.ResolutionContext;
-import net.minecraft.world.damagesource.FallLocation;
+import net.minecraft.world.damagesource.FellFromLocation;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.decoration.Mannequin;
@@ -104,7 +104,7 @@ public class PaperServerInternalAPIBridge implements InternalAPIBridge {
     @Override
     public CombatEntry createCombatEntry(final LivingEntity entity, final DamageSource damageSource, final float damage) {
         final net.minecraft.world.entity.LivingEntity mob = ((CraftLivingEntity) entity).getHandle();
-        final FallLocation fallLocation = FallLocation.getCurrentFallLocation(mob);
+        final FellFromLocation fallLocation = FellFromLocation.getCurrentFellFromLocation(mob);
         return createCombatEntry(
             ((CraftDamageSource) damageSource).getHandle(),
             damage,
@@ -131,7 +131,7 @@ public class PaperServerInternalAPIBridge implements InternalAPIBridge {
     private CombatEntry createCombatEntry(
         final net.minecraft.world.damagesource.DamageSource damageSource,
         final float damage,
-        final net.minecraft.world.damagesource.@Nullable FallLocation fallLocation,
+        final net.minecraft.world.damagesource.@Nullable FellFromLocation fallLocation,
         final float fallDistance
     ) {
         return new PaperCombatEntryWrapper(new net.minecraft.world.damagesource.CombatEntry(

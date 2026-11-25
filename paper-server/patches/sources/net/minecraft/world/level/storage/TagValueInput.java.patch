@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/TagValueInput.java
 +++ b/net/minecraft/world/level/storage/TagValueInput.java
-@@ -37,6 +_,15 @@
+@@ -38,6 +_,15 @@
          this.input = input;
      }
  
@@ -13,6 +13,6 @@
 +    }
 +    // Paper end - utility methods
 +
-     public static ValueInput create(final ProblemReporter problemReporter, final HolderLookup.Provider holders, final CompoundTag tag) {
+     public static ValueInput create(final ProblemReporter problemReporter, final HolderGetter.Provider holders, final CompoundTag tag) {
          return new TagValueInput(problemReporter, new ValueInputContextHelper(holders, NbtOps.INSTANCE), tag);
      }

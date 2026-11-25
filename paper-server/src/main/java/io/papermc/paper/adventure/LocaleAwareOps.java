@@ -1,7 +1,7 @@
 package io.papermc.paper.adventure;
 
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.resources.DelegatingOps;
 import net.minecraft.resources.RegistryOps;
 import java.util.Locale;
@@ -26,8 +26,8 @@ public interface LocaleAwareOps {
     class Registry<T> extends RegistryOps<T> implements LocaleAwareOps {
         private final Locale locale;
 
-        public Registry(final DynamicOps<T> parent, final HolderLookup.Provider lookupProvider, final Locale locale) {
-            super(parent, new RegistryOps.HolderLookupAdapter(lookupProvider));
+        public Registry(final DynamicOps<T> parent, final HolderGetter.Provider lookupProvider, final Locale locale) {
+            super(parent, lookupProvider);
             this.locale = locale;
         }
 

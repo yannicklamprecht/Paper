@@ -14,6 +14,6 @@
 +                return InteractionResult.PASS;
 +            }
 +            // Paper end
-             level.playSound(null, pos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 1.0F, 1.0F);
-             player.setItemInHand(context.getHand(), ItemUtils.createFilledResult(itemStack, player, new ItemStack(Items.GLASS_BOTTLE)));
+             level.playSound(null, pos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS);
+             itemStack.consume(1, player);
              if (!level.isClientSide()) {

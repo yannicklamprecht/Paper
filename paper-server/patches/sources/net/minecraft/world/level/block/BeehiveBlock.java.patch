@@ -56,6 +56,6 @@
 +                    popResource(serverLevel, pos, org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(stack));
 +                }
 +                // Paper end - Add PlayerShearBlockEvent
-                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
+                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS);
                  itemStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
                  hiveEmptied = true;

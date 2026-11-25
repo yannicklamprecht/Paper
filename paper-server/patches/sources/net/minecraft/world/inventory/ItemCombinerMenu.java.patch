@@ -34,7 +34,7 @@
  
      private void createInputSlots(final ItemCombinerMenuSlotDefinition itemInputSlots) {
 -        for (final ItemCombinerMenuSlotDefinition.SlotDefinition slot : itemInputSlots.getSlots()) {
--            this.addSlot(new Slot(this.inputSlots, slot.slotIndex(), slot.x(), slot.y()) {
+-            this.addSlot(new Slot(this.inputSlots, slot.slotIndex(), slot.x(), slot.y(), slot.section()) {
 +        for (final ItemCombinerMenuSlotDefinition.SlotDefinition slotDefinition : itemInputSlots.getSlots()) { // Paper - fix conflicting variable name
 +            this.addSlot(new Slot(this.inputSlots, slotDefinition.slotIndex(), slotDefinition.x(), slotDefinition.y()) { // Paper - fix conflicting variable name
                  @Override
@@ -44,7 +44,7 @@
                  }
              });
          }
-@@ -83,7 +_,7 @@
+@@ -89,7 +_,7 @@
      public abstract void createResult();
  
      private SimpleContainer createContainer(final int size) {
@@ -53,7 +53,7 @@
              @Override
              public void setChanged() {
                  super.setChanged();
-@@ -97,6 +_,7 @@
+@@ -103,6 +_,7 @@
          super.slotsChanged(container);
          if (container == this.inputSlots) {
              this.createResult();
@@ -61,7 +61,7 @@
          }
      }
  
-@@ -108,6 +_,7 @@
+@@ -114,6 +_,7 @@
  
      @Override
      public boolean stillValid(final Player player) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Bootstrap.java
 +++ b/net/minecraft/server/Bootstrap.java
-@@ -47,6 +_,7 @@
+@@ -46,6 +_,7 @@
              isBootstrapped = true;
              Instant start = Instant.now();
              SystemReport.setVersionDetails(SharedConstants.getCurrentVersion().name(), SharedConstants.getCurrentVersion().id(), "MC_DEBUG_");
@@ -8,9 +8,9 @@
              if (BuiltInRegistries.REGISTRY.keySet().isEmpty()) {
                  throw new IllegalStateException("Unable to load registries");
              }
-@@ -59,11 +_,81 @@
+@@ -57,11 +_,81 @@
+ 
              EntitySelectorOptions.bootStrap();
-             DispenseItemBehavior.bootStrap();
              CauldronInteractions.bootStrap();
 -            BuiltInRegistries.bootStrap();
 +            BuiltInRegistries.bootStrap(io.papermc.paper.world.worldgen.OptionallyFlatBedrockCondition::bootstrap); // Paper - Flat bedrock generator settings

@@ -62,7 +62,7 @@
 +                        }
 +                    }
 +                    // Paper end - Add EntityDyeEvent and CollarColorable interface
-                     this.level().playSound(player, this, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                     this.level().playSound(player, this, SoundEvents.DYE_USE, SoundSource.PLAYERS);
                      this.setCollarColor(color);
                      itemStack.consume(1, player);
 @@ -496,7 +_,7 @@

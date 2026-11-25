@@ -36,6 +36,6 @@ public class CraftStonecutterView extends CraftInventoryView<StonecutterMenu, St
 
     @Override
     public int getRecipeAmount() {
-        return this.container.getNumberOfVisibleRecipes();
+        return this.container.getVisibleRecipes().size();
     }
 }

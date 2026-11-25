@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ItemBasedSteering.java
 +++ b/net/minecraft/world/entity/ItemBasedSteering.java
-@@ -34,6 +_,14 @@
+@@ -40,6 +_,14 @@
          return true;
      }
  

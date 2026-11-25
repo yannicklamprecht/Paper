@@ -46,7 +46,7 @@
 +        };
 +        // Paper end - Add missing InventoryHolders
          this.access = access;
-         this.addSlot(new Slot(this.enchantSlots, 0, 15, 47) {
+         this.addSlot(new Slot(this.enchantSlots, 0, 15, 47, Slot.Section.INPUT) {
              @Override
 @@ -80,13 +_,14 @@
          this.addDataSlot(DataSlot.shared(this.levelClue, 0));
@@ -225,10 +225,10 @@
                      currency.consume(enchantmentCost, player);
                      if (currency.isEmpty()) {
                          this.enchantSlots.setItem(1, ItemStack.EMPTY);
-@@ -185,15 +_,20 @@
-     }
- 
-     private List<EnchantmentInstance> getEnchantmentList(final RegistryAccess access, final ItemStack itemStack, final int slot, final int enchantmentCost) {
+@@ -187,15 +_,20 @@
+     private List<EnchantmentInstance> getEnchantmentList(
+         final HolderGetter.Provider access, final ItemStack itemStack, final int slot, final int enchantmentCost
+     ) {
 -        this.random.setSeed(this.enchantmentSeed.get() + slot);
 +        // Paper start - make static and public
 +        return getEnchantmentList(access, itemStack, slot, enchantmentCost, this.random, this.enchantmentSeed.get());
@@ -249,7 +249,7 @@
          }
  
          return list;
-@@ -204,6 +_,12 @@
+@@ -206,6 +_,12 @@
          return goldStack.isEmpty() ? 0 : goldStack.getCount();
      }
  
@@ -262,7 +262,7 @@
      public int getEnchantmentSeed() {
          return this.enchantmentSeed.get();
      }
-@@ -216,6 +_,7 @@
+@@ -218,6 +_,7 @@
  
      @Override
      public boolean stillValid(final Player player) {
@@ -270,7 +270,7 @@
          return stillValid(this.access, player, Blocks.ENCHANTING_TABLE);
      }
  
-@@ -263,4 +_,17 @@
+@@ -265,4 +_,17 @@
  
          return clicked;
      }

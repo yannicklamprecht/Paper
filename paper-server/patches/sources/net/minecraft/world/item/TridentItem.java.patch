@@ -33,7 +33,7 @@
                              trident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                          }
  
-                         level.playSound(null, trident, sound.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                         level.playSound(null, trident, sound.value(), SoundSource.PLAYERS);
                          return true;
 +                        // CraftBukkit start - SPIGOT-5458 also need in this branch :(
 +                    } else {

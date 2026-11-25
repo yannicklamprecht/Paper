@@ -24,7 +24,7 @@
 +            lectern.setBook(eventSourcedBookStack);
 +            // Paper end - Add PlayerInsertLecternBookEvent
              resetBookState(sourceEntity, level, pos, state, true);
-             level.playSound(null, pos, SoundEvents.BOOK_PUT, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.playSound(null, pos, SoundEvents.BOOK_PUT, SoundSource.BLOCKS);
          }
 @@ -155,6 +_,13 @@
      }

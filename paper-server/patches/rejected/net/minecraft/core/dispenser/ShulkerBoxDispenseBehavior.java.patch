@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
 +++ b/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
-@@ -20,8 +_,34 @@
+@@ -20,8 +20,34 @@
              BlockPos relativePos = source.pos().relative(facing);
              Direction clickedFace = source.level().isEmptyBlock(relativePos.below()) ? facing : Direction.UP;
  

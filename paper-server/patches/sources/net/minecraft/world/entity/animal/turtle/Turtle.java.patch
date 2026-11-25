@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/turtle/Turtle.java
 +++ b/net/minecraft/world/entity/animal/turtle/Turtle.java
-@@ -282,7 +_,7 @@
+@@ -281,7 +_,7 @@
  
      @Override
      public void thunderHit(final ServerLevel level, final LightningBolt lightningBolt) {
@@ -9,7 +9,7 @@
      }
  
      @Override
-@@ -309,6 +_,10 @@
+@@ -308,6 +_,10 @@
              if (loveCause == null && this.partner.getLoveCause() != null) {
                  loveCause = this.partner.getLoveCause();
              }
@@ -20,7 +20,7 @@
  
              if (loveCause != null) {
                  loveCause.awardStat(Stats.ANIMALS_BRED);
-@@ -322,7 +_,7 @@
+@@ -321,7 +_,7 @@
              this.partner.resetLove();
              RandomSource random = this.animal.getRandom();
              if (getServerLevel(this.level).getGameRules().get(GameRules.MOB_DROPS)) {
@@ -29,7 +29,7 @@
              }
          }
      }
-@@ -345,7 +_,7 @@
+@@ -344,7 +_,7 @@
                  && (
                      this.turtle.hasEgg()
                          || this.turtle.getRandom().nextInt(reducedTickDelay(700)) == 0 && !this.turtle.homePos.closerToCenterThan(this.turtle.position(), 64.0)
@@ -38,7 +38,7 @@
          }
  
          @Override
-@@ -453,14 +_,20 @@
+@@ -452,14 +_,20 @@
              BlockPos turtlePos = this.turtle.blockPosition();
              if (!this.turtle.isInWater() && this.isReachedTarget()) {
                  if (this.turtle.layEggCounter < 1) {

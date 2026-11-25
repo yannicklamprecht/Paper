@@ -1,6 +1,5 @@
---- a/net/minecraft/world/level/block/DropperBlock.java
-+++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -46,6 +_,7 @@
+++++ REJECTED HUNK: 1
+@@ -46,6 +46,7 @@
              BlockSource source = new BlockSource(level, pos, state, blockEntity);
              int slot = blockEntity.getRandomSlot(level.getRandom());
              if (slot < 0) {
@@ -8,7 +7,10 @@
                  level.levelEvent(LevelEvent.SOUND_DISPENSER_FAIL, pos, 0);
              } else {
                  ItemStack itemStack = blockEntity.getItem(slot);
-@@ -54,10 +_,27 @@
+++++ END HUNK
+
+++++ REJECTED HUNK: 2
+@@ -54,10 +55,27 @@
                      Container into = HopperBlockEntity.getContainerAt(level, pos.relative(direction));
                      ItemStack remaining;
                      if (into == null) {
@@ -38,3 +40,4 @@
                              remaining = itemStack.copy();
                              remaining.shrink(1);
                          } else {
+++++ END HUNK

@@ -21,6 +21,6 @@
 +    }
 +    // Paper end - utility methods
 +
-     public static TagValueOutput createWithContext(final ProblemReporter problemReporter, final HolderLookup.Provider provider) {
+     public static TagValueOutput createWithContext(final ProblemReporter problemReporter, final HolderGetter.Provider provider) {
          return new TagValueOutput(problemReporter, provider.createSerializationContext(NbtOps.INSTANCE), new CompoundTag());
      }

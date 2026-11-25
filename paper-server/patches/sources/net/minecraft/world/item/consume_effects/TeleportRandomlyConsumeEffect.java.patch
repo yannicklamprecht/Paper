@@ -13,5 +13,5 @@
 +            if (result == LivingEntity.RandomTeleportResult.SUCCESS) {
 +                // CraftBukkit end
                  level.gameEvent(GameEvent.TELEPORT, oldPos, GameEvent.Context.of(user));
-                 SoundSource soundSource;
-                 SoundEvent soundEvent;
+                 if (!user.isSilent()) {
+                     SoundSource soundSource;

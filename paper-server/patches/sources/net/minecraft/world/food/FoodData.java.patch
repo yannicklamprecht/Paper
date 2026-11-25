@@ -48,22 +48,22 @@
          }
  
          boolean naturalRegen = level.getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION);
-         if (naturalRegen && this.saturationLevel > 0.0F && player.isHurt() && this.foodLevel >= FoodConstants.MAX_FOOD) {
+         if (naturalRegen && this.saturationLevel > 0.0F && player.canHealNaturally() && this.foodLevel >= FoodConstants.MAX_FOOD) {
              this.tickTimer++;
 -            if (this.tickTimer >= FoodConstants.HEALTH_TICK_COUNT_SATURATED) {
 +            if (this.tickTimer >= this.saturatedRegenRate) { // CraftBukkit
                  float saturationSpent = Math.min(this.saturationLevel, 6.0F);
--                player.heal(saturationSpent / 6.0F);
+-                player.healNaturally(saturationSpent / 6.0F);
 -                this.addExhaustion(saturationSpent);
 +                player.heal(saturationSpent / 6.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.SATIATED, true); // CraftBukkit - added RegainReason // Paper - This is fast regen
 +                // this.addExhaustion(saturationSpent); // CraftBukkit - EntityExhaustionEvent
 +                player.causeFoodExhaustion(saturationSpent, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.REGEN); // CraftBukkit - EntityExhaustionEvent
                  this.tickTimer = 0;
              }
-         } else if (naturalRegen && this.foodLevel >= FoodConstants.HEAL_LEVEL && player.isHurt()) {
+         } else if (naturalRegen && this.foodLevel >= FoodConstants.HEAL_LEVEL && player.canHealNaturally()) {
              this.tickTimer++;
 -            if (this.tickTimer >= FoodConstants.HEALTH_TICK_COUNT) {
--                player.heal(1.0F);
+-                player.healNaturally(1.0F);
 -                this.addExhaustion(6.0F);
 +            if (this.tickTimer >= this.unsaturatedRegenRate) { // CraftBukkit - add regen rate manipulation
 +                player.heal(1.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.SATIATED); // CraftBukkit - added RegainReason

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -49,9 +_,16 @@
+@@ -50,9 +_,16 @@
  import org.jspecify.annotations.Nullable;
  import org.slf4j.Logger;
  
@@ -17,28 +17,29 @@
 +    private static final java.util.concurrent.ExecutorService authenticatorPool = java.util.concurrent.Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("User Authenticator #", 0).uncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER)).factory()); // Paper - Virtual authenticator threads
      private static final int MAX_TICKS_BEFORE_LOGIN = 600;
      private static final String PROTOCOL_ERROR_MESSAGE = "Protocol error";
-     private final byte[] challenge;
-@@ -60,12 +_,16 @@
+     public static final boolean SHOULD_AUTHENTICATE = true;
+@@ -62,13 +_,17 @@
      private final ServerActivityMonitor serverActivityMonitor;
      public volatile ServerLoginPacketListenerImpl.State state = ServerLoginPacketListenerImpl.State.HELLO;
      private int tick;
 -    private @Nullable String requestedUsername;
 -    private @Nullable GameProfile resolvedUserProfile;
+-    private final boolean transferred;
 +    public @Nullable String requestedUsername; // Paper - public
 +    public @Nullable GameProfile resolvedUserProfile; // Paper - public
-     private final String serverId = "";
--    private final boolean transferred;
 +    public final boolean transferred; // Paper - public
      private final OptionalInt requestedCompressionThreshold;
-     private @Nullable SecretKey pendingSecretKey;
+     private @Nullable SessionKeyExchange sessionKeyExchange;
+     private @Nullable SessionKeys pendingSessionKeys;
+     private StreamCryptoUtils.@Nullable IVPair pendingIvSeeds;
 +    public boolean iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation = false; // Paper - username validation overriding
 +    private int velocityLoginMessageId = -1; // Paper - Add Velocity IP Forwarding Support
 +    public java.util.@Nullable UUID requestedUuid; // Paper
 +    private final io.papermc.paper.connection.PaperPlayerLoginConnection paperLoginConnection; // Paper - Config API
  
-     public ServerLoginPacketListenerImpl(final MinecraftServer minecraftserver, final Connection connection, final boolean transferred) {
-         this.server = minecraftserver;
-@@ -77,10 +_,19 @@
+     public ServerLoginPacketListenerImpl(final MinecraftServer server, final Connection connection, final boolean transferred) {
+         this.server = server;
+@@ -79,10 +_,19 @@
          this.requestedCompressionThreshold = !connection.isMemoryConnection() && compressionThreshold >= 0
              ? OptionalInt.of(compressionThreshold)
              : OptionalInt.empty();
@@ -58,7 +59,7 @@
          if (this.state == ServerLoginPacketListenerImpl.State.VERIFYING) {
              this.verifyLoginAndFinishConnectionSetup(Objects.requireNonNull(this.resolvedUserProfile));
          }
-@@ -90,16 +_,39 @@
+@@ -92,16 +_,39 @@
              this.finishLoginAndWaitForClient(this.resolvedUserProfile);
          }
  
@@ -99,7 +100,7 @@
      public void disconnect(final Component component) {
          try {
              LOGGER.info("Disconnecting {}: {}", this.getUserName(), component.getString());
-@@ -127,7 +_,14 @@
+@@ -129,7 +_,14 @@
      @Override
      public void handleHello(final ServerboundHelloPacket packet) {
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
@@ -115,9 +116,9 @@
          this.requestedUsername = packet.name();
          GameProfile singleplayerProfile = this.server.getSingleplayerProfile();
          if (singleplayerProfile != null && this.requestedUsername.equalsIgnoreCase(singleplayerProfile.name())) {
-@@ -137,7 +_,30 @@
-                 this.state = ServerLoginPacketListenerImpl.State.KEY;
-                 this.connection.send(new ClientboundKeyPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.challenge, true));
+@@ -145,7 +_,30 @@
+                 this.connection
+                     .send(new ClientboundKeyPacket(commonInfo.salt(), "server", this.sessionKeyExchange.publicKey(), commonInfo.authenticationRequested()));
              } else {
 -                this.startOfflineClientVerification(UUIDUtil.createOfflineProfile(this.requestedUsername));
 +                // Paper start - Add Velocity IP Forwarding Support
@@ -147,7 +148,7 @@
              }
          }
      }
-@@ -149,15 +_,15 @@
+@@ -157,15 +_,15 @@
  
      private void verifyLoginAndFinishConnectionSetup(final GameProfile profile) {
          PlayerList playerList = this.server.getPlayerList();
@@ -166,7 +167,7 @@
              if (waitForDisconnection) {
                  this.state = ServerLoginPacketListenerImpl.State.WAITING_FOR_DUPE_DISCONNECT;
              } else {
-@@ -170,6 +_,7 @@
+@@ -178,6 +_,7 @@
          byte optionsToEnable = this.loginFinishedPacketEnableOptions();
          this.state = ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING;
          this.connection.send(new ClientboundLoginFinishedPacket(gameProfile, this.server.getConnection().getSessionId(), optionsToEnable));
@@ -174,8 +175,8 @@
      }
  
      private @ConnectionOptionsPacket.Flags byte loginFinishedPacketEnableOptions() {
-@@ -196,7 +_,8 @@
-             throw new IllegalStateException("Protocol error", e);
+@@ -207,7 +_,8 @@
+             this.sessionKeyExchange = null;
          }
  
 -        Thread thread = new Thread("User Authenticator #" + UNIQUE_THREAD_ID.incrementAndGet()) {
@@ -183,9 +184,9 @@
 +        authenticatorPool.execute(new Runnable() {
              @Override
              public void run() {
-                 String name = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
-@@ -208,12 +_,18 @@
-                         .hasJoinedServer(name, digest, this.getAddress());
+                 try {
+@@ -217,12 +_,18 @@
+                         .hasJoinedServer(clientName, sessionKeys.computeKeysAuthenticationDigest(), this.getAddress());
                      if (result != null) {
                          GameProfile profile = result.profile();
 +                        // CraftBukkit start - fire PlayerPreLoginEvent
@@ -196,19 +197,19 @@
 +                        // CraftBukkit end
                          ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", profile.name(), profile.id());
                          ServerLoginPacketListenerImpl.this.serverActivityMonitor.reportLoginActivity();
-                         ServerLoginPacketListenerImpl.this.applyConnectionEncryption(profile, secretKey);
+                         ServerLoginPacketListenerImpl.this.applyConnectionEncryption(profile, sessionKeys);
                      } else if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
                          ServerLoginPacketListenerImpl.LOGGER.warn("Failed to verify username but will let them in anyway!");
--                        ServerLoginPacketListenerImpl.this.applyConnectionEncryption(UUIDUtil.createOfflineProfile(name), secretKey);
+-                        ServerLoginPacketListenerImpl.this.applyConnectionEncryption(UUIDUtil.createOfflineProfile(clientName), sessionKeys);
 +                        ServerLoginPacketListenerImpl.this.applyConnectionEncryption(ServerLoginPacketListenerImpl.this.createOfflineProfile(name), secretKey); // Spigot
                      } else {
                          ServerLoginPacketListenerImpl.this.disconnect(Component.translatable("multiplayer.disconnect.unverified_username"));
-                         ServerLoginPacketListenerImpl.LOGGER.error("Username '{}' tried to join with an invalid session", name);
-@@ -221,11 +_,16 @@
+                         ServerLoginPacketListenerImpl.LOGGER.error("Username '{}' tried to join with an invalid session", clientName);
+@@ -230,11 +_,16 @@
                  } catch (AuthenticationUnavailableException ignored) {
                      if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
                          ServerLoginPacketListenerImpl.LOGGER.warn("Authentication servers are down but will let them in anyway!");
--                        ServerLoginPacketListenerImpl.this.applyConnectionEncryption(UUIDUtil.createOfflineProfile(name), secretKey);
+-                        ServerLoginPacketListenerImpl.this.applyConnectionEncryption(UUIDUtil.createOfflineProfile(clientName), sessionKeys);
 +                        ServerLoginPacketListenerImpl.this.applyConnectionEncryption(ServerLoginPacketListenerImpl.this.createOfflineProfile(name), secretKey); // Spigot
                      } else {
 -                        ServerLoginPacketListenerImpl.this.disconnect(Component.translatable("multiplayer.disconnect.authservers_down"));
@@ -223,7 +224,7 @@
                  }
              }
  
-@@ -235,10 +_,60 @@
+@@ -244,10 +_,60 @@
                      ? inetSocketAddress.getAddress()
                      : null;
              }
@@ -286,9 +287,9 @@
 +    }
 +    // CraftBukkit end
  
-     private void applyConnectionEncryption(final GameProfile authenticatedGameProfile, final SecretKey secretKey) {
+     private void applyConnectionEncryption(final GameProfile authenticatedGameProfile, final SessionKeys secretKey) {
          this.resolvedUserProfile = authenticatedGameProfile;
-@@ -279,12 +_,71 @@
+@@ -291,12 +_,71 @@
  
      @Override
      public void handleCustomQueryPacket(final ServerboundCustomQueryAnswerPacket packet) {
@@ -361,7 +362,7 @@
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
          this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND);
          CommonListenerCookie cookie = CommonListenerCookie.createInitial(Objects.requireNonNull(this.resolvedUserProfile), this.transferred);
-@@ -294,6 +_,14 @@
+@@ -306,6 +_,14 @@
          this.state = ServerLoginPacketListenerImpl.State.ACCEPTED;
      }
  
@@ -376,7 +377,7 @@
      @Override
      public void fillListenerSpecificCrashDetails(final CrashReport report, final CrashReportCategory connectionDetails) {
          connectionDetails.setDetail("Login phase", () -> this.state.toString());
-@@ -301,8 +_,31 @@
+@@ -313,8 +_,31 @@
  
      @Override
      public void handleCookieResponse(final ServerboundCookieResponsePacket packet) {

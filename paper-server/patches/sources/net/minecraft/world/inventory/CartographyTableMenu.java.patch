@@ -78,7 +78,7 @@
 +        };
 +        // Paper end - Add missing InventoryHolders - move down
          this.access = access;
-         this.addSlot(new Slot(this.container, 0, 15, 15) {
+         this.addSlot(new Slot(this.container, 0, 15, 15, Slot.Section.INPUT) {
              @Override
 @@ -88,10 +_,12 @@
              }

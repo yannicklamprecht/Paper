@@ -1,7 +1,7 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -373,9 +_,19 @@
-     public static final Registry<ContextKeySet> CONTEXT_KEY_SET = BUILDER.registerSimple(Registries.CONTEXT_KEY_SET, LootContextParamSets::bootstrap);
+@@ -431,8 +_,18 @@
+     );
      public static final Registry<Consumer<GameTestHelper>> TEST_FUNCTION = BUILDER.registerSimple(Registries.TEST_FUNCTION, BuiltinTestFunctions::bootstrap);
      public static final Registry<? extends Registry<?>> REGISTRY = BUILDER.build();
 +    // Paper start - add built-in registry conversions
@@ -19,5 +19,4 @@
 +        BUILDER.bootStrap(runnable);
 +        // Paper end
      }
- 
-     public static <T> HolderGetter<T> acquireBootstrapRegistrationLookup(final Registry<T> registry) {
+ }

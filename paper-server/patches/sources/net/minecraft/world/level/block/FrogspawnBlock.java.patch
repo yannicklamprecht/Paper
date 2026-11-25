@@ -18,7 +18,7 @@
 +        }
 +        // Paper end - Call BlockFadeEven
          this.destroyBlock(level, pos);
-         level.playSound(null, pos, SoundEvents.FROGSPAWN_HATCH, SoundSource.BLOCKS, 1.0F, 1.0F);
+         level.playSound(null, pos, SoundEvents.FROGSPAWN_HATCH, SoundSource.BLOCKS);
          this.spawnTadpoles(level, pos, random);
 @@ -126,7 +_,7 @@
                  int yRot = random.nextInt(1, 361);

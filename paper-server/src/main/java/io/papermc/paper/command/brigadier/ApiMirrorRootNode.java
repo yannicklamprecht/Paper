@@ -22,7 +22,7 @@ import io.papermc.paper.command.brigadier.argument.WrappedArgumentCommandNode;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Set;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.arguments.SerializableArgument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,10 +55,7 @@ public abstract class ApiMirrorRootNode extends RootCommandNode<CommandSourceSta
 
     public static void validatePrimitiveType(ArgumentType<?> type) {
         if (ARGUMENT_WHITELIST.contains(type.getClass())) {
-            if (!ArgumentTypeInfos.isClassRecognized(type.getClass())) {
-                throw new IllegalArgumentException("This whitelisted primitive argument type is not recognized by the server!");
-            }
-        } else if (!(type instanceof VanillaArgumentProviderImpl.NativeWrapperArgumentType<?,?> nativeWrapperArgumentType) || !ArgumentTypeInfos.isClassRecognized(nativeWrapperArgumentType.nativeNmsArgumentType().getClass())) {
+        } else if (!(type instanceof VanillaArgumentProviderImpl.NativeWrapperArgumentType<?,?> nativeWrapperArgumentType) || !(nativeWrapperArgumentType.nativeNmsArgumentType() instanceof SerializableArgument.BrigadierWrapper<?>)) {
             throw new IllegalArgumentException("Custom argument type was passed, this was not a recognized type to send to the client! You must only pass vanilla arguments or primitive brig args in the wrapper!");
         }
     }
@@ -132,7 +129,7 @@ public abstract class ApiMirrorRootNode extends RootCommandNode<CommandSourceSta
             defined NMS type.
             This method allows us to check if this is recognized by vanilla.
              */
-            } else if (ArgumentTypeInfos.isClassRecognized(pureArgumentType.getClass())) {
+            } else if (ARGUMENT_WHITELIST.contains(pureArgumentType.getClass()) || pureArgumentType instanceof SerializableArgument.BrigadierWrapper<?>) {
                 // Allow any type of argument, as long as it's recognized by the client (but in most cases, this should be API only types)
                 // Previously we only allowed whitelisted types.
                 converted = this.simpleUnwrap(pureArgumentNode);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/MessageArgument.java
 +++ b/net/minecraft/commands/arguments/MessageArgument.java
-@@ -41,6 +_,12 @@
+@@ -51,6 +_,12 @@
  
      public static void resolveChatMessage(final CommandContext<CommandSourceStack> context, final String name, final Consumer<PlayerChatMessage> task) throws CommandSyntaxException {
          MessageArgument.Message message = context.getArgument(name, MessageArgument.Message.class);
@@ -13,7 +13,7 @@
          CommandSourceStack sender = context.getSource();
          Component formatted = message.resolveComponent(sender);
          CommandSigningContext signingContext = sender.getSigningContext();
-@@ -55,17 +_,21 @@
+@@ -65,17 +_,21 @@
      private static void resolveSignedMessage(final Consumer<PlayerChatMessage> task, final CommandSourceStack sender, final PlayerChatMessage signedArgument) {
          MinecraftServer server = sender.getServer();
          CompletableFuture<FilteredText> filteredFuture = filterPlainText(sender, signedArgument);

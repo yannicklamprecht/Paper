@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/RecipeHolder.java
 +++ b/net/minecraft/world/item/crafting/RecipeHolder.java
-@@ -5,10 +_,29 @@
+@@ -6,10 +_,29 @@
  import net.minecraft.network.codec.StreamCodec;
  import net.minecraft.resources.ResourceKey;
  
@@ -29,5 +29,5 @@
 +    }
 +    // CraftBukkit end
  
-     @Override
-     public boolean equals(final Object obj) {
+     public static <T extends Recipe<?>> RecipeHolder<T> wrap(final Holder.Reference<T> holder) {
+         ResourceKey<Recipe<?>> key = (ResourceKey<Recipe<?>>)holder.key();

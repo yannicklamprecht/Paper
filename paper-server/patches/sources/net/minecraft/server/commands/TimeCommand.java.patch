@@ -1,12 +1,12 @@
 --- a/net/minecraft/server/commands/TimeCommand.java
 +++ b/net/minecraft/server/commands/TimeCommand.java
-@@ -135,7 +_,7 @@
-         final CommandSourceStack source, final SuggestionsBuilder builder, final Holder<WorldClock> clock
-     ) {
-         return SharedSuggestionProvider.suggestResource(
--            source.getServer().clockManager().commandTimeMarkersForClock(clock).map(ResourceKey::identifier), builder
-+            source.getLevel().clockManager().commandTimeMarkersForClock(clock).map(ResourceKey::identifier), builder // Paper - per-world time
-         );
+@@ -132,7 +_,7 @@
+     private static SuggestionProvider<CommandSourceStack> suggestTimeMarker(final TimeCommand.ClockGetter clockGetter) {
+         return SuggestionProviders.serverOnly((server, context, builder) -> {
+             Holder<WorldClock> clock = clockGetter.getClockForSuggestions(context);
+-            return SuggestionContext.suggestResource(server.clockManager().commandTimeMarkersForClock(clock).map(ResourceKey::identifier), builder);
++            return SuggestionContext.suggestResource(context.getSource().getLevel().clockManager().commandTimeMarkersForClock(clock).map(ResourceKey::identifier), builder); // Paper - per-world time
+         });
      }
  
 @@ -157,7 +_,7 @@

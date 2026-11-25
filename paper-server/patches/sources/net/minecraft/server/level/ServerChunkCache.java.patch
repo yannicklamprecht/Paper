@@ -181,16 +181,16 @@
              this.ticketStorage.purgeStaleTickets(this.chunkMap);
          }
  
-@@ -338,7 +_,7 @@
-         if (!this.level.isDebug()) {
-             ProfilerFiller profiler = Profiler.get();
-             profiler.push("pollingChunks");
--            if (this.level.tickRateManager().runsNormally()) {
+@@ -337,7 +_,7 @@
+     private void tickChunks() {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("pollingChunks");
+-        if (this.level.tickRateManager().runsNormally()) {
 +            if (this.level.tickRateManager().runsNormally() && this.level.paperConfig().unsupportedSettings.ticking.chunks) { // Paper - option to disable ticking
-                 profiler.push("tickingChunks");
-                 this.tickChunks(profiler);
-                 profiler.pop();
-@@ -368,12 +_,20 @@
+             profiler.push("tickingChunks");
+             this.tickChunks(profiler);
+             profiler.pop();
+@@ -366,12 +_,20 @@
          int chunkCount = this.distanceManager.getNaturalSpawnChunkCount();
          NaturalSpawner.SpawnState spawnCookie = NaturalSpawner.createState(chunkCount, this.level, this::getFullChunk, new LocalMobCapCalculator(this.chunkMap));
          this.lastSpawnState = spawnCookie;
@@ -215,7 +215,7 @@
          } else {
              spawningCategories = List.of();
          }
-@@ -558,7 +_,13 @@
+@@ -556,7 +_,13 @@
  
      @Override
      public void setSpawnSettings(final boolean spawnEnemies) {
@@ -229,7 +229,7 @@
      }
  
      public String getChunkDebugData(final ChunkPos pos) {
-@@ -625,12 +_,18 @@
+@@ -623,12 +_,18 @@
  
          @Override
          protected boolean pollTask() {

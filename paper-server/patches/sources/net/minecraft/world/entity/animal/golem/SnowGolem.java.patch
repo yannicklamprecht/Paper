@@ -55,7 +55,7 @@
 +    @Override
 +    public void shear(final ServerLevel level, final SoundSource soundSource, final ItemStack tool, final java.util.List<ItemStack> drops) {
 +        // Paper end - custom shear drops
-         level.playSound(null, this, SoundEvents.SNOW_GOLEM_SHEAR, soundSource, 1.0F, 1.0F);
+         level.playSound(null, this, SoundEvents.SNOW_GOLEM_SHEAR, soundSource);
          this.setPumpkin(false);
 -        this.dropFromShearingLootTable(level, BuiltInLootTables.SHEAR_SNOW_GOLEM, tool, (l, drop) -> this.spawnAtLocation(l, drop, this.getEyeHeight()));
 +        // Paper start - custom shear drops

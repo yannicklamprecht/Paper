@@ -49,7 +49,7 @@ public interface CraftRecipe extends Recipe {
         Ingredient stack;
 
         if (bukkit == null) {
-            stack = Ingredient.of();
+            stack = Ingredient.of(new net.minecraft.world.level.ItemLike[0]);
         } else if (bukkit instanceof final RecipeChoice.ItemTypeChoice itemTypeChoice) {
             stack = Ingredient.of(PaperRegistrySets.convertToNms(Registries.ITEM, Conversions.global().lookup(), itemTypeChoice.itemTypes()));
         } else if (bukkit instanceof final RecipeChoice.PredicateChoice predicateChoice) {

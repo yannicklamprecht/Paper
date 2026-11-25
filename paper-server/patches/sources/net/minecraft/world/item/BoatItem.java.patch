@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BoatItem.java
 +++ b/net/minecraft/world/item/BoatItem.java
-@@ -30,7 +_,7 @@
+@@ -28,7 +_,7 @@
      @Override
      public InteractionResult use(final Level level, final Player player, final InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);
@@ -9,7 +9,7 @@
          if (hitResult.getType() == HitResult.Type.MISS) {
              return InteractionResult.PASS;
          }
-@@ -52,6 +_,13 @@
+@@ -50,6 +_,13 @@
          }
  
          if (hitResult.getType() == HitResult.Type.BLOCK) {
@@ -23,7 +23,7 @@
              AbstractBoat boat = this.getBoat(level, hitResult, itemStack, player);
              if (boat == null) {
                  return InteractionResult.FAIL;
-@@ -63,7 +_,15 @@
+@@ -61,7 +_,15 @@
              }
  
              if (!level.isClientSide()) {

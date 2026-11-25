@@ -902,19 +902,14 @@ public final class CraftServer implements Server {
         String command = StringUtils.normalizeSpace(commandLine.trim());
 
         net.minecraft.commands.Commands commands = this.getHandle().getServer().getCommands();
-        com.mojang.brigadier.CommandDispatcher<CommandSourceStack> dispatcher = commands.getDispatcher();
-        com.mojang.brigadier.ParseResults<CommandSourceStack> results = dispatcher.parse(command, sourceStack);
+        net.minecraft.commands.ParseBox.Result results = commands.parseBox().parse(command, net.minecraft.commands.ParseContext.of(sourceStack));
 
         CommandSender sender = sourceStack.getBukkitSender();
         String[] args = org.apache.commons.lang3.StringUtils.split(command, ' '); // Paper - fix adjacent spaces (from console/plugins) causing empty array elements
         Command target = this.commandMap.getCommand(args[0].toLowerCase(java.util.Locale.ENGLISH));
 
         try {
-            if (results.getContext().getNodes().isEmpty()) {
-                return false;
-            }
-            Commands.validateParseResults(results);
-            commands.performCommand(results, command, true);
+            net.minecraft.commands.Commands.performCommand(sourceStack, results, command, true);
             return true;
         } catch (CommandException ex) {
             new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args)).callEvent(); // Paper
@@ -2648,7 +2643,7 @@ public final class CraftServer implements Server {
         Preconditions.checkArgument(selector != null, "selector cannot be null");
         Preconditions.checkArgument(sender != null, "CommandSender sender cannot be null");
 
-        EntityArgument arg = EntityArgument.entities();
+        EntityArgument arg = new EntityArgument(false, false);
         List<? extends net.minecraft.world.entity.Entity> entities;
 
         try {

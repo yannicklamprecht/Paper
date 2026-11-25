@@ -35,7 +35,7 @@
 +    @Override
 +    public void shear(final ServerLevel level, final SoundSource soundSource, final ItemStack tool, java.util.List<ItemStack> drops) {
 +        // Paper end
-         level.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, soundSource, 1.0F, 1.0F);
+         level.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, soundSource);
          this.convertTo(EntityTypes.COW, ConversionParams.single(this, false, false), cow -> {
              level.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
 -            this.dropFromShearingLootTable(level, BuiltInLootTables.SHEAR_MOOSHROOM, tool, (l, drop) -> {

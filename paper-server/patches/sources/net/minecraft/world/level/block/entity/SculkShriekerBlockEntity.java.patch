@@ -14,7 +14,7 @@
          if (sourceEntity instanceof ServerPlayer player) {
              return player;
          } else if (sourceEntity != null && sourceEntity.getControllingPassenger() instanceof ServerPlayer player) {
-@@ -176,7 +_,7 @@
+@@ -178,7 +_,7 @@
      private boolean trySummonWarden(final ServerLevel level) {
          return this.warningLevel >= 4
              && SpawnUtil.trySpawnMob(

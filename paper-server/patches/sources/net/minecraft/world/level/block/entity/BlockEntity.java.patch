@@ -64,7 +64,7 @@
 +        // CraftBukkit end
      }
  
-     public final CompoundTag saveWithFullMetadata(final HolderLookup.Provider registries) {
+     public final CompoundTag saveWithFullMetadata(final HolderGetter.Provider registries) {
 @@ -279,6 +_,12 @@
      }
  

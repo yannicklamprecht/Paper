@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryLoadTask.java
 +++ b/net/minecraft/resources/RegistryLoadTask.java
-@@ -29,7 +_,7 @@
+@@ -30,7 +_,7 @@
  public abstract class RegistryLoadTask<T> {
      private final Object registryWriteLock = new Object();
      protected final RegistryDataLoader.RegistryData<T> data;
@@ -9,7 +9,7 @@
      protected final ConcurrentHolderGetter<T> concurrentRegistrationGetter;
      protected final Map<ResourceKey<?>, Exception> loadingErrors;
      private volatile boolean elementsRegistered;
-@@ -39,6 +_,7 @@
+@@ -40,6 +_,7 @@
          this.registry = new MappedRegistry<>(data.key(), lifecycle);
          this.loadingErrors = loadingErrors;
          this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
@@ -17,9 +17,9 @@
      }
  
      protected ResourceKey<? extends Registry<T>> registryKey() {
-@@ -55,11 +_,11 @@
+@@ -56,11 +_,11 @@
  
-     public abstract CompletableFuture<?> load(RegistryOps.RegistryInfoLookup context, Executor executor);
+     public abstract CompletableFuture<?> load(HolderGetter.Provider context, Executor executor);
  
 -    protected void registerElements(final Stream<RegistryLoadTask.PendingRegistration<T>> elements) {
 +    protected void registerElements(final Stream<RegistryLoadTask.PendingRegistration<T>> elements, final io.papermc.paper.registry.data.util.Conversions conversions) { // Paper - pass conversions

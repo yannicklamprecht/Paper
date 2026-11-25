@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/WeatherCommand.java
 +++ b/net/minecraft/server/commands/WeatherCommand.java
-@@ -48,19 +_,19 @@
+@@ -49,19 +_,19 @@
      }
  
      private static int setClear(final CommandSourceStack source, final int duration) {

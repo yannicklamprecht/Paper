@@ -50,7 +50,7 @@
 +                // Paper end - Add PlayerItemFrameChangeEvent
                  this.dropItem(level, source.getEntity(), false);
                  this.gameEvent(GameEvent.BLOCK_CHANGE, source.getEntity());
-                 this.playSound(this.getRemoveItemSound(), 1.0F, 1.0F);
+                 this.playSound(this.getRemoveItemSound());
 @@ -250,6 +_,13 @@
          return this.getEntityData().get(DATA_ITEM);
      }
@@ -83,7 +83,7 @@
          this.getEntityData().set(DATA_ITEM, itemStack);
 -        if (!itemStack.isEmpty()) {
 +        if (!itemStack.isEmpty() && updateNeighbours && playSound) { // CraftBukkit // Paper - only play sound when update flag is set
-             this.playSound(this.getAddItemSound(), 1.0F, 1.0F);
+             this.playSound(this.getAddItemSound());
          }
  
 @@ -296,6 +_,7 @@
@@ -120,6 +120,6 @@
 +                }
 +                setItem(org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(event.getItemStack()), false, false);
 +                // Paper end - Add PlayerItemFrameChangeEvent
-                 this.playSound(this.getRotateItemSound(), 1.0F, 1.0F);
+                 this.playSound(this.getRotateItemSound());
                  this.setRotation(this.getRotation() + 1);
                  this.gameEvent(GameEvent.BLOCK_CHANGE, player);

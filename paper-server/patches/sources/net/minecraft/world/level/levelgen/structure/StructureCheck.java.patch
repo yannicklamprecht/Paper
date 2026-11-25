@@ -11,7 +11,7 @@
 +        final ResourceKey<net.minecraft.world.level.dimension.LevelStem> levelStem,
 +    // Paper end - also store level stem
          final ChunkScanAccess storageAccess,
-         final RegistryAccess registryAccess,
+         final HolderGetter.Provider registryAccess,
          final StructureTemplateManager structureTemplateManager,
 @@ -60,7 +_,7 @@
          final long seed,

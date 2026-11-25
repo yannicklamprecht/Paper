@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
-@@ -50,6 +_,7 @@
+@@ -51,6 +_,7 @@
      private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
      private static final Splitter COMMA_SPLITTER = Splitter.on(',').trimResults();
      private static final Splitter COMMA_SPLITTER_NO_EMPTY = COMMA_SPLITTER.omitEmptyStrings();
@@ -8,7 +8,7 @@
      public static final String MANAGEMENT_SERVER_TLS_ENABLED_KEY = "management-server-tls-enabled";
      public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_KEY = "management-server-tls-keystore";
      public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_PASSWORD_KEY = "management-server-tls-keystore-password";
-@@ -109,7 +_,7 @@
+@@ -110,7 +_,7 @@
      public final boolean broadcastRconToOps = this.get("broadcast-rcon-to-ops", true);
      public final boolean broadcastConsoleToOps = this.get("broadcast-console-to-ops", true);
      public final int maxWorldSize = this.get("max-world-size", v -> Math.clamp(v.intValue(), 1, 29999984), 29999984);
@@ -17,13 +17,14 @@
      public final String regionFileComression = this.get("region-file-compression", "deflate");
      public final boolean enableJmxMonitoring = this.get("enable-jmx-monitoring", false);
      public final Settings<DedicatedServerProperties>.MutableValue<Boolean> enableStatus = this.getMutable("enable-status", true);
-@@ -127,14 +_,17 @@
+@@ -128,15 +_,18 @@
      public final Settings<DedicatedServerProperties>.MutableValue<Boolean> whiteList = this.getMutable("white-list", true);
      public final boolean enforceSecureProfile = this.get("enforce-secure-profile", true);
      public final boolean logIPs = this.get("log-ips", true);
 -    public final Settings<DedicatedServerProperties>.MutableValue<Integer> pauseWhenEmptySeconds = this.getMutable("pause-when-empty-seconds", 60);
 +    public final Settings<DedicatedServerProperties>.MutableValue<Integer> pauseWhenEmptySeconds = this.getMutable("pause-when-empty-seconds", -1); // Paper - disable tick sleeping by default
      public final String allowedConnectionIds = this.get("allowed-connection-ids", "");
+     public final int keyRotationPeriodSeconds = this.get("key-rotation-period-seconds", 60);
      private final DedicatedServerProperties.WorldDimensionData worldDimensionData;
      public final WorldOptions worldOptions;
      public final Settings<DedicatedServerProperties>.MutableValue<Boolean> acceptsTransfers = this.getMutable("accepts-transfers", false);
@@ -38,7 +39,7 @@
          String levelSeed = this.get("level-seed", "");
          boolean generateStructures = this.get("generate-structures", true);
          long seed = WorldOptions.parseSeed(levelSeed).orElse(WorldOptions.randomSeed());
-@@ -155,15 +_,23 @@
+@@ -157,15 +_,23 @@
              this.get("initial-enabled-packs", String.join(",", WorldDataConfiguration.DEFAULT.dataPacks().getEnabled())),
              this.get("initial-disabled-packs", String.join(",", WorldDataConfiguration.DEFAULT.dataPacks().getDisabled()))
          );
@@ -57,7 +58,7 @@
      }
  
      @Override
--    protected DedicatedServerProperties reload(final RegistryAccess registryAccess, final Properties properties) {
+-    protected DedicatedServerProperties reload(final HolderGetter.Provider registryAccess, final Properties properties) {
 -        return new DedicatedServerProperties(properties);
 +    // CraftBukkit start
 +    public DedicatedServerProperties reload(final RegistryAccess registryAccess, final Properties properties, final joptsimple.OptionSet options) {

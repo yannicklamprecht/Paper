@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
-@@ -14,10 +_,17 @@
+@@ -14,10 +14,17 @@
  
      @Override
      protected ItemStack execute(final BlockSource source, final ItemStack dispensed) {
@@ -19,7 +20,7 @@
          BlockPos pos = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
          List<LivingEntity> entities = source.level().getEntitiesOfClass(LivingEntity.class, new AABB(pos), entity -> entity.canEquipWithDispenser(dispensed));
          if (entities.isEmpty()) {
-@@ -26,13 +_,39 @@
+@@ -26,13 +33,39 @@
  
          LivingEntity target = entities.getFirst();
          EquipmentSlot slot = target.getEquipmentSlotForItem(dispensed);

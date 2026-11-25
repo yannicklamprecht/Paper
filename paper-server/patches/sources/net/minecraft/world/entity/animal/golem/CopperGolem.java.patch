@@ -20,7 +20,7 @@
      private int idleAnimationStartTick = 0;
      private final AnimationState idleAnimationState = new AnimationState();
      private final AnimationState interactionGetItemAnimationState = new AnimationState();
-@@ -217,7 +_,13 @@
+@@ -227,7 +_,13 @@
          Level level = this.level();
          if (itemStack.is(Items.SHEARS) && this.readyForShearing()) {
              if (level instanceof ServerLevel serverLevel) {
@@ -35,7 +35,7 @@
                  this.gameEvent(GameEvent.SHEAR, player);
                  itemStack.hurtAndBreak(1, player, hand);
              }
-@@ -288,8 +_,10 @@
+@@ -298,8 +_,10 @@
  
      private void turnToStatue(final ServerLevel level) {
          BlockPos pos = this.blockPosition();
@@ -48,7 +48,7 @@
              Blocks.COPPER_GOLEM_STATUE
                  .weathering()
                  .oxidized()
-@@ -297,12 +_,17 @@
+@@ -307,12 +_,17 @@
                  .setValue(
                      CopperGolemStatueBlock.POSE, CopperGolemStatueBlock.Pose.values()[this.random.nextInt(0, CopperGolemStatueBlock.Pose.values().length)]
                  )
@@ -69,14 +69,14 @@
              this.playSound(SoundEvents.COPPER_GOLEM_BECOME_STATUE);
              if (this.isLeashed()) {
                  if (level.getGameRules().get(GameRules.ENTITY_DROPS)) {
-@@ -432,12 +_,30 @@
+@@ -442,12 +_,30 @@
      }
  
      @Override
 -    public void shear(final ServerLevel level, final SoundSource soundSource, final ItemStack tool) {
 +    // Paper start
 +    public void shear(final ServerLevel level, final SoundSource soundSource, final ItemStack tool, final java.util.List<ItemStack> drops) {
-         level.playSound(null, this, SoundEvents.COPPER_GOLEM_SHEAR, soundSource, 1.0F, 1.0F);
+         level.playSound(null, this, SoundEvents.COPPER_GOLEM_SHEAR, soundSource);
 -        ItemStack itemStack = this.getItemBySlot(EQUIPMENT_SLOT_ANTENNA);
          this.setItemSlot(EQUIPMENT_SLOT_ANTENNA, ItemStack.EMPTY);
 -        this.spawnAtLocation(level, itemStack, 1.5F);
@@ -104,7 +104,7 @@
  
      @Override
      public boolean readyForShearing() {
-@@ -451,9 +_,13 @@
+@@ -461,9 +_,13 @@
      }
  
      @Override

@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -41,13 +_,36 @@
+@@ -41,13 +41,36 @@
              yOffset = 0.0;
          }
  

@@ -30,7 +30,7 @@
                  }
              }
          }
-@@ -180,13 +_,19 @@
+@@ -180,11 +_,17 @@
      private static void updateAndAttackTarget(
          final ServerLevel level, final BlockPos worldPosition, final BlockState blockState, final ConduitBlockEntity entity, final boolean isActive
      ) {
@@ -45,9 +45,7 @@
 -        if (targetEntity != null) {
 +        if (damageTarget && targetEntity != null) { // CraftBukkit
 +            if (targetEntity.hurtServer(level, level.damageSources().magic().eventBlockDamager(level, worldPosition), 4.0F)) // CraftBukkit - move up
-             level.playSound(
-                 null, targetEntity.getX(), targetEntity.getY(), targetEntity.getZ(), SoundEvents.CONDUIT_ATTACK_TARGET, SoundSource.BLOCKS, 1.0F, 1.0F
-             );
+             level.playSound(null, targetEntity.getX(), targetEntity.getY(), targetEntity.getZ(), SoundEvents.CONDUIT_ATTACK_TARGET, SoundSource.BLOCKS);
 -            targetEntity.hurtServer(level, level.damageSources().magic(), 4.0F);
          }
  

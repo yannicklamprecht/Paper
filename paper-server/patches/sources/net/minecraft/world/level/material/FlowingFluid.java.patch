@@ -60,7 +60,7 @@
                  level.destroyBlock(pos, true);
              }
  
-@@ -297,7 +_,8 @@
+@@ -298,7 +_,8 @@
          for (Direction direction : Direction.Plane.HORIZONTAL) {
              if (direction != from) {
                  BlockPos testPos = pos.relative(direction);
@@ -70,7 +70,7 @@
                  FluidState testFluidState = testState.getFluidState();
                  if (this.canPassThrough(level, pos, state, direction, testPos, testState, testFluidState)) {
                      if (context.isHole(testPos)) {
-@@ -378,7 +_,8 @@
+@@ -379,7 +_,8 @@
  
          for (Direction direction : Direction.Plane.HORIZONTAL) {
              BlockPos testPos = pos.relative(direction);
@@ -80,7 +80,7 @@
              FluidState testFluidState = testState.getFluidState();
              if (this.canMaybePassThrough(level, pos, state, direction, testPos, testState, testFluidState)) {
                  FluidState newFluid = this.getNewLiquid(level, testPos, testState);
-@@ -439,10 +_,24 @@
+@@ -440,10 +_,24 @@
              if (newFluidState.isEmpty()) {
                  fluidState = newFluidState;
                  blockState = Blocks.AIR.defaultBlockState();
@@ -105,7 +105,7 @@
                  level.setBlockAndUpdate(pos, blockState);
                  level.scheduleTick(pos, fluidState.getType(), tickDelay);
              }
-@@ -513,8 +_,27 @@
+@@ -514,8 +_,27 @@
              return this.getBlockState(pos, this.getCacheKey(pos));
          }
  

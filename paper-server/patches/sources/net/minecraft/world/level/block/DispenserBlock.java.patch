@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/DispenserBlock.java
 +++ b/net/minecraft/world/level/block/DispenserBlock.java
-@@ -70,8 +_,7 @@
+@@ -53,8 +_,7 @@
      protected InteractionResult useWithoutItem(
          final BlockState state, final Level level, final BlockPos pos, final Player player, final BlockHitResult hitResult
      ) {
@@ -10,7 +10,7 @@
              player.awardStat(dispenser instanceof DropperBlockEntity ? Stats.INSPECT_DROPPER : Stats.INSPECT_DISPENSER);
          }
  
-@@ -86,17 +_,26 @@
+@@ -72,15 +_,24 @@
              BlockSource source = new BlockSource(level, pos, state, blockEntity);
              int slot = blockEntity.getRandomSlot(level.getRandom());
              if (slot < 0) {
@@ -20,11 +20,9 @@
 +                } // Paper - Add BlockFailedDispenseEvent
              } else {
                  ItemStack itemStack = blockEntity.getItem(slot);
-                 DispenseItemBehavior behavior = this.getDispenseMethod(level, itemStack);
-                 if (behavior != DispenseItemBehavior.NOOP) {
+                 List<DispenseBehavior> behaviors = this.getDispenseMethods(level, itemStack);
 +                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockPreDispenseEvent(level, pos, itemStack, slot)) return; // Paper - Add BlockPreDispenseEvent
-                     blockEntity.setItem(slot, behavior.dispense(source, itemStack));
-                 }
+                 blockEntity.setItem(slot, DispenseBehavior.dispense(behaviors, source, itemStack));
              }
          }
      }
@@ -35,5 +33,5 @@
 +    }
 +    // Paper end - Fix NPE with equippable and items without behavior
  
-     protected DispenseItemBehavior getDispenseMethod(final Level level, final ItemStack itemStack) {
+     protected List<DispenseBehavior> getDispenseMethods(final ServerLevel level, final ItemStack itemStack) {
          if (!itemStack.isItemEnabled(level.enabledFeatures())) {

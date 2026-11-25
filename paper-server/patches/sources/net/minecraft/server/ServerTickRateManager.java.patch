@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/ServerTickRateManager.java
 +++ b/net/minecraft/server/ServerTickRateManager.java
-@@ -15,6 +_,7 @@
+@@ -18,6 +_,7 @@
      private long scheduledCurrentSprintTicks = 0L;
      private boolean previousIsFrozen = false;
      private final MinecraftServer server;
@@ -8,7 +8,7 @@
  
      public ServerTickRateManager(final MinecraftServer server) {
          this.server = server;
-@@ -68,6 +_,13 @@
+@@ -71,6 +_,13 @@
      }
  
      public boolean requestGameToSprint(final int time) {
@@ -22,17 +22,20 @@
          boolean interrupted = this.remainingSprintTicks > 0L;
          this.sprintTimeSpend = 0L;
          this.scheduledCurrentSprintTicks = time;
-@@ -86,9 +_,12 @@
-         );
-         this.scheduledCurrentSprintTicks = 0L;
+@@ -91,10 +_,15 @@
          this.sprintTimeSpend = 0L;
--        this.server
-+        // Paper start - silence feedback when API requests sprint
-+        if (!this.silent) this.server
-             .createCommandSourceStack()
-             .sendSuccess(() -> Component.translatable("commands.tick.sprint.report", ticksPerSecond, millisecondsPerTick), true);
-+        this.silent = false;
-+        // Paper end - silence feedback when API requests sprint
+         Supplier<Component> message = () -> Component.translatable("commands.tick.sprint.report", ticksPerSecond, millisecondsPerTick);
+         if (source == null) {
+-            CommandSourceStack.sendSuccessAsServer(this.server, message, true);
++            // Paper start - silence feedback when API requests sprint
++            if (!this.silent) {
++                CommandSourceStack.sendSuccessAsServer(this.server, message, true);
++            }
++            // Paper end - silence feedback when API requests sprint
+         } else {
+             source.sendSuccess(message, true);
+         }
++        this.silent = false; // Paper - silence feedback when API requests sprint
+ 
          this.remainingSprintTicks = 0L;
          this.setFrozen(this.previousIsFrozen);
-         this.server.onTickRateChanged();

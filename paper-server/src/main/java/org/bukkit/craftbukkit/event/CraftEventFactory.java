@@ -2304,7 +2304,7 @@ public class CraftEventFactory {
         return event.callEvent();
     }
 
-    public static @Nullable ItemStack handleBlockDispenseEvent(net.minecraft.core.dispenser.BlockSource pointer, BlockPos to, ItemStack dispensed, net.minecraft.core.dispenser.DispenseItemBehavior instance) {
+    public static @Nullable ItemStack handleBlockDispenseEvent(net.minecraft.core.dispenser.BlockSource pointer, BlockPos to, ItemStack dispensed, net.minecraft.core.dispenser.DispenseBehavior instance) {
         org.bukkit.block.Block bukkitBlock = CraftBlock.at(pointer.level(), pointer.pos());
         org.bukkit.inventory.ItemStack craftItem = CraftItemStack.asBukkitMirror(dispensed.isDamageableItem() ? dispensed : dispensed.copyWithCount(1));
 
@@ -2316,9 +2316,9 @@ public class CraftEventFactory {
         if (!event.getItem().equals(craftItem)) {
             // Chain to handler for new item
             ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
-            net.minecraft.core.dispenser.DispenseItemBehavior itemBehavior = net.minecraft.world.level.block.DispenserBlock.getDispenseBehavior(pointer, eventStack);
-            if (itemBehavior != net.minecraft.core.dispenser.DispenseItemBehavior.NOOP && itemBehavior != instance) {
-                itemBehavior.dispense(pointer, eventStack);
+            java.util.List<net.minecraft.core.dispenser.DispenseBehavior> itemBehaviors = net.minecraft.world.level.block.DispenserBlock.getDispenseBehavior(pointer, eventStack);
+            if (!itemBehaviors.isEmpty() && !itemBehaviors.contains(instance)) {
+                net.minecraft.core.dispenser.DispenseBehavior.dispense(itemBehaviors, pointer, eventStack);
                 return dispensed;
             }
         }

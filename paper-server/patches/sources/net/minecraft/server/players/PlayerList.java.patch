@@ -792,9 +792,9 @@
 @@ -712,9 +_,26 @@
      }
  
-     public void removeAll() {
--        for (int i = 0; i < this.players.size(); i++) {
--            this.players.get(i).connection.disconnect(Component.translatable("multiplayer.disconnect.server_shutdown"));
+     public void removeAllForShutdown() {
+-        for (ServerPlayer player : List.copyOf(this.players)) {
+-            player.connection.disconnectForShutdown();
 -        }
 +        // Paper start - Extract method to allow for restarting flag
 +        this.removeAll(false);

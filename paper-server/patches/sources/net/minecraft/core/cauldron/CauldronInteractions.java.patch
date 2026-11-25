@@ -20,7 +20,7 @@
                      player.awardStat(Stats.ITEM_USED.get(usedItem));
 -                    level.setBlockAndUpdate(pos, Blocks.WATER_CAULDRON.defaultBlockState());
 +                    // level.setBlockAndUpdate(pos, Blocks.WATER_CAULDRON.defaultBlockState()); // CraftBukkit
-                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS);
                      level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
                  }
 @@ -67,7 +_,7 @@
@@ -54,7 +54,7 @@
                  player.awardStat(Stats.ITEM_USED.get(usedItem));
 -                LayeredCauldronBlock.lowerFillLevel(state, level, pos);
 +                // LayeredCauldronBlock.lowerFillLevel(state, level, pos); // CraftBukkit
-                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS);
                  level.gameEvent(null, GameEvent.FLUID_PICKUP, pos);
              }
  
@@ -79,7 +79,7 @@
                      player.awardStat(Stats.ITEM_USED.get(itemInHand.getItem()));
 -                    level.setBlockAndUpdate(pos, state.cycle(LayeredCauldronBlock.LEVEL));
 +                    // level.setBlockAndUpdate(pos, state.cycle(LayeredCauldronBlock.LEVEL)); // CraftBukkit
-                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS);
                      level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
                  }
 @@ -118,14 +_,14 @@
@@ -155,7 +155,7 @@
              player.awardStat(Stats.ITEM_USED.get(itemUsed));
 -            level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
 +            // level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState()); // CraftBukkit
-             level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.playSound(null, pos, soundEvent, SoundSource.BLOCKS);
              level.gameEvent(null, GameEvent.FLUID_PICKUP, pos);
          }
 @@ -183,12 +_,42 @@
@@ -200,7 +200,7 @@
              player.awardStat(Stats.ITEM_USED.get(itemUsed));
 -            level.setBlockAndUpdate(pos, newState);
 +            // level.setBlockAndUpdate(pos, newState); // CraftBukkit
-             level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+             level.playSound(null, pos, soundEvent, SoundSource.BLOCKS);
              level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
          }
 @@ -197,23 +_,23 @@
